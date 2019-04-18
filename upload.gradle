@@ -1,0 +1,28 @@
+apply plugin: 'maven'
+
+//def sonatypeRepositoryUrl = "http://maven.wallstcn.com/nexus/content/repositories/thirdparty/"
+def sonatypeRepositoryUrl = "file://" + rootDir.absolutePath + "/.repo"
+
+afterEvaluate { project ->
+    Properties properties = new Properties()
+    properties.load(project.rootProject.file('local.properties').newDataInputStream())
+    uploadArchives {
+        repositories {
+            mavenDeployer {
+
+                pom.groupId = GROUP
+                pom.artifactId = POM_ARTIFACT_ID
+                pom.version = VERSION
+
+                repository(url: sonatypeRepositoryUrl) {
+                    try {
+                        authentication(userName: properties.getProperty("userName"), password: properties.getProperty("password"))
+                    } catch (Exception e) {
+                        println(e.getMessage())
+                    }
+                }
+
+            }
+        }
+    }
+}
