@@ -1,6 +1,8 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-android'
+apply plugin: 'auto-track'
+
 android {
     compileSdkVersion 28
     defaultConfig {
@@ -27,4 +29,8 @@ dependencies {
 
     implementation 'androidx.multidex:multidex:2.0.1'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+}
+
+autoConfig {
+    packageList = ['com.wallstreetcn']
 }

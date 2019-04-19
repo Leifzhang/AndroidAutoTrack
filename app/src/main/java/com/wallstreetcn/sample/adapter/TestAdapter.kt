@@ -1,4 +1,4 @@
-package com.wallstreetcn.autotrack.adapter
+package com.wallstreetcn.sample.adapter
 
 import android.util.Log
 import android.view.LayoutInflater

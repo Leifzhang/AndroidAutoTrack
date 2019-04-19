@@ -8,7 +8,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 
-import com.wallstreetcn.autotrack.SecondActivity;
 
 public class MainActivity extends AppCompatActivity {
     private String test = "MainActivity";

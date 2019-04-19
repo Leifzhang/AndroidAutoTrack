@@ -8,7 +8,7 @@ import com.wallstreetcn.sample.utils.ReflectUtil;
 public class ToastHelper {
     public static void toast(View view) {
         String toastText = "插入的代码";
-        Toast.makeText(view.getContext(), toastText, Toast.LENGTH_LONG).show();
+        Toast.makeText(view.getContext(), toastText, Toast.LENGTH_SHORT).show();
     }
 
     public static void toast(Object text, View view) {
@@ -19,7 +19,7 @@ public class ToastHelper {
             } else {
                 toastText = text.toString();
             }*/
-            Toast.makeText(view.getContext(), toastText, Toast.LENGTH_LONG).show();
+            Toast.makeText(view.getContext(), toastText, Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
             e.printStackTrace();
         }
