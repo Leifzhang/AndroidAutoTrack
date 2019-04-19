@@ -1,2 +1,6 @@
 # AndroidAutoTrack
 安卓自动打点雏形  检索代码中onclick事件并在尾部插入代码
+
+通过gradle插件在编译打包时拦截onclick事件并在onclick方法体尾部插入字节码生成的调用打点工具。
+
+项目beta版本 暂时只提供简单的测试效果  可以基于本项目进行二次开发。
