@@ -11,9 +11,9 @@ class MethodHelper {
                 '(Landroid/view/View;)V',
                 'android/view/View$OnClickListener',
                 'toast',
-                '(Ljava/lang/Object;Landroid/view/View;)V',
+                '(Ljava/lang/Object;Landroid/view/View;Ljava/lang/Object;)V',
                 1, 1,
-                [ Opcodes.ALOAD]))
+                [Opcodes.ALOAD]))
         sInterfaceMethods.put('onClick(Landroid/content/DialogInterface;I)V', new MethodCell(
                 'onClick',
                 '(Landroid/content/DialogInterface;I)V',

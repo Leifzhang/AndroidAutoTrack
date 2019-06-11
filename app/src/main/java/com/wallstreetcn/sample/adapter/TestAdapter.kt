@@ -1,12 +1,12 @@
-package com.wallstreetcn.sample.adapter
+package com.wallstreetcn.autotrack.adapter
 
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.wallstreetcn.sample.R
 
+import com.wallstreetcn.sample.R
 import kotlinx.android.synthetic.main.recycler_item_view.view.*
 
 class TestAdapter : RecyclerView.Adapter<TestAdapter.ViewHolder>() {
@@ -22,13 +22,14 @@ class TestAdapter : RecyclerView.Adapter<TestAdapter.ViewHolder>() {
         return 10
     }
 
-    class ViewHolder constructor(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    class ViewHolder constructor(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
+        override fun onClick(v: View?) {
+            Log.i("onBindViewHolder", adapterPosition.toString())
+        }
+
         fun bindViewHolder(position: Int) {
             itemView.titleTv.text = "这是第" + position + "条目"
-            itemView.setOnClickListener {
-                //   ToastHelper.toast(this@ViewHolder, it)
-                Log.i("onBindViewHolder", adapterPosition.toString())
-            }
+            itemView.setOnClickListener(this)
         }
     }
 }

@@ -11,6 +11,8 @@ class ClassFilterVisitor extends ClassVisitor {
     private String outerName
     private String outerOwner
     private final String objectText = "java/lang/Object"
+    private String fieldName, fieldDesc, fieldOwner
+
 
     ClassFilterVisitor(ClassVisitor classVisitor) {
         super(Opcodes.ASM5, classVisitor)
@@ -22,8 +24,9 @@ class ClassFilterVisitor extends ClassVisitor {
         this.superName = superName
         this.outerName = name
         this.outerOwner = name
+        this.fieldOwner = name
         this.interfaces = interfaces
-        Log.info("parentName:" + name + "   superName:" + superName + "    interfaces:" + interfaces)
+        // Log.info("parentName:" + name + "   superName:" + superName + "    interfaces:" + interfaces)
         if (!superName.equals(objectText)) {
             int index = name.lastIndexOf("/")
             index = index < 0 ? 0 : index
@@ -38,17 +41,15 @@ class ClassFilterVisitor extends ClassVisitor {
     @Override
     void visitOuterClass(String owner, String name, String desc) {
         super.visitOuterClass(owner, name, desc)
-        Log.info("visitOuterClass:" + owner + "   outerName:" + name + "    desc:" + desc)
         this.parentName = "L" + owner + ";"
     }
 
     @Override
     void visitInnerClass(String name, String outerName, String innerName, int access) {
         super.visitInnerClass(name, outerName, innerName, access)
-        //Log.info("visitInnerClass:" + name + "   outerName:" + outerName + "    interfaces:" + innerName)
-        /*     this.outerOwner = name
-             this.parentName = "L" + outerName + ";"*/
+       // this.fieldOwner += innerName
     }
+
 
     @Override
     void visitEnd() {
@@ -57,13 +58,21 @@ class ClassFilterVisitor extends ClassVisitor {
 
     @Override
     FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
-        return super.visitField(access, name, desc, signature, value)
+        FieldVisitor fieldVisitor = super.visitField(access, name, desc, signature, value)
+        return new FieldAnnotationVisitor(Opcodes.ASM5, fieldVisitor, name, desc) {
+
+            @Override
+            void hasAnnotation(String fieldName, String fieldDesc) {
+                this.fieldName = name
+                this.fieldDesc = desc
+            }
+        }
     }
 
     @Override
     MethodVisitor visitMethod(int access, String name,
                               String desc, String signature, String[] exceptions) {
-        //  Log.info("* visitMethod *" + " , " + access + " , " + name + " , " + desc + " , " + signature + " , " + exceptions)
+        // Log.info("* visitMethod *" + " , " + access + " , " + name + " , " + desc + " , " + signature + " , " + exceptions)
         if (interfaces != null && interfaces.length > 0) {
             try {
                 MethodCell cell = MethodHelper.sInterfaceMethods.get(name + desc)
@@ -136,11 +145,24 @@ class ClassFilterVisitor extends ClassVisitor {
  */
     void visitMethodWithLoadedParams(MethodVisitor methodVisitor, int opcode, String owner, String methodName, String methodDesc,
                                      int start, int count, List<Integer> paramOpcodes) {
-        Log.info("outerOwner:" + outerOwner + "  outerDesc:" + parentName)
+        //  Log.info("outerOwner:" + outerOwner + "  outerDesc:" + parentName)
         methodVisitor.visitVarInsn(Opcodes.ALOAD, 0)
-        methodVisitor.visitFieldInsn(Opcodes.GETFIELD, outerOwner, "this\$0", parentName)
+        //  Log.info("visitVarInsn:")
+        if (parentName != null && outerOwner != null) {
+            methodVisitor.visitFieldInsn(Opcodes.GETFIELD, outerOwner, "this\$0", parentName)
+            //     Log.info("visitFieldInsn:")
+        }
         for (int i = start; i < start + count; i++) {
             methodVisitor.visitVarInsn(paramOpcodes[i - start], i)
+            //    Log.info("method visitFieldInsn:")
+        }
+        if (fieldDesc != null && fieldName != null) {
+            methodVisitor.visitVarInsn(Opcodes.ALOAD, 0)
+            Log.info("AnnotationVisitor fieldOwner:" + fieldOwner)
+            methodVisitor.visitFieldInsn(Opcodes.GETFIELD, fieldOwner, fieldName, fieldDesc)
+            // methodVisitor.visitInsn(Opcodes.ACONST_NULL)
+        } else {
+            methodVisitor.visitInsn(Opcodes.ACONST_NULL)
         }
         methodVisitor.visitMethodInsn(opcode, owner, methodName, methodDesc, false)
     }

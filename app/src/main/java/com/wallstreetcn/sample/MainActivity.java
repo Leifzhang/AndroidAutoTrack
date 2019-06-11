@@ -2,23 +2,41 @@ package com.wallstreetcn.sample;
 
 import android.content.Intent;
 import android.os.Bundle;
-
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.util.Log;
 import android.view.View;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 
-public class MainActivity extends AppCompatActivity {
-    private String test = "MainActivity";
+import com.wallstreetcn.sample.adapter.Test;
+
+
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+
+
+    @Nullable
+    private View.OnClickListener listener = new View.OnClickListener() {
+
+        @Override
+        public void onClick(View v) {
+            Log.i("MainActivity", v.toString());
+            Intent intent = new Intent();
+            intent.setClass(MainActivity.this, SecondActivity.class);
+            startActivity(intent);
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         findViewById(R.id.textView1).setOnClickListener(new View.OnClickListener() {
+            @Test
+            private Entity mdata = new Entity();
+
             @Override
             public void onClick(View v) {
+                //  ToastHelper.toast(MainActivity.this, v, mdata);
                 Log.i("MainActivity", v.toString());
                 Intent intent = new Intent();
                 intent.setClass(MainActivity.this, SecondActivity.class);
@@ -26,4 +44,13 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+    @Override
+    public void onClick(View v) {
+        Log.i("MainActivity", v.toString());
+        Intent intent = new Intent();
+        intent.setClass(MainActivity.this, SecondActivity.class);
+        startActivity(intent);
+    }
+
 }

@@ -1,6 +1,9 @@
-package com.wallstreetcn.autotrack.helper;
+package com.wallstreetcn.autotrack.helper
 
-import org.objectweb.asm.*
+
+import org.objectweb.asm.ClassReader
+import org.objectweb.asm.ClassVisitor
+import org.objectweb.asm.ClassWriter
 
 
 class ModifyUtils {
@@ -8,11 +11,11 @@ class ModifyUtils {
     static byte[] modifyClasses(String className, byte[] srcByteCode) {
         byte[] classBytesCode = null
         try {
-            Log.info("====start modifying ${className}====");
+           // Log.info("====start modifying ${className}====");
             classBytesCode = modifyClass(srcByteCode);
-            Log.info("====revisit modified ${className}====");
+          //  Log.info("====revisit modified ${className}====");
             //  onlyVisitClassMethod(classBytesCode);
-            Log.info("====finish modifying ${className}====");
+          //  Log.info("====finish modifying ${className}====");
             return classBytesCode
         } catch (Exception e) {
             e.printStackTrace()
@@ -24,8 +27,8 @@ class ModifyUtils {
     }
 
     static byte[] modifyClass(byte[] srcClass) throws IOException {
-        ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_MAXS);
-        ClassVisitor methodFilterCV = new ClassFilterVisitor(classWriter);
+        ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_MAXS)
+        ClassVisitor methodFilterCV = new ClassFilterVisitor(classWriter)
         ClassReader cr = new ClassReader(srcClass)
         cr.accept(methodFilterCV, ClassReader.SKIP_DEBUG)
         return classWriter.toByteArray()

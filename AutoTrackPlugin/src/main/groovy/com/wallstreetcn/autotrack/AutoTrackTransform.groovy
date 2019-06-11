@@ -3,7 +3,6 @@ package com.wallstreetcn.autotrack
 import com.android.build.api.transform.*
 import com.android.build.gradle.internal.pipeline.TransformManager
 import com.wallstreetcn.autotrack.helper.ClassInjectHelper
-import com.wallstreetcn.autotrack.helper.Log
 import groovy.io.FileType
 import org.apache.commons.codec.digest.DigestUtils
 import org.apache.commons.io.FileUtils
@@ -68,45 +67,44 @@ class AutoTrackTransform extends Transform {
                 FileUtils.copyFile(jarInput.file, dest)
             }
 
-            input.directoryInputs.each { DirectoryInput directoryInput ->
-                File dest = outputProvider.getContentLocation(directoryInput.name,
-                        directoryInput.contentTypes, directoryInput.scopes,
-                        Format.DIRECTORY)
-                File dir = directoryInput.file
-                if (dir) {
-                    directoryInput.file.eachFileRecurse {
-                        HashMap<String, File> modifyMap = new HashMap<>()
-                        dir.traverse(type: FileType.FILES, nameFilter: ~/.*\.class/) {
-                            File classFile ->
-                                String absolutePath = classFile.absolutePath.replace(dir.absolutePath + File.separator, "")
-                                String className = path2Classname(absolutePath)
-                                if (checkClassName(className)) {
-                                    project.logger.warn("ClassInjectHelper:" + className)
-                                    ClassInjectHelper injectHelper = new ClassInjectHelper(className, classFile, context.getTemporaryDir())
-                                    File modified = injectHelper.modify()
-                                    if (modified != null) {
-                                        //key为相对路径
-                                        modifyMap.put(classFile.absolutePath.replace(dir.absolutePath, ""), modified)
+            input.directoryInputs.each {
+                DirectoryInput directoryInput ->
+                    File dest = outputProvider.getContentLocation(directoryInput.name,
+                            directoryInput.contentTypes, directoryInput.scopes,
+                            Format.DIRECTORY)
+                    File dir = directoryInput.file
+                    if (dir) {
+                        directoryInput.file.eachFileRecurse {
+                            HashMap<String, File> modifyMap = new HashMap<>()
+                            dir.traverse(type: FileType.FILES, nameFilter: ~/.*\.class/) {
+                                File classFile ->
+                                    String absolutePath = classFile.absolutePath.replace(dir.absolutePath + File.separator, "")
+                                    String className = path2Classname(absolutePath)
+                                    if (checkClassName(className)) {
+                                        ClassInjectHelper injectHelper = new ClassInjectHelper(className, classFile, context.getTemporaryDir())
+                                        File modified = injectHelper.modify()
+                                        if (modified != null) {
+                                            //key为相对路径
+                                            modifyMap.put(classFile.absolutePath.replace(dir.absolutePath, ""), modified)
+                                        }
                                     }
-                                }
 
 
+                            }
+                            FileUtils.copyDirectory(directoryInput.file, dest)
+                            modifyMap.entrySet().each {
+                                Map.Entry<String, File> en ->
+                                    File target = new File(dest.absolutePath + en.getKey())
+                                    if (target.exists()) {
+                                        target.delete()
+                                    }
+                                    FileUtils.copyFile(en.getValue(), target)
+                                    //  saveModifiedJarForCheck(en.getValue())
+                                    en.getValue().delete()
+                            }
                         }
-                        FileUtils.copyDirectory(directoryInput.file, dest)
-                        modifyMap.entrySet().each {
-                            Map.Entry<String, File> en ->
-                                File target = new File(dest.absolutePath + en.getKey())
-                                Log.info(target.getAbsolutePath())
-                                if (target.exists()) {
-                                    target.delete()
-                                }
-                                FileUtils.copyFile(en.getValue(), target)
-                                //  saveModifiedJarForCheck(en.getValue())
-                                en.getValue().delete()
-                        }
+
                     }
-
-                }
             }
 
         }

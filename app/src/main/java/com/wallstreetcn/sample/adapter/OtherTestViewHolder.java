@@ -19,7 +19,6 @@ public class OtherTestViewHolder extends RecyclerView.ViewHolder {
             @Override
             public void onClick(View v) {
                 Log.i("", "");
-                //  ToastHelper.toast(OtherTestViewHolder.this, v);
             }
         });
     }
