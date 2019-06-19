@@ -1,11 +1,9 @@
-package com.wallstreetcn.autotrack
+package com.wallstreetcn.sample
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import android.util.Log
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.wallstreetcn.autotrack.adapter.TestAdapter
-import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_second.*
 
 class SecondActivity : AppCompatActivity() {

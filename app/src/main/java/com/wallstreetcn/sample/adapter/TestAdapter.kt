@@ -6,10 +6,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.Nullable
 import androidx.recyclerview.widget.RecyclerView
-import com.wallstreetcn.autotrack.Entity
 
-import com.wallstreetcn.autotrack.R
-import com.wallstreetcn.autotrack.ToastHelper
+import com.wallstreetcn.sample.Entity
+import com.wallstreetcn.sample.R
+import com.wallstreetcn.sample.adapter.Test
 import kotlinx.android.synthetic.main.recycler_item_view.view.*
 
 class TestAdapter : RecyclerView.Adapter<TestAdapter.ViewHolder>() {

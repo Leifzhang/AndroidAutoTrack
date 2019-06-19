@@ -8,7 +8,7 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.wallstreetcn.autotrack.adapter.Test;
+import com.wallstreetcn.sample.adapter.Test;
 
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
@@ -38,7 +38,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onClick(View v) {
                 mdata = new Entity();
                 Log.i("MainActivity", v.toString());
-                @Test
                 Intent intent = new Intent();
                 intent.setClass(MainActivity.this, SecondActivity.class);
                 startActivity(intent);

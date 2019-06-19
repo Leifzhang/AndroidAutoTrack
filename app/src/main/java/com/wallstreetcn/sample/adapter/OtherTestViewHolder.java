@@ -3,7 +3,6 @@ package com.wallstreetcn.sample.adapter;
 import android.util.Log;
 import android.view.View;
 
-import com.wallstreetcn.autotrack.ToastHelper;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -22,7 +21,7 @@ public class OtherTestViewHolder extends RecyclerView.ViewHolder {
             @Override
             public void onClick(View v) {
                 Log.i("", "");
-              //  ToastHelper.toast(OtherTestViewHolder.this, v);
+                //  ToastHelper.toast(OtherTestViewHolder.this, v);
             }
         });
     }
