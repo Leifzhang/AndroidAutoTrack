@@ -1,0 +1,7 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.wallstreetcn.testmodule">
+
+    <application>
+        <activity android:name=".ModuleActivity" />
+    </application>
+</manifest>

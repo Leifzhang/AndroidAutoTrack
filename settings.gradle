@@ -1,1 +1,1 @@
-include ':app', ':AutoTrackPlugin'
+include ':app', ':AutoTrackPlugin', ':testmodule'

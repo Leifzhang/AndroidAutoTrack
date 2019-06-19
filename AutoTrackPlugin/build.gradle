@@ -9,7 +9,7 @@ repositories {
     mavenCentral()
 }
 dependencies {
-    compile 'com.android.tools.build:gradle:3.3.2'
+    compile 'com.android.tools.build:gradle:3.4.1'
     compile 'commons-io:commons-io:2.4'
     compile 'org.javassist:javassist:3.20.0-GA'
 }

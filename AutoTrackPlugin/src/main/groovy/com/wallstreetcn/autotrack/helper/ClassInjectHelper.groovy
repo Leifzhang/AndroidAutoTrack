@@ -17,7 +17,7 @@ class ClassInjectHelper {
         File modified = null
         try {
             byte[] sourceClassBytes = IOUtils.toByteArray(new FileInputStream(mClassFile))
-            byte[] modifiedClassBytes = ModifyUtils.modifyClasses(mClassName, sourceClassBytes)
+            byte[] modifiedClassBytes = ModifyUtils.modifyClasses(sourceClassBytes)
             if (modifiedClassBytes) {
                 modified = new File(mTempDir, mClassName.replace('.', '') + '.class')
                 if (modified.exists()) {

@@ -3,10 +3,17 @@ package com.wallstreetcn.autotrack
 import com.android.build.api.transform.*
 import com.android.build.gradle.internal.pipeline.TransformManager
 import com.wallstreetcn.autotrack.helper.ClassInjectHelper
+import com.wallstreetcn.autotrack.helper.ModifyUtils
 import groovy.io.FileType
 import org.apache.commons.codec.digest.DigestUtils
+import org.apache.commons.compress.utils.IOUtils
 import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
+
+import java.util.jar.JarEntry
+import java.util.jar.JarFile
+import java.util.jar.JarOutputStream
+import java.util.zip.ZipEntry
 
 class AutoTrackTransform extends Transform {
 
@@ -55,18 +62,17 @@ class AutoTrackTransform extends Transform {
                 }
                 /** 获得输出文件*/
                 File dest = outputProvider.getContentLocation(destName + "_" + hexName, jarInput.contentTypes, jarInput.scopes, Format.JAR)
-                /*  def modifiedJar = null
-                  if (isJarNeedModify(jarInput.file)) {
-                      modifiedJar = modifyJarFile(jarInput.file, context.getTemporaryDir())
-                  }
-                  if (modifiedJar == null) {
-                      modifiedJar = jarInput.file
-                  } else {
-                      saveModifiedJarForCheck(modifiedJar)
-                  }*/
-                FileUtils.copyFile(jarInput.file, dest)
+                def modifiedJar = null
+                if (isJarNeedModify(jarInput.file)) {
+                    modifiedJar = modifyJarFile(jarInput.file, context.getTemporaryDir())
+                }
+                if (modifiedJar == null) {
+                    modifiedJar = jarInput.file
+                }
+                FileUtils.copyFile(modifiedJar, dest)
             }
 
+            HashMap<String, ClassInjectHelper> modifyMap = new HashMap<>()
             input.directoryInputs.each {
                 DirectoryInput directoryInput ->
                     File dest = outputProvider.getContentLocation(directoryInput.name,
@@ -75,35 +81,31 @@ class AutoTrackTransform extends Transform {
                     File dir = directoryInput.file
                     if (dir) {
                         directoryInput.file.eachFileRecurse {
-                            HashMap<String, File> modifyMap = new HashMap<>()
                             dir.traverse(type: FileType.FILES, nameFilter: ~/.*\.class/) {
                                 File classFile ->
                                     String absolutePath = classFile.absolutePath.replace(dir.absolutePath + File.separator, "")
                                     String className = path2Classname(absolutePath)
                                     if (checkClassName(className)) {
-                                        ClassInjectHelper injectHelper = new ClassInjectHelper(className, classFile, context.getTemporaryDir())
-                                        File modified = injectHelper.modify()
-                                        if (modified != null) {
-                                            //key为相对路径
-                                            modifyMap.put(classFile.absolutePath.replace(dir.absolutePath, ""), modified)
-                                        }
+                                        ClassInjectHelper injectHelper = new ClassInjectHelper(className, classFile,
+                                                context.getTemporaryDir())
+                                        modifyMap.put(classFile.absolutePath.replace(dir.absolutePath, ""), injectHelper)
                                     }
-
 
                             }
                             FileUtils.copyDirectory(directoryInput.file, dest)
-                            modifyMap.entrySet().each {
-                                Map.Entry<String, File> en ->
-                                    File target = new File(dest.absolutePath + en.getKey())
-                                    if (target.exists()) {
-                                        target.delete()
-                                    }
-                                    FileUtils.copyFile(en.getValue(), target)
-                                    //  saveModifiedJarForCheck(en.getValue())
-                                    en.getValue().delete()
-                            }
                         }
-
+                        modifyMap.entrySet().each {
+                            Map.Entry<String, ClassInjectHelper> en ->
+                                File target = new File(dest.absolutePath + en.getKey())
+                                if (target.exists()) {
+                                    target.delete()
+                                }
+                                ClassInjectHelper injectHelper = en.getValue()
+                                File modify = injectHelper.modify()
+                                FileUtils.copyFile(modify, target)
+                                //  saveModifiedJarForCheck(en.getValue())
+                                modify.delete()
+                        }
                     }
             }
 
@@ -128,5 +130,75 @@ class AutoTrackTransform extends Transform {
     }
 
 
+     File modifyJarFile(File jarFile, File tempDir) {
+        /** 设置输出到的jar */
+        def hexName = DigestUtils.md5Hex(jarFile.absolutePath).substring(0, 8);
+        def optJar = new File(tempDir, hexName + jarFile.name)
+        JarOutputStream jarOutputStream = new JarOutputStream(new FileOutputStream(optJar));
+        /**
+         * 读取原jar
+         */
+        def file = new JarFile(jarFile);
+        Enumeration enumeration = file.entries();
+        while (enumeration.hasMoreElements()) {
+            JarEntry jarEntry = (JarEntry) enumeration.nextElement();
+            InputStream inputStream = file.getInputStream(jarEntry);
+
+            String entryName = jarEntry.getName()
+            String className
+
+            ZipEntry zipEntry = new ZipEntry(entryName)
+
+            jarOutputStream.putNextEntry(zipEntry)
+
+            byte[] modifiedClassBytes = null
+            byte[] sourceClassBytes = IOUtils.toByteArray(inputStream)
+            if (entryName.endsWith(".class")) {
+                className = path2Classname(entryName)
+                if (checkClassName(className)) {
+                    modifiedClassBytes = ModifyUtils.modifyClasses(sourceClassBytes)
+                }
+            }
+            if (modifiedClassBytes == null) {
+                jarOutputStream.write(sourceClassBytes)
+            } else {
+                jarOutputStream.write(modifiedClassBytes)
+            }
+            jarOutputStream.closeEntry()
+        }
+        jarOutputStream.close()
+        file.close()
+        return optJar
+    }
+
+    /**
+     * 该jar文件是否包含需要修改的类
+     * @param jarFile
+     * @return
+     */
+    boolean isJarNeedModify(File jarFile) {
+        boolean modified = false
+        if (jarFile) {
+            /**
+             * 读取原jar
+             */
+            def file = new JarFile(jarFile)
+            Enumeration enumeration = file.entries()
+            while (enumeration.hasMoreElements()) {
+                JarEntry jarEntry = (JarEntry) enumeration.nextElement()
+                String entryName = jarEntry.getName()
+                String className
+                if (entryName.endsWith(".class")) {
+                    className = entryName.replace("/", ".").replace(".class", "")
+                    if (checkClassName(className)) {
+                        modified = true
+                        break
+                    }
+                }
+            }
+            file.close()
+        }
+        return modified
+    }
 }
 

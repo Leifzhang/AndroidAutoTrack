@@ -24,9 +24,9 @@ android {
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation 'androidx.appcompat:appcompat:1.1.0-alpha04'
-    implementation 'androidx.recyclerview:recyclerview:1.1.0-alpha04'
-
+    implementation 'androidx.appcompat:appcompat:1.1.0-beta01'
+    implementation 'androidx.recyclerview:recyclerview:1.1.0-alpha06'
+    implementation project(":testmodule")
     implementation 'androidx.multidex:multidex:2.0.1'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }

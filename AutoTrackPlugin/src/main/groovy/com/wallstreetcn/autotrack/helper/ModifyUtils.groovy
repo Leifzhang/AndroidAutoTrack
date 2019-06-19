@@ -8,14 +8,14 @@ import org.objectweb.asm.ClassWriter
 
 class ModifyUtils {
 
-    static byte[] modifyClasses(String className, byte[] srcByteCode) {
+    static byte[] modifyClasses(byte[] srcByteCode) {
         byte[] classBytesCode = null
         try {
-           // Log.info("====start modifying ${className}====");
+            // Log.info("====start modifying ${className}====");
             classBytesCode = modifyClass(srcByteCode);
-          //  Log.info("====revisit modified ${className}====");
+            //  Log.info("====revisit modified ${className}====");
             //  onlyVisitClassMethod(classBytesCode);
-          //  Log.info("====finish modifying ${className}====");
+            //  Log.info("====finish modifying ${className}====");
             return classBytesCode
         } catch (Exception e) {
             e.printStackTrace()
@@ -34,7 +34,7 @@ class ModifyUtils {
         return classWriter.toByteArray()
     }
 
-    static byte[] modifyClass(byte[] srcClass, Map<String, String> modifyMap, boolean isOnlyVisit) throws IOException {
+    static byte[] modifyClass(byte[] srcClass, boolean isOnlyVisit) throws IOException {
         ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_MAXS)
         ClassVisitor adapter = new ClassFilterVisitor(classWriter)
         adapter.isOnlyVisit = isOnlyVisit

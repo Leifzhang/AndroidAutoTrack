@@ -1,4 +1,4 @@
-package com.wallstreetcn.autotrack.helper;
+package com.wallstreetcn.autotrack.helper
 
 
 import org.objectweb.asm.*
@@ -47,7 +47,7 @@ class ClassFilterVisitor extends ClassVisitor {
     @Override
     void visitInnerClass(String name, String outerName, String innerName, int access) {
         super.visitInnerClass(name, outerName, innerName, access)
-       // this.fieldOwner += innerName
+        // this.fieldOwner += innerName
     }
 
 
@@ -81,30 +81,21 @@ class ClassFilterVisitor extends ClassVisitor {
                     MethodVisitor mv = new MethodVisitor(Opcodes.ASM5, methodVisitor) {
 
                         @Override
-                        void visitCode() {
-                            super.visitCode()
-                            /*   methodVisitor.visitMethodInsn(Opcodes.INVOKESTATIC, "java/ lang / System ", " currentTimeMillis ", "() J ", false)
-                               methodVisitor.visitVarInsn(Opcodes.LSTORE, 1)*/
+                        void visitLocalVariable(String localName, String localDesc, String localSignature, Label start, Label end, int index) {
+                            Log.info("visitFieldInsn:" + localName + "   desc:" + localDesc)
+                            super.visitLocalVariable(localName, localDesc, localSignature, start, end, index)
+                        }
+
+                        @Override
+                        AnnotationVisitor visitLocalVariableAnnotation(int typeRef, TypePath typePath, Label[] start, Label[] end, int[] index, String annotationDesc, boolean visible) {
+                            Log.info("methodAnnotation:" + annotationDesc)
+                            return super.visitLocalVariableAnnotation(typeRef, typePath, start, end, index, annotationDesc, visible)
                         }
 
                         @Override
                         void visitInsn(int opcode) {
                             if ((opcode >= Opcodes.IRETURN && opcode <= Opcodes.RETURN)
                                     || opcode == Opcodes.ATHROW) {
-                                /*   methodVisitor.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/System", "currentTimeMillis", "()J", false);
-                                   methodVisitor.visitVarInsn(Opcodes.LSTORE, 3);
-                                   methodVisitor.visitFieldInsn(Opcodes.GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
-                                   methodVisitor.visitTypeInsn(Opcodes.NEW, "java/lang/StringBuilder");
-                                   methodVisitor.visitInsn(Opcodes.DUP);
-                                   methodVisitor.visitLdcInsn("MyTimeLog now use time====");
-                                   methodVisitor.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/lang/StringBuilder", "<init>", "(Ljava/lang/String;)V", false);
-                                   methodVisitor.visitVarInsn(Opcodes.LLOAD, 3);
-                                   methodVisitor.visitVarInsn(Opcodes.LLOAD, 1);
-                                   methodVisitor.visitInsn(Opcodes.LSUB);
-                                   methodVisitor.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(J)Ljava/lang/StringBuilder;", false);
-                                   methodVisitor.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/StringBuilder", "toString", "()Ljava/lang/String;", false);
-                                   methodVisitor.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V", false);
-   */
                                 visitMethodWithLoadedParams(methodVisitor, Opcodes.INVOKESTATIC, MethodHelper.INJECT_CLASS_NAME,
                                         cell.agentName, cell.agentDesc, cell.paramsStart,
                                         cell.paramsCount, cell.opcodes)
@@ -158,7 +149,6 @@ class ClassFilterVisitor extends ClassVisitor {
         }
         if (fieldDesc != null && fieldName != null) {
             methodVisitor.visitVarInsn(Opcodes.ALOAD, 0)
-            Log.info("AnnotationVisitor fieldOwner:" + fieldOwner)
             methodVisitor.visitFieldInsn(Opcodes.GETFIELD, fieldOwner, fieldName, fieldDesc)
             // methodVisitor.visitInsn(Opcodes.ACONST_NULL)
         } else {
