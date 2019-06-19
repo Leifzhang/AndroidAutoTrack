@@ -8,7 +8,7 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.wallstreetcn.sample.adapter.Test;
+import com.wallstreetcn.autotrack.adapter.Test;
 
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
@@ -32,12 +32,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
         findViewById(R.id.textView1).setOnClickListener(new View.OnClickListener() {
             @Test
-            private Entity mdata = new Entity();
+            private Entity mdata;
 
             @Override
             public void onClick(View v) {
-                //  ToastHelper.toast(MainActivity.this, v, mdata);
+                mdata = new Entity();
                 Log.i("MainActivity", v.toString());
+                @Test
                 Intent intent = new Intent();
                 intent.setClass(MainActivity.this, SecondActivity.class);
                 startActivity(intent);

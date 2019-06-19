@@ -1,5 +1,6 @@
 package com.wallstreetcn.sample.utils;
 
+import android.content.res.Resources;
 import android.view.View;
 
 public class ResourceUtils {
