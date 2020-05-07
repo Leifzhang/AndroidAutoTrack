@@ -1,7 +1,15 @@
 apply plugin: 'maven'
 
-//def sonatypeRepositoryUrl = "http://maven.wallstcn.com/nexus/content/repositories/thirdparty/"
 def sonatypeRepositoryUrl = "file://" + rootDir.absolutePath + "/.repo"
+
+Properties config = new Properties()
+config.load(project.file("nexus.properties").newDataInputStream())
+def nexus_versionName = config.getProperty('nexus_versionName')
+def nexus_artifactId = config.getProperty('nexus_artifactId')
+def nexus_groupId = config.getProperty('nexus_groupId')
+def nexus_description = config.getProperty('nexus_description')
+def nexus_fileName = config.getProperty('nexus_fileName')
+def nexus_type = config.getProperty('nexus_type')
 
 afterEvaluate { project ->
     Properties properties = new Properties()
@@ -9,10 +17,11 @@ afterEvaluate { project ->
     uploadArchives {
         repositories {
             mavenDeployer {
-
-                pom.groupId = GROUP
-                pom.artifactId = POM_ARTIFACT_ID
-                pom.version = VERSION
+                pom.groupId = nexus_groupId
+                pom.artifactId = nexus_artifactId
+                pom.packaging = 'aar'
+                pom.name = nexus_fileName
+                pom.version = nexus_versionName + '-SNAPSHOT'
 
                 repository(url: sonatypeRepositoryUrl) {
                     try {
