@@ -42,7 +42,7 @@ class AutoTrackTransform extends Transform {
 
     @Override
     boolean isIncremental() {
-        return true
+        return false
     }
 
     @Override
