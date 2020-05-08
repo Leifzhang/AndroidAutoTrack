@@ -9,6 +9,7 @@ import com.kronos.doubletap.base.BaseTransform
 import com.kronos.doubletap.base.TransformCallBack
 import com.kronos.doubletap.helper.DoubleTapDelegate
 import org.gradle.api.Project
+import com.kronos.doubletap.base.ClassUtils
 
 class DoubleTabTransform extends Transform {
 

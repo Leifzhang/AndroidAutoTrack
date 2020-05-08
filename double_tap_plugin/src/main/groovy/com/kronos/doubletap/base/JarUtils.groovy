@@ -36,9 +36,7 @@ class JarUtils {
             byte[] sourceClassBytes = IOUtils.toByteArray(inputStream)
             if (entryName.endsWith(".class")) {
                 try {
-                    Log.info("||-->entryName :$entryName")
                     modifiedClassBytes = callBack.processJarClass(entryName, sourceClassBytes, transform)
-                    Log.info("||--> isModify :${modifiedClassBytes == null}")
                 } catch (Exception e) {
                     // e.printStackTrace()
                 }

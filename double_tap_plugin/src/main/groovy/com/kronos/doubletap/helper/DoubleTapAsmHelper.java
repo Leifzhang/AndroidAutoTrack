@@ -1,6 +1,7 @@
 package com.kronos.doubletap.helper;
 
 import com.kronos.doubletap.base.AsmHelper;
+import com.kronos.doubletap.helper.ModifyUtils;
 
 import java.io.IOException;
 

@@ -1,5 +1,7 @@
 package com.kronos.doubletap.helper
 
+import com.kronos.doubletap.base.Log
+import com.kronos.doubletap.*
 import org.objectweb.asm.ClassVisitor
 import org.objectweb.asm.FieldVisitor
 import org.objectweb.asm.MethodVisitor

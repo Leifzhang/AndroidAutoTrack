@@ -12,7 +12,7 @@ public class DoubleTabConfig {
 
     public void transform() {
         if (TextUtils.isEmpty(injectClassName)) {
-            ByteCodeInjectClassName = "com/hellobike/doubleclickplugin/sample/test/DoubleTapCheck";
+            ByteCodeInjectClassName = "com/wallstreetcn/sample/DoubleTapCheck";
         } else {
             ByteCodeInjectClassName = injectClassName.replace(".", "/");
         }

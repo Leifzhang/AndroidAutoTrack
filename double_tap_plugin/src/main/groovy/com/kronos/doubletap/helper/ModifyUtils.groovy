@@ -3,6 +3,7 @@ package com.kronos.doubletap.helper
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassVisitor
 import org.objectweb.asm.ClassWriter
+import com.kronos.doubletap.helper.ClassFilterVisitor
 
 
 class ModifyUtils {
