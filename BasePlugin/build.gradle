@@ -6,10 +6,6 @@ dependencies {
     implementation localGroovy()
 }
 
-repositories {
-    mavenCentral()
-}
-
 dependencies {
     implementation 'com.android.tools.build:gradle:3.3.0'
     implementation 'commons-io:commons-io:2.6'
