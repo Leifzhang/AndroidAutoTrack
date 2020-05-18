@@ -3,6 +3,8 @@ package com.wallstreetcn.sample;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.NonNull;
+
 public class Entity implements Parcelable {
     private String test = "test";
 
@@ -17,6 +19,12 @@ public class Entity implements Parcelable {
     }
 
     public Entity() {
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return "Entity";
     }
 
     protected Entity(Parcel in) {

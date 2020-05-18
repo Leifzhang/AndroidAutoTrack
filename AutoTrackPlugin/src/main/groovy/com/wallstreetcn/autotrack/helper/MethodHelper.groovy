@@ -3,7 +3,7 @@ package com.wallstreetcn.autotrack.helper
 import org.objectweb.asm.Opcodes
 
 class MethodHelper {
-    public final static String INJECT_CLASS_NAME = "com/wallstreetcn/autotrack/ToastHelper"
+    public final static String INJECT_CLASS_NAME = "com/wallstreetcn/sample/ToastHelper"
     public final static HashMap<String, MethodCell> sInterfaceMethods = new HashMap<>()
     static {
         sInterfaceMethods.put('onClick(Landroid/view/View;)V', new MethodCell(

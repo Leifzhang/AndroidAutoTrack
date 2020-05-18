@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+  <groupId>com.wallstreetcn.autotrack</groupId>
+  <artifactId>autotrack</artifactId>
+  <versioning>
+    <versions>
+      <version>0.1.4-SNAPSHOT</version>
+    </versions>
+    <lastUpdated>20200518122553</lastUpdated>
+  </versioning>
+</metadata>

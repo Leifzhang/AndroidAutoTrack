@@ -11,6 +11,7 @@ class AutoTrackPlugin implements Plugin<Project> {
     @Override
     void apply(Project project) {
         AutoTrackConfig config = project.extensions.create('autoConfig', AutoTrackConfig)
-        project.android.registerTransform(new AutoTrackTransform(project, config))
+        project.android.registerTransform(new NewAutoTackTransform(project))
     }
+
 }

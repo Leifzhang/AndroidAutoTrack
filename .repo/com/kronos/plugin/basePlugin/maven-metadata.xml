@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+  <groupId>com.kronos.plugin</groupId>
+  <artifactId>basePlugin</artifactId>
+  <versioning>
+    <versions>
+      <version>0.1.3-SNAPSHOT</version>
+    </versions>
+    <lastUpdated>20200518113905</lastUpdated>
+  </versioning>
+</metadata>

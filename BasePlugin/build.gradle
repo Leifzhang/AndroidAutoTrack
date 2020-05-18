@@ -1,0 +1,11 @@
+apply plugin: 'groovy'
+apply from: '../upload.gradle'
+
+
+dependencies {
+    implementation gradleApi()
+    implementation localGroovy()
+    implementation 'com.android.tools.build:gradle:3.3.0'
+    implementation 'commons-io:commons-io:2.6'
+    implementation 'org.javassist:javassist:3.20.0-GA'
+}

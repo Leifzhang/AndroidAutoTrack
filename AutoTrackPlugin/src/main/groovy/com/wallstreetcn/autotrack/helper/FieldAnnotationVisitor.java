@@ -5,7 +5,7 @@ import org.objectweb.asm.FieldVisitor;
 
 public abstract class FieldAnnotationVisitor extends FieldVisitor {
 
-    private final String annotationName = "Lcom/wallstreetcn/autotrack/adapter/Test;";
+    private final String annotationName = "Lcom/wallstreetcn/sample/adapter/Test;";
     private String fieldName, fieldDesc;
 
     public FieldAnnotationVisitor(int i, FieldVisitor fieldVisitor, String fieldName, String fieldDesc) {
@@ -18,7 +18,6 @@ public abstract class FieldAnnotationVisitor extends FieldVisitor {
     @Override
     public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
         if (desc.equals(annotationName)) {
-            //  Log.info("AnnotationVisitor fieldName:" + fieldName + "   fieldDesc:" + fieldDesc);
             hasAnnotation(fieldName, fieldDesc);
         }
         return super.visitAnnotation(desc, visible);
