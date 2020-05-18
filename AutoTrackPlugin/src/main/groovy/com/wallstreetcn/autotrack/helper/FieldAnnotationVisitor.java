@@ -18,7 +18,6 @@ public abstract class FieldAnnotationVisitor extends FieldVisitor {
     @Override
     public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
         if (desc.equals(annotationName)) {
-            //  Log.info("AnnotationVisitor fieldName:" + fieldName + "   fieldDesc:" + fieldDesc);
             hasAnnotation(fieldName, fieldDesc);
         }
         return super.visitAnnotation(desc, visible);

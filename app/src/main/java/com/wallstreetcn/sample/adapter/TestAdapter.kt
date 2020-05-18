@@ -39,10 +39,10 @@ class TestAdapter : RecyclerView.Adapter<TestAdapter.ViewHolder>() {
 
         fun bindViewHolder(position: Int) {
             itemView.titleTv.text = "这是第" + position + "条目"
-            // itemView.setOnClickListener(this)
-            itemView.setOnClickListener {
+             itemView.setOnClickListener(this)
+            /*itemView.setOnClickListener {
                 Log.i("", "")
-            }
+            }*/
         }
     }
 }
