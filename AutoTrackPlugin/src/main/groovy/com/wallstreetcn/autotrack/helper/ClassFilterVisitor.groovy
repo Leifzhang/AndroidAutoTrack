@@ -72,7 +72,7 @@ class ClassFilterVisitor extends ClassVisitor {
     @Override
     MethodVisitor visitMethod(int access, String name,
                               String desc, String signature, String[] exceptions) {
-        // Log.info("* visitMethod *" + " , " + access + " , " + name + " , " + desc + " , " + signature + " , " + exceptions)
+        //  Log.info("* visitMethod *" + " , " + access + " , " + name + " , " + desc + " , " + signature + " , " + exceptions)
         if (interfaces != null && interfaces.length > 0) {
             try {
                 MethodCell cell = MethodHelper.sInterfaceMethods.get(name + desc)
@@ -81,21 +81,10 @@ class ClassFilterVisitor extends ClassVisitor {
                     MethodVisitor mv = new MethodVisitor(Opcodes.ASM5, methodVisitor) {
 
                         @Override
-                        void visitLocalVariable(String localName, String localDesc, String localSignature, Label start, Label end, int index) {
-                            Log.info("visitFieldInsn:" + localName + "   desc:" + localDesc)
-                            super.visitLocalVariable(localName, localDesc, localSignature, start, end, index)
-                        }
-
-                        @Override
-                        AnnotationVisitor visitLocalVariableAnnotation(int typeRef, TypePath typePath, Label[] start, Label[] end, int[] index, String annotationDesc, boolean visible) {
-                            Log.info("methodAnnotation:" + annotationDesc)
-                            return super.visitLocalVariableAnnotation(typeRef, typePath, start, end, index, annotationDesc, visible)
-                        }
-
-                        @Override
                         void visitInsn(int opcode) {
                             if ((opcode >= Opcodes.IRETURN && opcode <= Opcodes.RETURN)
                                     || opcode == Opcodes.ATHROW) {
+                                Log.info("methodAnnotation: visitInsn")
                                 visitMethodWithLoadedParams(methodVisitor, Opcodes.INVOKESTATIC, MethodHelper.INJECT_CLASS_NAME,
                                         cell.agentName, cell.agentDesc, cell.paramsStart,
                                         cell.paramsCount, cell.opcodes)
@@ -136,12 +125,11 @@ class ClassFilterVisitor extends ClassVisitor {
  */
     void visitMethodWithLoadedParams(MethodVisitor methodVisitor, int opcode, String owner, String methodName, String methodDesc,
                                      int start, int count, List<Integer> paramOpcodes) {
-        //  Log.info("outerOwner:" + outerOwner + "  outerDesc:" + parentName)
+        Log.info("outerOwner:" + outerOwner + "  outerDesc:" + parentName)
         methodVisitor.visitVarInsn(Opcodes.ALOAD, 0)
-        //  Log.info("visitVarInsn:")
         if (parentName != null && outerOwner != null) {
             methodVisitor.visitFieldInsn(Opcodes.GETFIELD, outerOwner, "this\$0", parentName)
-            //     Log.info("visitFieldInsn:")
+            Log.info("methodVisitor:")
         }
         for (int i = start; i < start + count; i++) {
             methodVisitor.visitVarInsn(paramOpcodes[i - start], i)

@@ -130,7 +130,7 @@ class AutoTrackTransform extends Transform {
     }
 
 
-     File modifyJarFile(File jarFile, File tempDir) {
+    File modifyJarFile(File jarFile, File tempDir) {
         /** 设置输出到的jar */
         def hexName = DigestUtils.md5Hex(jarFile.absolutePath).substring(0, 8);
         def optJar = new File(tempDir, hexName + jarFile.name)
