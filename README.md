@@ -19,7 +19,7 @@ buildscript {
 
     }
     dependencies {
-        classpath 'com.kronos.doubleTap:doubleTap:0.1.3-SNAPSHOT'
+        classpath 'com.kronos.doubleTap:doubleTap:0.1.3'
     }
 }
 ```
@@ -62,5 +62,3 @@ View.OnClickListener listener=new View.OnClickListener() {
 
 
 ## 备注
-
-项目由于还没有上传maven，所以暂时没办法远程依赖，有时间我回家操作下， bintary的key丢失了。

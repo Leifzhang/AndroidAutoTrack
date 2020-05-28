@@ -1,9 +1,20 @@
 apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
 
-def siteUrl = 'https://github.com/Leifzhang/AndroidRouter' // 项目的主页
-def gitUrl = 'https://github.com/Leifzhang/AndroidRouter.git' // Git仓库的url
-group = PROJ_GROUP // Maven Group ID for the artifact，一般填你唯一的包名
+Properties config = new Properties()
+config.load(project.file("nexus.properties").newDataInputStream())
+def nexus_versionName = config.getProperty('nexus_versionName')
+def nexus_artifactId = config.getProperty('nexus_artifactId')
+def nexus_groupId = config.getProperty('nexus_groupId')
+def nexus_description = config.getProperty('nexus_description')
+def nexus_fileName = config.getProperty('nexus_fileName')
+def nexus_url = config.getProperty('nexus_url')
+
+def siteUrl = nexus_url// 项目的主页
+def gitUrl = nexus_url// Git仓库的url
+group = nexus_groupId
+version = nexus_versionName
+
 install {
     repositories.mavenInstaller {
         // This generates POM.xml with proper parameters
@@ -11,7 +22,7 @@ install {
             project {
                 packaging 'aar'
                 // Add your description here
-                name 'An Android Router Lib' //项目描述
+                name nexus_description //项目描述
                 url siteUrl
                 // Set your license
                 licenses {
@@ -23,7 +34,7 @@ install {
                 developers {
                     developer {
                         id 'LeifZhang'    //填写的一些基本信息
-                        name '肉老师'
+                        name nexus_fileName
                         email 'leifzhanggithub@gmail.com'
                     }
                 }
@@ -44,13 +55,10 @@ bintray {
     configurations = ['archives']
     pkg {
         repo = "maven"
-        name = "routerLib"    //发布到JCenter上的项目名字
+        name = nexus_artifactId   //发布到JCenter上的项目名字
         websiteUrl = siteUrl
         vcsUrl = gitUrl
         licenses = ["Apache-2.0"]
         publish = true
     }
-}
-repositories {
-    mavenCentral()
 }

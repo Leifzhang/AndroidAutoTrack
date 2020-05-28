@@ -1,5 +1,5 @@
 apply plugin: 'groovy'
-apply from: '../upload.gradle'
+apply from: '../upload_bintray.gradle'
 
 dependencies {
     implementation gradleApi()
