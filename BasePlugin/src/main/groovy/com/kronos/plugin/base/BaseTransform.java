@@ -10,12 +10,12 @@ import com.android.build.api.transform.TransformInvocation;
 import com.android.build.api.transform.TransformOutputProvider;
 import com.google.common.io.Files;
 
-import groovy.io.FileType;
-
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
@@ -108,14 +108,20 @@ public class BaseTransform {
             //maybe mkdirs fail for some strange reason, try again.
             Files.createParentDirs(dest);
         }
-        File modified = callBack.processClass(dir, file, context.getTemporaryDir(), this);
-        String key = file.getAbsolutePath().replace(dir.getAbsolutePath(), "");
-        File target = new File(dest.getAbsolutePath() + key);
-        if (target.exists()) {
-            target.delete();
+        String absolutePath = file.getAbsolutePath().replace(dir.getAbsolutePath() + File.separator, "");
+        String className = ClassUtils.path2Classname(absolutePath);
+        byte[] bytes = IOUtils.toByteArray(new FileInputStream(file));
+        byte[] modifiedBytes = callBack.process(className, bytes, this);
+        if (modifiedBytes != null) {
+            File modified = ClassUtils.saveFile(file, modifiedBytes);
+            String key = file.getAbsolutePath().replace(dir.getAbsolutePath(), "");
+            File target = new File(dest.getAbsolutePath() + key);
+            if (target.exists()) {
+                target.delete();
+            }
+            FileUtils.copyFile(modified, target);
+            modified.delete();
         }
-        FileUtils.copyFile(modified, target);
-        modified.delete();
     }
 
     private void changeFile(File dir, File dest) throws IOException {
@@ -124,7 +130,11 @@ public class BaseTransform {
             for (File classFile : com.android.utils.FileUtils.getAllFiles(dir)) {
                 if (classFile.getName().endsWith(".class")) {
                     try {
-                        File modified = callBack.processClass(dir, classFile, context.getTemporaryDir(), this);
+                        String absolutePath = classFile.getAbsolutePath().replace(dir.getAbsolutePath() + File.separator, "");
+                        String className = ClassUtils.path2Classname(absolutePath);
+                        byte[] bytes = IOUtils.toByteArray(new FileInputStream(classFile));
+                        byte[] modifiedBytes = callBack.process(className, bytes, this);
+                        File modified = ClassUtils.saveFile(classFile, modifiedBytes);
                         if (modified != null) {
                             //key为相对路径
                             modifyMap.put(classFile.getAbsolutePath().replace(dir.getAbsolutePath(), ""), modified);

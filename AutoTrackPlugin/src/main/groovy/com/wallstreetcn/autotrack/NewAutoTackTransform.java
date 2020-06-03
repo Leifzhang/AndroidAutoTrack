@@ -12,7 +12,6 @@ import com.wallstreetcn.autotrack.helper.AutoTrackDelegate;
 
 import org.gradle.api.Project;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Set;
 
@@ -50,24 +49,14 @@ public class NewAutoTackTransform extends Transform {
         BaseTransform baseTransform = new BaseTransform(transformInvocation, new TransformCallBack() {
 
             @Override
-            public byte[] processJarClass(String className, byte[] classBytes, BaseTransform transform) {
+            public byte[] process(String className, byte[] bytes, BaseTransform baseTransform) {
                 if (ClassUtils.checkClassName(className)) {
-                    return injectHelper.transformByte(classBytes);
+                    return injectHelper.transformByte(bytes);
                 } else {
                     return null;
                 }
             }
 
-            @Override
-            public File processClass(File dir, File classFile, File tempDir, BaseTransform transform) {
-                String absolutePath = classFile.getAbsolutePath().replace(dir.getAbsolutePath() + File.separator, "");
-                String className = ClassUtils.path2Classname(absolutePath);
-                if (ClassUtils.checkClassName(className)) {
-                    return injectHelper.beginTransform(className, classFile, transform.context.getTemporaryDir());
-                } else {
-                    return null;
-                }
-            }
         });
         baseTransform.startTransform();
     }

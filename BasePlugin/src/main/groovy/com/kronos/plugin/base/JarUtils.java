@@ -4,7 +4,6 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.compress.utils.IOUtils;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -42,7 +41,7 @@ class JarUtils {
             byte[] sourceClassBytes = IOUtils.toByteArray(inputStream);
             if (entryName.endsWith(".class")) {
                 try {
-                    modifiedClassBytes = callBack.processJarClass(entryName, sourceClassBytes, transform);
+                    modifiedClassBytes = callBack.process(entryName, sourceClassBytes, transform);
                 } catch (Exception e) {
                     // e.printStackTrace()
                 }

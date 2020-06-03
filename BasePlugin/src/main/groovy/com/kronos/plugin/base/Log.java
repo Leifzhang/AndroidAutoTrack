@@ -4,7 +4,7 @@ import org.codehaus.groovy.runtime.InvokerHelper;
 
 class Log {
 
-    static void info(Object msg) {
+    public static void info(Object msg) {
         try {
             System.out.println(InvokerHelper.
                     toString(String.format("{%s}", msg.toString())));
