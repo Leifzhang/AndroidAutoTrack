@@ -8,6 +8,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.JarOutputStream;
@@ -21,7 +23,6 @@ class JarUtils {
         String hexName = DigestUtils.md5Hex(jarFile.getAbsolutePath()).substring(0, 8);
         File optJar = new File(tempDir, hexName + jarFile.getName());
         JarOutputStream jarOutputStream = new JarOutputStream(new FileOutputStream(optJar));
-
         /**
          * 读取原jar
          */
@@ -36,14 +37,13 @@ class JarUtils {
             ZipEntry zipEntry = new ZipEntry(entryName);
 
             jarOutputStream.putNextEntry(zipEntry);
-
             byte[] modifiedClassBytes = null;
             byte[] sourceClassBytes = IOUtils.toByteArray(inputStream);
             if (entryName.endsWith(".class")) {
                 try {
                     modifiedClassBytes = callBack.process(entryName, sourceClassBytes, transform);
                 } catch (Exception e) {
-                    // e.printStackTrace()
+
                 }
             }
             if (modifiedClassBytes == null) {
@@ -56,6 +56,47 @@ class JarUtils {
         jarOutputStream.close();
         file.close();
         return optJar;
+    }
+
+
+    static HashSet<String> scanJarFile(File jarFile) throws IOException {
+        HashSet<String> hashSet = new HashSet<>();
+        JarFile file = new JarFile(jarFile);
+        Enumeration enumeration = file.entries();
+        while (enumeration.hasMoreElements()) {
+            JarEntry jarEntry = (JarEntry) enumeration.nextElement();
+            String entryName = jarEntry.getName();
+            if (entryName.endsWith(".class")) {
+                hashSet.add(entryName);
+            }
+        }
+        file.close();
+        return hashSet;
+    }
+
+    static void deleteJarScan(File jarFile, List<String> removeClasses, DeleteCallBack callBack) throws IOException {
+        /**
+         * 读取原jar
+         */
+        JarFile file = new JarFile(jarFile);
+        Enumeration enumeration = file.entries();
+        while (enumeration.hasMoreElements()) {
+            JarEntry jarEntry = (JarEntry) enumeration.nextElement();
+            String entryName = jarEntry.getName();
+            if (entryName.endsWith(".class") && removeClasses.contains(entryName)) {
+                InputStream inputStream = file.getInputStream(jarEntry);
+                byte[] sourceClassBytes = IOUtils.toByteArray(inputStream);
+                try {
+                    if (callBack != null) {
+                        callBack.delete(entryName, sourceClassBytes);
+                    }
+                } catch (Exception ignored) {
+
+                }
+            }
+
+        }
+        file.close();
     }
 
 

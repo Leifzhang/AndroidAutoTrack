@@ -18,7 +18,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 
 public class BaseTransform {
@@ -66,8 +69,10 @@ public class BaseTransform {
                             case NOTCHANGED:
                                 break;
                             case ADDED:
-                            case CHANGED:
                                 foreachJar(dest, jarInput);
+                                break;
+                            case CHANGED:
+                                diffJar(dest, jarInput);
                                 break;
                             case REMOVED:
                                 try {
@@ -108,56 +113,87 @@ public class BaseTransform {
                         break;
                     case ADDED:
                     case CHANGED:
+                        try {
+                            FileUtils.touch(destFile);
+                        } catch (Exception ignored) {
+                            Files.createParentDirs(destFile);
+                        }
                         modifySingleFile(dir, file, dest);
                         break;
                     case REMOVED:
-                        deleteSingleFile(destFile, dest);
+                        Log.info(entry);
+                        deleteDirectory(destFile, dest);
                         break;
                 }
             }
         } else {
             changeFile(dir, dest);
         }
-        Log.info("||-->结束遍历特定目录  ${dest.absolutePath}");
     }
 
-    private void deleteSingleFile(File destFile, File dest) {
+    private void deleteDirectory(File destFile, File dest) {
         try {
-            byte[] bytes = IOUtils.toByteArray(new FileInputStream(destFile));
-            String absolutePath = destFile.getAbsolutePath().replace(dest.getAbsolutePath() + File.separator, "");
-            String className = ClassUtils.path2Classname(absolutePath);
-            if (deleteCallBack != null) {
-                deleteCallBack.delete(className, bytes);
-            }
-            if (destFile.exists()) {
-                FileUtils.forceDelete(destFile);
+            if (destFile.isDirectory()) {
+                for (File classFile : com.android.utils.FileUtils.getAllFiles(destFile)) {
+                    deleteSingle(classFile, dest);
+                }
+            } else {
+                deleteSingle(destFile, dest);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+        try {
+            if (destFile.exists()) {
+                FileUtils.forceDelete(destFile);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
+    private void deleteSingle(File classFile, File dest) {
+        try {
+            if (classFile.getName().endsWith(".class")) {
+                String absolutePath = classFile.getAbsolutePath().replace(dest.getAbsolutePath() +
+                        File.separator, "");
+                String className = ClassUtils.path2Classname(absolutePath);
+                byte[] bytes = IOUtils.toByteArray(new FileInputStream(classFile));
+                if (deleteCallBack != null) {
+                    deleteCallBack.delete(className, bytes);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void modifySingleFile(File dir, File file, File dest) throws IOException {
         try {
-            FileUtils.touch(dest);
-        } catch (Exception ignored) {
-            //maybe mkdirs fail for some strange reason, try again.
-            Files.createParentDirs(dest);
-        }
-        String absolutePath = file.getAbsolutePath().replace(dir.getAbsolutePath() + File.separator, "");
-        String className = ClassUtils.path2Classname(absolutePath);
-        byte[] bytes = IOUtils.toByteArray(new FileInputStream(file));
-        byte[] modifiedBytes = callBack.process(className, bytes, this);
-        if (modifiedBytes != null) {
-            File modified = ClassUtils.saveFile(file, modifiedBytes);
-            String key = file.getAbsolutePath().replace(dir.getAbsolutePath(), "");
-            File target = new File(dest.getAbsolutePath() + key);
-            if (target.exists()) {
-                target.delete();
+            String absolutePath = file.getAbsolutePath().replace(dir.getAbsolutePath() + File.separator, "");
+            String className = ClassUtils.path2Classname(absolutePath);
+            if (!ClassUtils.checkClassName(className)) {
+                byte[] bytes = IOUtils.toByteArray(new FileInputStream(file));
+                byte[] modifiedBytes = null;
+                try {
+                    modifiedBytes = callBack.process(className, bytes, this);
+                } catch (Exception ignored) {
+
+                }
+                if (modifiedBytes == null) {
+                    modifiedBytes = bytes;
+                }
+                File modified = ClassUtils.saveFile(file, modifiedBytes);
+                String key = file.getAbsolutePath().replace(dir.getAbsolutePath(), "");
+                File target = new File(dest.getAbsolutePath() + key);
+                if (target.exists()) {
+                    target.delete();
+                }
+                FileUtils.copyFile(modified, target);
+                modified.delete();
             }
-            FileUtils.copyFile(modified, target);
-            modified.delete();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -193,16 +229,35 @@ public class BaseTransform {
         }
     }
 
-    private void foreachJar(File dest, JarInput jarInput) throws IOException {
-        File modifiedJar = JarUtils.modifyJarFile(jarInput.getFile(), context.getTemporaryDir(),
-                callBack, this);
-        if (modifiedJar == null) {
-            modifiedJar = jarInput.getFile();
+    private void foreachJar(File dest, JarInput jarInput) {
+        try {
+            File modifiedJar = JarUtils.modifyJarFile(jarInput.getFile(), context.getTemporaryDir(),
+                    callBack, this);
+            if (modifiedJar == null) {
+                modifiedJar = jarInput.getFile();
+            }
+            FileUtils.copyFile(modifiedJar, dest);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        FileUtils.copyFile(modifiedJar, dest);
-        Log.info("||-->结束遍历jar");
     }
 
+
+    private void diffJar(File dest, JarInput jarInput) {
+        try {
+            HashSet<String> oldJarFileName = JarUtils.scanJarFile(dest);
+            HashSet<String> newJarFileName = JarUtils.scanJarFile(jarInput.getFile());
+            SetDiff diff = new SetDiff<>(oldJarFileName, newJarFileName);
+            List<String> removeList = diff.getRemovedList();
+            Log.info("diffList:" + removeList);
+            if (removeList.size() > 0) {
+                JarUtils.deleteJarScan(dest, removeList, deleteCallBack);
+            }
+            foreachJar(dest, jarInput);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     private void deleteScan(File dest) {
         try {

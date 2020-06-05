@@ -7,8 +7,10 @@ import com.android.build.api.transform.TransformInvocation
 import com.android.build.gradle.internal.pipeline.TransformManager
 import com.kronos.doubletap.helper.DoubleTapDelegate
 import com.kronos.plugin.base.BaseTransform
+import com.kronos.plugin.base.DeleteCallBack
 import com.kronos.plugin.base.TransformCallBack
 import org.gradle.api.Project
+import com.kronos.plugin.base.ClassUtils
 
 class DoubleTabTransform extends Transform {
 
@@ -45,13 +47,17 @@ class DoubleTabTransform extends Transform {
 
             @Override
             byte[] process(String s, byte[] bytes, BaseTransform baseTransform) {
-                String absolutePath = classFile.absolutePath.replace(dir.absolutePath + File.separator, "")
-                String className = ClassUtils.path2Classname(absolutePath)
-                if (ClassUtils.checkClassName(className)) {
-                    return injectHelper.beginTransform(className, classFile, transform.context.getTemporaryDir())
+                if (ClassUtils.checkClassName(s)) {
+                    return injectHelper.transformByte(bytes)
                 } else {
                     return null
                 }
+            }
+        })
+        baseTransform.setDeleteCallBack(new DeleteCallBack() {
+            @Override
+            void delete(String s, byte[] bytes) {
+
             }
         })
         baseTransform.startTransform()
