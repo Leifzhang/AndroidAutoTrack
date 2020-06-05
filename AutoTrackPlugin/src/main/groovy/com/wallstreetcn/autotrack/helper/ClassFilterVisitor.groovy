@@ -84,7 +84,6 @@ class ClassFilterVisitor extends ClassVisitor {
                         void visitInsn(int opcode) {
                             if ((opcode >= Opcodes.IRETURN && opcode <= Opcodes.RETURN)
                                     || opcode == Opcodes.ATHROW) {
-                                Log.info("methodAnnotation: visitInsn")
                                 visitMethodWithLoadedParams(methodVisitor, Opcodes.INVOKESTATIC, MethodHelper.INJECT_CLASS_NAME,
                                         cell.agentName, cell.agentDesc, cell.paramsStart,
                                         cell.paramsCount, cell.opcodes)
@@ -125,11 +124,9 @@ class ClassFilterVisitor extends ClassVisitor {
  */
     void visitMethodWithLoadedParams(MethodVisitor methodVisitor, int opcode, String owner, String methodName, String methodDesc,
                                      int start, int count, List<Integer> paramOpcodes) {
-        Log.info("outerOwner:" + outerOwner + "  outerDesc:" + parentName)
         methodVisitor.visitVarInsn(Opcodes.ALOAD, 0)
         if (parentName != null && outerOwner != null) {
             methodVisitor.visitFieldInsn(Opcodes.GETFIELD, outerOwner, "this\$0", parentName)
-            Log.info("methodVisitor:")
         }
         for (int i = start; i < start + count; i++) {
             methodVisitor.visitVarInsn(paramOpcodes[i - start], i)

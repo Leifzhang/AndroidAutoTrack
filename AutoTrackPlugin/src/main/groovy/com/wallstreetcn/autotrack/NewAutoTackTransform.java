@@ -7,8 +7,10 @@ import com.android.build.api.transform.TransformInvocation;
 import com.android.build.gradle.internal.pipeline.TransformManager;
 import com.kronos.plugin.base.BaseTransform;
 import com.kronos.plugin.base.ClassUtils;
+import com.kronos.plugin.base.DeleteCallBack;
 import com.kronos.plugin.base.TransformCallBack;
 import com.wallstreetcn.autotrack.helper.AutoTrackDelegate;
+import com.wallstreetcn.autotrack.helper.Log;
 
 import org.gradle.api.Project;
 
@@ -57,6 +59,12 @@ public class NewAutoTackTransform extends Transform {
                 }
             }
 
+        });
+        baseTransform.setDeleteCallBack(new DeleteCallBack() {
+            @Override
+            public void delete(String className, byte[] classBytes) {
+                Log.info("delete:" + className);
+            }
         });
         baseTransform.startTransform();
     }

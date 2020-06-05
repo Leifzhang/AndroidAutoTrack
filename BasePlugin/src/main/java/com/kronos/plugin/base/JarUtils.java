@@ -57,4 +57,30 @@ class JarUtils {
         file.close();
         return optJar;
     }
+
+
+    static void deleteJarScan(File jarFile, DeleteCallBack callBack) throws IOException {
+        /**
+         * 读取原jar
+         */
+        JarFile file = new JarFile(jarFile);
+        Enumeration enumeration = file.entries();
+        while (enumeration.hasMoreElements()) {
+            JarEntry jarEntry = (JarEntry) enumeration.nextElement();
+            InputStream inputStream = file.getInputStream(jarEntry);
+            String entryName = jarEntry.getName();
+            byte[] sourceClassBytes = IOUtils.toByteArray(inputStream);
+            if (entryName.endsWith(".class")) {
+                try {
+                    if (callBack != null) {
+                        callBack.delete(entryName, sourceClassBytes);
+                    }
+                } catch (Exception ignored) {
+
+                }
+            }
+
+        }
+        file.close();
+    }
 }

@@ -29,6 +29,7 @@ public class BaseTransform {
     private Collection<TransformInput> inputs = null;
     private TransformOutputProvider outputProvider = null;
     private boolean isIncremental = false;
+    private DeleteCallBack deleteCallBack;
 
     public BaseTransform(TransformInvocation transformInvocation, TransformCallBack callBack) {
         this.transformInvocation = transformInvocation;
@@ -39,6 +40,10 @@ public class BaseTransform {
         isIncremental = transformInvocation.isIncremental();
     }
 
+    public void setDeleteCallBack(DeleteCallBack deleteCallBack) {
+        this.deleteCallBack = deleteCallBack;
+    }
+
     public void startTransform() {
         try {
             if (!isIncremental) {
@@ -47,21 +52,35 @@ public class BaseTransform {
             for (TransformInput input : inputs) {
                 for (JarInput jarInput : input.getJarInputs()) {
                     Status status = jarInput.getStatus();
+                    String destName = jarInput.getFile().getName();
+                    /* 重名名输出文件,因为可能同名,会覆盖*/
+                    String hexName = DigestUtils.md5Hex(jarInput.getFile().getAbsolutePath()).substring(0, 8);
+                    if (destName.endsWith(".jar")) {
+                        destName = destName.substring(0, destName.length() - 4);
+                    }
+                    /*获得输出文件*/
+                    File dest = outputProvider.getContentLocation(destName + "_" + hexName,
+                            jarInput.getContentTypes(), jarInput.getScopes(), Format.JAR);
                     if (isIncremental) {
                         switch (status) {
                             case NOTCHANGED:
                                 break;
                             case ADDED:
                             case CHANGED:
-                                foreachJar(jarInput);
+                                foreachJar(dest, jarInput);
                                 break;
                             case REMOVED:
-                                if (jarInput.getFile().exists()) {
-                                    FileUtils.forceDelete(jarInput.getFile());
+                                try {
+                                    deleteScan(dest);
+                                    if (dest.exists()) {
+                                        FileUtils.forceDelete(dest);
+                                    }
+                                } catch (Exception e) {
+                                    e.printStackTrace();
                                 }
                         }
                     } else {
-                        foreachJar(jarInput);
+                        foreachJar(dest, jarInput);
                     }
                 }
                 for (DirectoryInput directoryInput : input.getDirectoryInputs()) {
@@ -82,6 +101,8 @@ public class BaseTransform {
             for (Map.Entry<File, Status> entry : map.entrySet()) {
                 Status status = entry.getValue();
                 File file = entry.getKey();
+                String destFilePath = file.getAbsolutePath().replace(dir.getAbsolutePath(), dest.getAbsolutePath());
+                File destFile = new File(destFilePath);
                 switch (status) {
                     case NOTCHANGED:
                         break;
@@ -90,15 +111,31 @@ public class BaseTransform {
                         modifySingleFile(dir, file, dest);
                         break;
                     case REMOVED:
-                        if (dest.exists()) {
-                            FileUtils.forceDelete(file);
-                        }
+                        deleteSingleFile(destFile, dest);
+                        break;
                 }
             }
         } else {
             changeFile(dir, dest);
         }
         Log.info("||-->结束遍历特定目录  ${dest.absolutePath}");
+    }
+
+    private void deleteSingleFile(File destFile, File dest) {
+        try {
+            byte[] bytes = IOUtils.toByteArray(new FileInputStream(destFile));
+            String absolutePath = destFile.getAbsolutePath().replace(dest.getAbsolutePath() + File.separator, "");
+            String className = ClassUtils.path2Classname(absolutePath);
+            if (deleteCallBack != null) {
+                deleteCallBack.delete(className, bytes);
+            }
+            if (destFile.exists()) {
+                FileUtils.forceDelete(destFile);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
     private void modifySingleFile(File dir, File file, File dest) throws IOException {
@@ -156,27 +193,23 @@ public class BaseTransform {
         }
     }
 
-    private void foreachJar(JarInput jarInput) throws IOException {
-        Log.info("||-->开始遍历jar  ${jarInput.file}");
-        String destName = jarInput.getFile().getName();
-        /* 重名名输出文件,因为可能同名,会覆盖*/
-        String hexName = DigestUtils.md5Hex(jarInput.getFile().getAbsolutePath()).substring(0, 8);
-        if (destName.endsWith(".jar")) {
-            destName = destName.substring(0, destName.length() - 4);
-        }
-        /*获得输出文件*/
-        File dest = outputProvider.getContentLocation(destName + "_" + hexName,
-                jarInput.getContentTypes(), jarInput.getScopes(), Format.JAR);
-        Log.info("||-->dest ${dest} ");
+    private void foreachJar(File dest, JarInput jarInput) throws IOException {
         File modifiedJar = JarUtils.modifyJarFile(jarInput.getFile(), context.getTemporaryDir(),
                 callBack, this);
-
-        Log.info("||-->modifiedJar ${modifiedJar} ");
         if (modifiedJar == null) {
             modifiedJar = jarInput.getFile();
         }
         FileUtils.copyFile(modifiedJar, dest);
         Log.info("||-->结束遍历jar");
+    }
+
+
+    private void deleteScan(File dest) {
+        try {
+            JarUtils.deleteJarScan(dest, deleteCallBack);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 

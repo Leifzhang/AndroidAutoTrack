@@ -5,11 +5,10 @@ import com.android.build.api.transform.Transform
 import com.android.build.api.transform.TransformException
 import com.android.build.api.transform.TransformInvocation
 import com.android.build.gradle.internal.pipeline.TransformManager
-import com.kronos.doubletap.base.BaseTransform
-import com.kronos.doubletap.base.TransformCallBack
 import com.kronos.doubletap.helper.DoubleTapDelegate
+import com.kronos.plugin.base.BaseTransform
+import com.kronos.plugin.base.TransformCallBack
 import org.gradle.api.Project
-import com.kronos.doubletap.base.ClassUtils
 
 class DoubleTabTransform extends Transform {
 
@@ -45,16 +44,7 @@ class DoubleTabTransform extends Transform {
         BaseTransform baseTransform = new BaseTransform(transformInvocation, new TransformCallBack() {
 
             @Override
-            byte[] processJarClass(String className, byte[] classBytes, BaseTransform transform) {
-                if (ClassUtils.checkClassName(className)) {
-                    return injectHelper.transformByte(classBytes)
-                } else {
-                    return null
-                }
-            }
-
-            @Override
-            File processClass(File dir, File classFile, File tempDir, BaseTransform transform) {
+            byte[] process(String s, byte[] bytes, BaseTransform baseTransform) {
                 String absolutePath = classFile.absolutePath.replace(dir.absolutePath + File.separator, "")
                 String className = ClassUtils.path2Classname(absolutePath)
                 if (ClassUtils.checkClassName(className)) {

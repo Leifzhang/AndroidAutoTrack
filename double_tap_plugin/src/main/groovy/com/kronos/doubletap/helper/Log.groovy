@@ -1,4 +1,4 @@
-package com.kronos.doubletap.base
+package com.kronos.doubletap.helper
 
 class Log {
 

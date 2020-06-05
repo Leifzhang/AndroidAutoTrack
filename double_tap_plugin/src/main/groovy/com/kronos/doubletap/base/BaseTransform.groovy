@@ -1,6 +1,7 @@
 package com.kronos.doubletap.base
 
 import com.android.build.api.transform.*
+import com.kronos.doubletap.helper.Log
 import groovy.io.FileType
 import org.apache.commons.codec.digest.DigestUtils
 import org.apache.commons.io.FileUtils
