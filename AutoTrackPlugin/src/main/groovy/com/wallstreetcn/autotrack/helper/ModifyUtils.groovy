@@ -27,7 +27,6 @@ class ModifyUtils {
     }
 
     static byte[] modifyClass(byte[] srcClass) throws IOException {
-        Log.info("modifyClass")
         ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_MAXS)
         ClassVisitor methodFilterCV = new ClassFilterVisitor(classWriter)
         ClassReader cr = new ClassReader(srcClass)

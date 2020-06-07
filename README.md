@@ -19,7 +19,7 @@ buildscript {
 
     }
     dependencies {
-        classpath 'com.kronos.doubleTap:doubleTap:0.1.3'
+        classpath 'com.kronos.doubleTap:double_tap_plugin:0.1.3'
     }
 }
 ```

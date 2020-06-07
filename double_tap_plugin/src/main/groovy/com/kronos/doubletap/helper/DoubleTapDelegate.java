@@ -1,8 +1,8 @@
 package com.kronos.doubletap.helper;
 
 
-import com.kronos.doubletap.base.AbstractAsmDelegate;
-import com.kronos.doubletap.base.AsmHelper;
+import com.kronos.plugin.base.AbstractAsmDelegate;
+import com.kronos.plugin.base.AsmHelper;
 
 public class DoubleTapDelegate extends AbstractAsmDelegate {
     @Override

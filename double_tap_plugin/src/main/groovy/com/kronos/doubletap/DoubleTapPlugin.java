@@ -2,7 +2,7 @@ package com.kronos.doubletap;
 
 import com.android.build.gradle.AppExtension;
 import com.android.build.gradle.AppPlugin;
-import com.kronos.doubletap.base.TimingsListener;
+import com.kronos.doubletap.helper.TimingsListener;
 
 import org.gradle.api.Action;
 import org.gradle.api.Plugin;

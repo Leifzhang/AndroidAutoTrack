@@ -15,7 +15,8 @@ repositories {
 }
 dependencies {
     implementation 'com.android.tools.build:gradle:3.3.0'
-    implementation 'com.kronos.plugin:basePlugin:0.1.3-SNAPSHOT'
+    implementation 'com.kronos.plugin:basePlugin:0.1.6-SNAPSHOT'
+   // implementation project(':BasePlugin')
     implementation 'commons-io:commons-io:2.6'
     implementation 'org.javassist:javassist:3.20.0-GA'
 }

@@ -13,3 +13,4 @@
 **/*.iml
 **/local.properties
 local_repo.xml
+.repo/

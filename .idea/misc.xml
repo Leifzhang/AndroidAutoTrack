@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ASMIdeaPluginConfiguration">
     <asm skipDebug="false" skipFrames="false" skipCode="false" expandFrames="false" />
-    <groovy codeStyle="GROOVIFIER_0_2_0" />
+    <groovy codeStyle="LEGACY" />
   </component>
   <component name="ASMPluginConfiguration">
     <asm skipDebug="false" skipFrames="false" skipCode="false" expandFrames="false" />

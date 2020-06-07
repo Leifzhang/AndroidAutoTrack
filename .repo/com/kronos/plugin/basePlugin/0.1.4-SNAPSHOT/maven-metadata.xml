@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata modelVersion="1.1.0">
+  <groupId>com.kronos.plugin</groupId>
+  <artifactId>basePlugin</artifactId>
+  <version>0.1.4-SNAPSHOT</version>
+  <versioning>
+    <snapshot>
+      <timestamp>20200603.120753</timestamp>
+      <buildNumber>2</buildNumber>
+    </snapshot>
+    <lastUpdated>20200603120753</lastUpdated>
+    <snapshotVersions>
+      <snapshotVersion>
+        <extension>jar</extension>
+        <value>0.1.4-20200603.120753-2</value>
+        <updated>20200603120753</updated>
+      </snapshotVersion>
+      <snapshotVersion>
+        <extension>pom</extension>
+        <value>0.1.4-20200603.120753-2</value>
+        <updated>20200603120753</updated>
+      </snapshotVersion>
+    </snapshotVersions>
+  </versioning>
+</metadata>
