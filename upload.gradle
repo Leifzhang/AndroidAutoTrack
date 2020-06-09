@@ -11,6 +11,15 @@ def nexus_description = config.getProperty('nexus_description')
 def nexus_fileName = config.getProperty('nexus_fileName')
 def nexus_type = config.getProperty('nexus_type')
 
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allSource
+    classifier = 'sources'
+}
+
+artifacts {
+    archives sourcesJar
+}
+
 afterEvaluate { project ->
     Properties properties = new Properties()
     properties.load(project.rootProject.file('local.properties').newDataInputStream())
