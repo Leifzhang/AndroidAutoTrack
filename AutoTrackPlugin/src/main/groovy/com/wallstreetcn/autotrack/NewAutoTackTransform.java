@@ -52,6 +52,7 @@ public class NewAutoTackTransform extends Transform {
 
             @Override
             public byte[] process(String className, byte[] bytes, BaseTransform baseTransform) {
+                Log.info("process:" + className);
                 if (ClassUtils.checkClassName(className)) {
                     return injectHelper.transformByte(bytes);
                 } else {
@@ -66,6 +67,7 @@ public class NewAutoTackTransform extends Transform {
                 Log.info("delete:" + className);
             }
         });
+        baseTransform.openSimpleScan();
         baseTransform.startTransform();
     }
 
