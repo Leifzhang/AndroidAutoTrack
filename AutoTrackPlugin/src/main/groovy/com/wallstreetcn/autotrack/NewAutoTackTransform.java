@@ -61,13 +61,6 @@ public class NewAutoTackTransform extends Transform {
             }
 
         });
-        baseTransform.setDeleteCallBack(new DeleteCallBack() {
-            @Override
-            public void delete(String className, byte[] classBytes) {
-                Log.info("delete:" + className);
-            }
-        });
-        baseTransform.openSimpleScan();
         baseTransform.startTransform();
     }
 

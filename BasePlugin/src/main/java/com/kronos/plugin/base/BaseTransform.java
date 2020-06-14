@@ -13,13 +13,11 @@ import com.google.common.io.Files;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.gradle.internal.impldep.com.amazonaws.services.s3.internal.InputSubstream;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -55,6 +53,7 @@ public class BaseTransform {
 
     public void startTransform() {
         try {
+            Log.info("startTransform");
             if (!isIncremental) {
                 outputProvider.deleteAll();
             }
@@ -98,7 +97,7 @@ public class BaseTransform {
                     foreachClass(directoryInput);
                 }
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -110,10 +109,12 @@ public class BaseTransform {
         File dir = directoryInput.getFile();
         if (isIncremental) {
             for (Map.Entry<File, Status> entry : map.entrySet()) {
+                Log.info("entry:" + entry.getKey().getAbsolutePath());
                 Status status = entry.getValue();
                 File file = entry.getKey();
                 String destFilePath = file.getAbsolutePath().replace(dir.getAbsolutePath(), dest.getAbsolutePath());
                 File destFile = new File(destFilePath);
+                Log.info("destFilePath:" + destFilePath);
                 switch (status) {
                     case NOTCHANGED:
                         break;
@@ -124,7 +125,7 @@ public class BaseTransform {
                         } catch (Exception ignored) {
                             Files.createParentDirs(destFile);
                         }
-                        modifySingleFile(dir, file, dest);
+                        modifySingleFile(dir, file, destFile);
                         break;
                     case REMOVED:
                         Log.info(entry);
@@ -178,7 +179,7 @@ public class BaseTransform {
         try {
             String absolutePath = file.getAbsolutePath().replace(dir.getAbsolutePath() + File.separator, "");
             String className = ClassUtils.path2Classname(absolutePath);
-            if (!ClassUtils.checkClassName(className)) {
+            if (absolutePath.endsWith(".class")) {
                 byte[] modifiedBytes = null;
                 byte[] bytes = IOUtils.toByteArray(new FileInputStream(file));
                 if (!simpleScan) {
@@ -197,14 +198,9 @@ public class BaseTransform {
                 if (modifiedBytes == null) {
                     modifiedBytes = bytes;
                 }
-                File modified = ClassUtils.saveFile(file, modifiedBytes);
-                String key = file.getAbsolutePath().replace(dir.getAbsolutePath(), "");
-                File target = new File(dest.getAbsolutePath() + key);
-                if (target.exists()) {
-                    target.delete();
-                }
-                FileUtils.copyFile(modified, target);
-                modified.delete();
+                ClassUtils.saveFile(dest, modifiedBytes);
+            } else {
+                FileUtils.copyFile(file, dest);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -276,7 +272,6 @@ public class BaseTransform {
             HashSet<String> newJarFileName = JarUtils.scanJarFile(jarInput.getFile());
             SetDiff diff = new SetDiff<>(oldJarFileName, newJarFileName);
             List<String> removeList = diff.getRemovedList();
-            Log.info("diffList:" + removeList);
             if (removeList.size() > 0) {
                 JarUtils.deleteJarScan(dest, removeList, deleteCallBack);
             }

@@ -7,7 +7,7 @@ buildscript {
             url "file://${rootDir.absolutePath}/.repo"
         }
         maven {
-            url 'https://dl.bintray.com/leifzhang/maven/'
+            url 'https://dl.bintray.com/leifzhang/maven'
         }
         jcenter()
         google()
@@ -15,7 +15,7 @@ buildscript {
     dependencies {
         classpath 'com.android.tools.build:gradle:3.6.3'
         classpath 'com.wallstreetcn.autotrack:autotrack:0.1.4-SNAPSHOT'
-        classpath 'com.kronos.doubleTap:double_tap_plugin:0.1.4-SNAPSHOT'
+        classpath 'com.kronos.doubleTap:double_tap_plugin:0.1.5-SNAPSHOT'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4'
         classpath 'com.github.dcendents:android-maven-gradle-plugin:2.1'
@@ -27,13 +27,13 @@ buildscript {
 
 allprojects {
     repositories {
+        jcenter()
         maven {
             url 'https://dl.bintray.com/leifzhang/maven'
         }
         maven {
             url "file://${rootDir.absolutePath}/.repo"
         }
-        jcenter()
         google()
     }
 }
