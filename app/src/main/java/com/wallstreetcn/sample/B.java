@@ -1,4 +1,4 @@
 package com.wallstreetcn.sample;
 
-public class A {
+public class B {
 }

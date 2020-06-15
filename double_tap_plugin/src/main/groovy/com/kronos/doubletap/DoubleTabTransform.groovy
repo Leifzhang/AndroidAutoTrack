@@ -6,11 +6,11 @@ import com.android.build.api.transform.TransformException
 import com.android.build.api.transform.TransformInvocation
 import com.android.build.gradle.internal.pipeline.TransformManager
 import com.kronos.doubletap.helper.DoubleTapDelegate
+import com.kronos.doubletap.helper.Log
 import com.kronos.plugin.base.BaseTransform
-import com.kronos.plugin.base.DeleteCallBack
+import com.kronos.plugin.base.ClassUtils
 import com.kronos.plugin.base.TransformCallBack
 import org.gradle.api.Project
-import com.kronos.plugin.base.ClassUtils
 
 class DoubleTabTransform extends Transform {
 
@@ -42,6 +42,7 @@ class DoubleTabTransform extends Transform {
 
     @Override
     void transform(TransformInvocation transformInvocation) throws TransformException, InterruptedException, IOException {
+        Log.info("transform")
         final DoubleTapDelegate injectHelper = new DoubleTapDelegate()
         BaseTransform baseTransform = new BaseTransform(transformInvocation, new TransformCallBack() {
 
@@ -54,14 +55,13 @@ class DoubleTabTransform extends Transform {
                 }
             }
         })
-        baseTransform.setDeleteCallBack(new DeleteCallBack() {
-            @Override
-            void delete(String s, byte[] bytes) {
-
-            }
-        })
+        Log.info("startTransform")
         baseTransform.startTransform()
     }
 
 
+    @Override
+    boolean isCacheable() {
+        return true
+    }
 }

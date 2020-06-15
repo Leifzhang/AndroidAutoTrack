@@ -15,6 +15,15 @@ def gitUrl = nexus_url// Git仓库的url
 group = nexus_groupId
 version = nexus_versionName
 
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allSource
+    classifier = 'sources'
+}
+
+artifacts {
+    archives sourcesJar
+}
+
 install {
     repositories.mavenInstaller {
         // This generates POM.xml with proper parameters
