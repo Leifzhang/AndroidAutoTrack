@@ -33,6 +33,7 @@ public class BaseTransform {
     private boolean isIncremental = false;
     private DeleteCallBack deleteCallBack;
     private boolean simpleScan = false;
+    public ClassNameFilter filter = null;
 
     public BaseTransform(TransformInvocation transformInvocation, TransformCallBack callBack) {
         this.transformInvocation = transformInvocation;
@@ -41,6 +42,10 @@ public class BaseTransform {
         this.inputs = transformInvocation.getInputs();
         this.outputProvider = transformInvocation.getOutputProvider();
         isIncremental = transformInvocation.isIncremental();
+    }
+
+    public void setFilter(ClassNameFilter filter) {
+        this.filter = filter;
     }
 
     public void openSimpleScan() {
@@ -123,12 +128,15 @@ public class BaseTransform {
                         try {
                             FileUtils.touch(destFile);
                         } catch (Exception ignored) {
-                            Files.createParentDirs(destFile);
+                            try {
+                                Files.createParentDirs(destFile);
+                            } catch (Exception ignored1) {
+
+                            }
                         }
                         modifySingleFile(dir, file, destFile);
                         break;
                     case REMOVED:
-                        Log.info(entry);
                         deleteDirectory(destFile, dest);
                         break;
                 }
@@ -147,15 +155,13 @@ public class BaseTransform {
             } else {
                 deleteSingle(destFile, dest);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception ignored) {
         }
         try {
             if (destFile.exists()) {
                 FileUtils.forceDelete(destFile);
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Exception ignored) {
         }
     }
 
@@ -171,7 +177,7 @@ public class BaseTransform {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            //  e.printStackTrace();
         }
     }
 
@@ -183,17 +189,9 @@ public class BaseTransform {
                 byte[] modifiedBytes = null;
                 byte[] bytes = IOUtils.toByteArray(new FileInputStream(file));
                 if (!simpleScan) {
-                    try {
-                        modifiedBytes = callBack.process(className, bytes, this);
-                    } catch (Exception ignored) {
-
-                    }
+                    modifiedBytes = process(className, bytes);
                 } else {
-                    try {
-                        modifiedBytes = callBack.process(className, null, this);
-                    } catch (Exception ignored) {
-
-                    }
+                    modifiedBytes = process(className, null);
                 }
                 if (modifiedBytes == null) {
                     modifiedBytes = bytes;
@@ -207,6 +205,20 @@ public class BaseTransform {
         }
     }
 
+    protected byte[] process(String className, byte[] classBytes) {
+        try {
+            if (filter == null) {
+                filter = new DefaultClassNameFilter();
+            }
+            if (!filter.filter(className)) {
+                return callBack.process(className, classBytes, this);
+            }
+        } catch (Exception ignored) {
+
+        }
+        return null;
+    }
+
     private void changeFile(File dir, File dest) throws IOException {
         if (dir.isDirectory()) {
             HashMap<String, File> modifyMap = new HashMap<>();
@@ -217,14 +229,14 @@ public class BaseTransform {
                         String className = ClassUtils.path2Classname(absolutePath);
                         if (!simpleScan) {
                             byte[] bytes = IOUtils.toByteArray(new FileInputStream(classFile));
-                            byte[] modifiedBytes = callBack.process(className, bytes, this);
+                            byte[] modifiedBytes = process(className, bytes);
                             File modified = ClassUtils.saveFile(classFile, modifiedBytes);
                             if (modified != null) {
                                 //key为相对路径
                                 modifyMap.put(classFile.getAbsolutePath().replace(dir.getAbsolutePath(), ""), modified);
                             }
                         } else {
-                            callBack.process(className, null, this);
+                            process(className, null);
                         }
                     } catch (Exception ignored) {
 
@@ -256,7 +268,7 @@ public class BaseTransform {
                 File jarFile = jarInput.getFile();
                 HashSet<String> classNames = JarUtils.scanJarFile(jarFile);
                 for (String className : classNames) {
-                    callBack.process(className, null, this);
+                    process(className, null);
                 }
                 FileUtils.copyFile(jarFile, dest);
             }
