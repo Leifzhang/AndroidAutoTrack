@@ -41,7 +41,7 @@ class JarUtils {
             byte[] sourceClassBytes = IOUtils.toByteArray(inputStream);
             if (entryName.endsWith(".class")) {
                 try {
-                    modifiedClassBytes = callBack.process(entryName, sourceClassBytes, transform);
+                    modifiedClassBytes = transform.process(entryName, sourceClassBytes);
                 } catch (Exception e) {
 
                 }
