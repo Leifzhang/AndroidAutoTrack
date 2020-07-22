@@ -18,6 +18,6 @@ class SecondActivity : AppCompatActivity() {
         setContentView(R.layout.activity_second)
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = TestAdapter()
-     //   poolExecutor = Executors.newFixedThreadPool(2)
+        poolExecutor = Executors.newFixedThreadPool(2)
     }
 }

@@ -13,12 +13,12 @@ public class ThreadPoolMethodVisitor extends MethodVisitor {
         super(Opcodes.ASM5, mv);
     }
 
-
     @Override
     public void visitMethodInsn(int opcode, String owner, String name, String desc, boolean itf) {
         boolean isThreadPool = isThreadPool(opcode, owner, name, desc);
         if (isThreadPool) {
             JLog.info("owner:" + owner + " name:" + name + " desc:" + desc);
+            mv.visitInsn(Opcodes.POP);
             mv.visitMethodInsn(Opcodes.INVOKESTATIC, "com/wallstreetcn/sample/utils/TestIOThreadExecutor",
                     "getTHREAD_POOL_SHARE",
                     "()Lcom/wallstreetcn/sample/utils/TestIOThreadExecutor;", itf);
