@@ -9,6 +9,10 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.wallstreetcn.sample.adapter.Test;
+import com.wallstreetcn.sample.utils.TestIOThreadExecutor;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
@@ -26,10 +30,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     };
 
+    ExecutorService service;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ExecutorService mService = Executors.newFixedThreadPool(2);
+        service = mService;
         findViewById(R.id.textView1).setOnClickListener(new View.OnClickListener() {
             @Test
             private Entity mdata;
