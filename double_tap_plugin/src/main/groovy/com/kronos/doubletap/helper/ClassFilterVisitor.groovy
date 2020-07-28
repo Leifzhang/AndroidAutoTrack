@@ -61,10 +61,7 @@ class ClassFilterVisitor extends ClassVisitor {
                 e.printStackTrace()
             }
         }
-        if (name == "onCreate") {
-            return new ThreadPoolMethodVisitor(cv.visitMethod(access, name, desc, signature, exceptions))
-        }
-        return super.visitMethod(access, name, desc, signature, exceptions)
+        return new ThreadPoolMethodVisitor(cv.visitMethod(access, name, desc, signature, exceptions))
     }
 
 
