@@ -1,15 +1,16 @@
 package com.kronos.doubletap.helper;
 
 import com.kronos.doubletap.DoubleTabConfig;
+import com.kronos.thread.plugin.visitor.ThreadPoolMethodVisitor;
 
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.*;
 
-public class InitBlockVisitor extends MethodVisitor {
+public class InitBlockVisitor extends ThreadPoolMethodVisitor {
     private String owner;
 
     InitBlockVisitor(MethodVisitor mv, String owner) {
-        super(Opcodes.ASM5, mv);
+        super(mv);
         this.owner = owner;
     }
 

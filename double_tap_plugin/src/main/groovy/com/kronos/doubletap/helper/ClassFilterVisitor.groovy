@@ -1,7 +1,8 @@
 package com.kronos.doubletap.helper
 
 
-import com.kronos.doubletap.*
+import com.kronos.doubletap.DoubleTabConfig
+import com.kronos.thread.plugin.visitor.ThreadPoolMethodVisitor
 import org.objectweb.asm.ClassVisitor
 import org.objectweb.asm.FieldVisitor
 import org.objectweb.asm.MethodVisitor
@@ -55,11 +56,12 @@ class ClassFilterVisitor extends ClassVisitor {
                     CheckVisitor mv = new CheckVisitor(methodVisitor, owner)
                     return mv
                 }
+
             } catch (Exception e) {
                 e.printStackTrace()
             }
         }
-        return super.visitMethod(access, name, desc, signature, exceptions)
+        return new ThreadPoolMethodVisitor(cv.visitMethod(access, name, desc, signature, exceptions))
     }
 
 
