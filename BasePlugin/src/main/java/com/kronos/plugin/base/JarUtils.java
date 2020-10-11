@@ -42,7 +42,7 @@ class JarUtils {
             if (entryName.endsWith(".class")) {
                 try {
                     modifiedClassBytes = transform.process(entryName, sourceClassBytes);
-                } catch (Exception e) {
+                } catch (Exception ignored) {
 
                 }
             }

@@ -44,7 +44,7 @@ class DoubleTabTransform extends Transform {
     void transform(TransformInvocation transformInvocation) throws TransformException, InterruptedException, IOException {
         Log.info("transform")
         final DoubleTapDelegate injectHelper = new DoubleTapDelegate()
-        BaseTransform baseTransform = new BaseTransform(transformInvocation, new TransformCallBack() {
+        BaseTransform baseTransform = new BaseTransform(project, transformInvocation, new TransformCallBack() {
 
             @Override
             byte[] process(String s, byte[] bytes, BaseTransform baseTransform) {

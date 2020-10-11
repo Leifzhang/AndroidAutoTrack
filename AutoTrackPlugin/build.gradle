@@ -1,20 +1,18 @@
 apply plugin: 'groovy'
-apply plugin:'kotlin'
-apply from: '../upload.gradle'
-
-dependencies {
-    implementation gradleApi()
-    implementation localGroovy()
-}
+apply plugin: 'kotlin'
+//apply from: '../upload.gradle'
 
 repositories {
+    mavenCentral()
+    google()
     jcenter()
 }
 
 dependencies {
-    implementation 'com.android.tools.build:gradle:3.3.0'
-    implementation 'com.kronos.plugin:BasePlugin:0.1.9'
-    // implementation project(':BasePlugin')
+    implementation gradleApi()
+    implementation localGroovy()
+    implementation 'com.android.tools.build:gradle:3.6.3'
+    implementation project(":BasePlugin")
     implementation 'commons-io:commons-io:2.6'
     implementation 'org.javassist:javassist:3.20.0-GA'
 }

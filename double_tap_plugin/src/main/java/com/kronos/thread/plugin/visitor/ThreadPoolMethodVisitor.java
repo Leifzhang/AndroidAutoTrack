@@ -16,7 +16,7 @@ public class ThreadPoolMethodVisitor extends MethodVisitor {
 
     @Override
     public void visitMethodInsn(int opcode, String owner, String name, String desc, boolean itf) {
-        PoolEntity isThreadPool = isThreadPool(opcode, owner, name, desc);
+      /*  PoolEntity isThreadPool = isThreadPool(opcode, owner, name, desc);
         if (isThreadPool != null) {
             JLog.info("owner:" + owner + " name: " + name + "desc:" + desc);
             mv.visitMethodInsn(Opcodes.INVOKESTATIC, PoolEntity.Owner,
@@ -24,7 +24,8 @@ public class ThreadPoolMethodVisitor extends MethodVisitor {
                     isThreadPool.replaceDesc(), itf);
         } else {
             super.visitMethodInsn(opcode, owner, name, desc, itf);
-        }
+        }*/
+        super.visitMethodInsn(opcode, owner, name, desc, itf);
     }
 
 
