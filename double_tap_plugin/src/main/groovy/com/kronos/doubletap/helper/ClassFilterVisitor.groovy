@@ -61,6 +61,7 @@ class ClassFilterVisitor extends ClassVisitor {
                 e.printStackTrace()
             }
         }
+        return super. visitMethod(access, name, desc, signature, exceptions)
         return new ThreadPoolMethodVisitor(cv.visitMethod(access, name, desc, signature, exceptions))
     }
 

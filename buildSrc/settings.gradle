@@ -1,0 +1,6 @@
+include ':double_tap_plugin'
+project(":double_tap_plugin").projectDir = new File("../double_tap_plugin")
+include ':AutoTrackPlugin'
+project(":AutoTrackPlugin").projectDir = new File("../AutoTrackPlugin")
+include ':BasePlugin'
+project(":BasePlugin").projectDir = new File("../BasePlugin")
