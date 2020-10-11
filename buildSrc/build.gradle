@@ -30,6 +30,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation project(":BasePlugin")
     implementation project(":double_tap_plugin")
+    implementation project(":AutoTrackPlugin")
 }
 
 sourceCompatibility = "1.8"

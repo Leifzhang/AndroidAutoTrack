@@ -48,7 +48,7 @@ public class NewAutoTackTransform extends Transform {
     @Override
     public void transform(TransformInvocation transformInvocation) throws TransformException, InterruptedException, IOException {
         final AutoTrackDelegate injectHelper = new AutoTrackDelegate();
-        BaseTransform baseTransform = new BaseTransform(transformInvocation, new TransformCallBack() {
+        BaseTransform baseTransform = new BaseTransform(project, transformInvocation, new TransformCallBack() {
 
             @Override
             public byte[] process(String className, byte[] bytes, BaseTransform baseTransform) {

@@ -12,7 +12,7 @@ dependencies {
     implementation gradleApi()
     implementation localGroovy()
     implementation 'com.android.tools.build:gradle:3.6.3'
-    implementation 'com.kronos.plugin:BasePlugin:0.2.0'
+    implementation project(":BasePlugin")
     implementation 'commons-io:commons-io:2.6'
     implementation 'org.javassist:javassist:3.20.0-GA'
 }

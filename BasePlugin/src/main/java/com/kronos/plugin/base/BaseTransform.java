@@ -8,20 +8,28 @@ import com.android.build.api.transform.Status;
 import com.android.build.api.transform.TransformInput;
 import com.android.build.api.transform.TransformInvocation;
 import com.android.build.api.transform.TransformOutputProvider;
+import com.android.build.gradle.internal.tasks.Workers;
+import com.android.ide.common.internal.WaitableExecutor;
+import com.android.ide.common.workers.WorkerExecutorFacade;
 import com.google.common.io.Files;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.gradle.api.Project;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 
 public class BaseTransform {
 
@@ -34,14 +42,17 @@ public class BaseTransform {
     private DeleteCallBack deleteCallBack;
     private boolean simpleScan = false;
     public ClassNameFilter filter = null;
+    private ExecutorService executor;
+    private List<Callable<Void>> tasks = new ArrayList<>();
 
-    public BaseTransform(TransformInvocation transformInvocation, TransformCallBack callBack) {
+    public BaseTransform(Project project, TransformInvocation transformInvocation, TransformCallBack callBack) {
         this.transformInvocation = transformInvocation;
         this.callBack = callBack;
         this.context = transformInvocation.getContext();
         this.inputs = transformInvocation.getInputs();
         this.outputProvider = transformInvocation.getOutputProvider();
         isIncremental = transformInvocation.isIncremental();
+        executor = Workers.INSTANCE.getDefaultExecutor();
     }
 
     public void setFilter(ClassNameFilter filter) {
@@ -102,6 +113,7 @@ public class BaseTransform {
                     foreachClass(directoryInput);
                 }
             }
+            executor.invokeAll(tasks);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -135,6 +147,15 @@ public class BaseTransform {
                             }
                         }
                         modifySingleFile(dir, file, destFile);
+                      /*  Callable<Void> callable = new Callable<Void>() {
+                            @Override
+                            public Void call() throws Exception {
+                                modifySingleFile(dir, file, destFile);
+                                return null;
+                            }
+                        };
+                        tasks.add(callable);
+`                        executor.submit(callable);*/
                         break;
                     case REMOVED:
                         deleteDirectory(destFile, dest);
@@ -145,6 +166,7 @@ public class BaseTransform {
             changeFile(dir, dest);
         }
     }
+
 
     private void deleteDirectory(File destFile, File dest) {
         try {
