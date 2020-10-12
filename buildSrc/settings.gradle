@@ -4,3 +4,5 @@ include ':AutoTrackPlugin'
 project(":AutoTrackPlugin").projectDir = new File("../AutoTrackPlugin")
 include ':BasePlugin'
 project(":BasePlugin").projectDir = new File("../BasePlugin")
+include ':thread_hook_plugin'
+project(":thread_hook_plugin").projectDir = new File("../thread_hook_plugin")

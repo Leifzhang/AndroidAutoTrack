@@ -17,6 +17,7 @@
             <option value="$PROJECT_DIR$/buildSrc" />
             <option value="$PROJECT_DIR$/double_tap_plugin" />
             <option value="$PROJECT_DIR$/testmodule" />
+            <option value="$PROJECT_DIR$/thread_hook_plugin" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />

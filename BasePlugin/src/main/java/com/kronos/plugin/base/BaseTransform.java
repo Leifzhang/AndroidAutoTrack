@@ -17,6 +17,7 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.gradle.api.Project;
+import org.gradle.workers.WorkerExecutor;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -30,6 +31,7 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class BaseTransform {
 
@@ -69,7 +71,6 @@ public class BaseTransform {
 
     public void startTransform() {
         try {
-            Log.info("startTransform");
             if (!isIncremental) {
                 outputProvider.deleteAll();
             }
@@ -126,36 +127,31 @@ public class BaseTransform {
         File dir = directoryInput.getFile();
         if (isIncremental) {
             for (Map.Entry<File, Status> entry : map.entrySet()) {
-                Log.info("entry:" + entry.getKey().getAbsolutePath());
                 Status status = entry.getValue();
                 File file = entry.getKey();
                 String destFilePath = file.getAbsolutePath().replace(dir.getAbsolutePath(), dest.getAbsolutePath());
                 File destFile = new File(destFilePath);
-                Log.info("destFilePath:" + destFilePath);
                 switch (status) {
                     case NOTCHANGED:
                         break;
                     case ADDED:
                     case CHANGED:
-                        try {
-                            FileUtils.touch(destFile);
-                        } catch (Exception ignored) {
+                        // modifySingleFile(dir, file, destFile);
+                        Callable<Void> callable = () -> {
                             try {
-                                Files.createParentDirs(destFile);
-                            } catch (Exception ignored1) {
+                                FileUtils.touch(destFile);
+                            } catch (Exception ignored) {
+                                try {
+                                    Files.createParentDirs(destFile);
+                                } catch (Exception ignored1) {
 
+                                }
                             }
-                        }
-                        modifySingleFile(dir, file, destFile);
-                      /*  Callable<Void> callable = new Callable<Void>() {
-                            @Override
-                            public Void call() throws Exception {
-                                modifySingleFile(dir, file, destFile);
-                                return null;
-                            }
+                            modifySingleFile(dir, file, destFile);
+                            return null;
                         };
                         tasks.add(callable);
-`                        executor.submit(callable);*/
+                        executor.submit(callable);
                         break;
                     case REMOVED:
                         deleteDirectory(destFile, dest);
@@ -199,7 +195,7 @@ public class BaseTransform {
                 }
             }
         } catch (Exception e) {
-            //  e.printStackTrace();
+
         }
     }
 
@@ -243,10 +239,10 @@ public class BaseTransform {
 
     private void changeFile(File dir, File dest) throws IOException {
         if (dir.isDirectory()) {
-            HashMap<String, File> modifyMap = new HashMap<>();
+            FileUtils.copyDirectory(dir, dest);
             for (File classFile : com.android.utils.FileUtils.getAllFiles(dir)) {
                 if (classFile.getName().endsWith(".class")) {
-                    try {
+                    Callable<Void> task = () -> {
                         String absolutePath = classFile.getAbsolutePath().replace(dir.getAbsolutePath() + File.separator, "");
                         String className = ClassUtils.path2Classname(absolutePath);
                         if (!simpleScan) {
@@ -255,24 +251,21 @@ public class BaseTransform {
                             File modified = ClassUtils.saveFile(classFile, modifiedBytes);
                             if (modified != null) {
                                 //key为相对路径
-                                modifyMap.put(classFile.getAbsolutePath().replace(dir.getAbsolutePath(), ""), modified);
+                                String key = classFile.getAbsolutePath().replace(dir.getAbsolutePath(), "");
+                                File target = new File(dest.getAbsolutePath() + key);
+                                if (target.exists()) {
+                                    target.delete();
+                                }
+                                FileUtils.copyFile(modified, target);
                             }
                         } else {
                             process(className, null);
                         }
-                    } catch (Exception ignored) {
-
-                    }
+                        return null;
+                    };
+                    tasks.add(task);
+                    executor.submit(task);
                 }
-            }
-            FileUtils.copyDirectory(dir, dest);
-            for (Map.Entry<String, File> en : modifyMap.entrySet()) {
-                File target = new File(dest.getAbsolutePath() + en.getKey());
-                if (target.exists()) {
-                    target.delete();
-                }
-                FileUtils.copyFile(en.getValue(), target);
-                en.getValue().delete();
             }
         }
     }
@@ -282,9 +275,6 @@ public class BaseTransform {
             if (!simpleScan) {
                 File modifiedJar = JarUtils.modifyJarFile(jarInput.getFile(), context.getTemporaryDir(),
                         callBack, this);
-                if (modifiedJar == null) {
-                    modifiedJar = jarInput.getFile();
-                }
                 FileUtils.copyFile(modifiedJar, dest);
             } else {
                 File jarFile = jarInput.getFile();
