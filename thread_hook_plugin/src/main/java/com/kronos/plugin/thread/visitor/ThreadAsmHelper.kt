@@ -2,6 +2,7 @@ package com.kronos.plugin.thread.visitor
 
 import com.kronos.plugin.base.AsmHelper
 import com.kronos.plugin.base.Log.info
+import com.kronos.plugin.thread.visitor.ThreadPoolCreator.EXECUTORS_OWNER
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassWriter
 import org.objectweb.asm.Opcodes
@@ -17,8 +18,7 @@ import java.io.IOException
 class ThreadAsmHelper : AsmHelper {
     @Throws(IOException::class)
     override fun modifyClass(srcClass: ByteArray): ByteArray {
-        val classNode =
-            ClassNode(Opcodes.ASM5)
+        val classNode = ClassNode(Opcodes.ASM5)
         val classReader = ClassReader(srcClass)
         //1 将读入的字节转为classNode
         classReader.accept(classNode, 0)
@@ -30,7 +30,7 @@ class ThreadAsmHelper : AsmHelper {
             method.instructions?.iterator()?.forEach {
                 if (it.opcode == Opcodes.INVOKESTATIC) {
                     if (it is MethodInsnNode) {
-                        info("node:" + it.name)
+                        it.hookExecutors(classNode, method)
                     }
                 }
             }
@@ -39,5 +39,16 @@ class ThreadAsmHelper : AsmHelper {
         //3  将classNode转为字节数组
         classNode.accept(classWriter)
         return classWriter.toByteArray()
+    }
+
+    fun MethodInsnNode.hookExecutors(classNode: ClassNode, methodNode: MethodNode) {
+        info("owner:$owner  name:$name")
+        when (this.owner) {
+            EXECUTORS_OWNER -> {
+                when (this.name) {
+
+                }
+            }
+        }
     }
 }

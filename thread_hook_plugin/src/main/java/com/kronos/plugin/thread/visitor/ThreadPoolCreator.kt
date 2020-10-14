@@ -6,6 +6,7 @@ import org.objectweb.asm.Opcodes
 object ThreadPoolCreator {
 
     val poolList = mutableListOf<PoolEntity>()
+    const val EXECUTORS_OWNER = "java/util/concurrent/Executors"
 
     init {
         val fix = PoolEntity(
