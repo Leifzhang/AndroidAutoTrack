@@ -1,5 +1,6 @@
-package com.kronos.thread.plugin.visitor
+package com.kronos.plugin.thread.visitor
 
+import com.kronos.plugin.thread.PoolEntity
 import org.objectweb.asm.Opcodes
 
 object ThreadPoolCreator {

@@ -8,19 +8,6 @@ import com.kronos.doubletap.helper.ClassFilterVisitor
 
 class ModifyUtils {
 
-    static byte[] modifyClasses(byte[] srcByteCode) {
-        byte[] classBytesCode = null
-        try {
-            classBytesCode = modifyClass(srcByteCode)
-            return classBytesCode
-        } catch (Exception e) {
-            e.printStackTrace()
-        }
-        if (classBytesCode == null) {
-            classBytesCode = srcByteCode
-        }
-        return classBytesCode
-    }
 
     static byte[] modifyClass(byte[] srcClass) throws IOException {
         ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_MAXS)
@@ -30,12 +17,4 @@ class ModifyUtils {
         return classWriter.toByteArray()
     }
 
-    static byte[] modifyClass(byte[] srcClass, boolean isOnlyVisit) throws IOException {
-        ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_MAXS)
-        ClassVisitor adapter = new ClassFilterVisitor(classWriter)
-        adapter.isOnlyVisit = isOnlyVisit
-        ClassReader cr = new ClassReader(srcClass)
-        cr.accept(adapter, 0)
-        return classWriter.toByteArray()
-    }
 }

@@ -3,7 +3,7 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-android'
 apply plugin: 'doubleTap'
 apply plugin: 'auto-track'
-
+apply plugin: 'thread-hook'
 android {
     compileSdkVersion 28
     defaultConfig {
