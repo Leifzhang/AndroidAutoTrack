@@ -6,7 +6,7 @@ import org.objectweb.asm.FieldVisitor;
 public abstract class FieldAnnotationVisitor extends FieldVisitor {
 
     private final String annotationName = "Lcom/wallstreetcn/sample/adapter/Test;";
-    private String fieldName, fieldDesc;
+    public String fieldName, fieldDesc;
 
     public FieldAnnotationVisitor(int i, FieldVisitor fieldVisitor, String fieldName, String fieldDesc) {
         super(i, fieldVisitor);

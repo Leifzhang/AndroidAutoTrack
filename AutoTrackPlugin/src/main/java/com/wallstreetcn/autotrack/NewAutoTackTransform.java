@@ -7,10 +7,8 @@ import com.android.build.api.transform.TransformInvocation;
 import com.android.build.gradle.internal.pipeline.TransformManager;
 import com.kronos.plugin.base.BaseTransform;
 import com.kronos.plugin.base.ClassUtils;
-import com.kronos.plugin.base.DeleteCallBack;
 import com.kronos.plugin.base.TransformCallBack;
 import com.wallstreetcn.autotrack.helper.AutoTrackDelegate;
-import com.wallstreetcn.autotrack.helper.Log;
 
 import org.gradle.api.Project;
 
