@@ -31,6 +31,7 @@ dependencies {
     implementation project(":BasePlugin")
     implementation project(":double_tap_plugin")
     implementation project(":AutoTrackPlugin")
+    implementation project(":thread_hook_plugin")
 }
 
 sourceCompatibility = "1.8"

@@ -7,6 +7,7 @@ import com.android.build.gradle.internal.pipeline.TransformManager
 import com.kronos.plugin.base.BaseTransform
 import com.kronos.plugin.base.ClassUtils
 import com.kronos.plugin.base.TransformCallBack
+import com.kronos.plugin.thread.visitor.ThreadAsmHelper
 import org.gradle.api.Project
 
 /**
@@ -31,14 +32,14 @@ class HookTransform(private val project: Project) : Transform() {
     }
 
     override fun transform(transformInvocation: TransformInvocation?) {
-        super.transform(transformInvocation)
+        val helper = ThreadAsmHelper()
         val baseTransform =
             BaseTransform(
                 project,
                 transformInvocation,
                 TransformCallBack { s: String, bytes: ByteArray, baseTransform: BaseTransform ->
                     if (ClassUtils.checkClassName(s)) {
-                        null
+                        helper.modifyClass(bytes)
                     } else {
                         null
                     }

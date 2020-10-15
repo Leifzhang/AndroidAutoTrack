@@ -10,8 +10,7 @@ class PoolEntity(
 
     fun replaceDesc(): String {
         val index = desc.lastIndexOf(")")
-        desc.substring(index)
-        return desc + ClassName
+        return desc.substring(0, index + 1) + ClassName
     }
 
     companion object {

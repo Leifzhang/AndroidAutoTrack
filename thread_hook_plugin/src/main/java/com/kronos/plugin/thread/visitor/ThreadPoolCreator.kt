@@ -1,10 +1,12 @@
-package com.kronos.thread.plugin.visitor
+package com.kronos.plugin.thread.visitor
 
+import com.kronos.plugin.thread.PoolEntity
 import org.objectweb.asm.Opcodes
 
 object ThreadPoolCreator {
 
     val poolList = mutableListOf<PoolEntity>()
+    const val EXECUTORS_OWNER = "java/util/concurrent/Executors"
 
     init {
         val fix = PoolEntity(

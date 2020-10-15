@@ -6,6 +6,8 @@
 
 原理和无痕埋点相似，通过classvisitor的机制访问所有View.OnClickListener的子类，然后插入双击优化的代码块。但是插入的是一个类，所以有一部分逻辑代码，织入操作更为复杂，可以使用gradle插件去更好的学习。
 
+`InitBlockVisitor` 这个类MethodVisitor会给当前类的init 添加一个成员变量。`DoubleTapCheck doubleTap = new DoubleTapCheck();` 然后在onClick 方法前添加一个逻辑判断。
+
 ### 使用原则
 
 根目录build 添加插件
@@ -73,7 +75,57 @@ View.OnClickListener listener=new View.OnClickListener() {
 
 通过字节码访问，查找项目内的线程池构造等，发现之后替换成自定义的线程构造。
 
-但是还没写完，哈哈哈哈
+### 方法
+
+通过ASM的ClassNode 的方式读取了当前类的所有构造函数，然后判断当前的执行内容是否是需要变魔改的类，如果是则替换他的desc owner name相关。
+
+~~~kotlin
+class ThreadAsmHelper : AsmHelper {
+    @Throws(IOException::class)
+    override fun modifyClass(srcClass: ByteArray): ByteArray {
+        val classNode = ClassNode(Opcodes.ASM5)
+        val classReader = ClassReader(srcClass)
+        //1 将读入的字节转为classNode
+        classReader.accept(classNode, 0)
+        //2 对classNode的处理逻辑
+        val iterator: Iterator<MethodNode> =
+            classNode.methods.iterator()
+        while (iterator.hasNext()) {
+            val method = iterator.next()
+            method.instructions?.iterator()?.forEach {
+                if (it.opcode == Opcodes.INVOKESTATIC) {
+                    if (it is MethodInsnNode) {
+                        it.hookExecutors(classNode, method)
+                    }
+                }
+            }
+        }
+        val classWriter = ClassWriter(0)
+        //3  将classNode转为字节数组
+        classNode.accept(classWriter)
+        return classWriter.toByteArray()
+    }
+
+    private fun MethodInsnNode.hookExecutors(classNode: ClassNode, methodNode: MethodNode) {
+        when (this.owner) {
+            EXECUTORS_OWNER -> {
+                info("owner:${this.owner}  name:${this.name} ")
+                ThreadPoolCreator.poolList.forEach {
+                    if (it.name == this.name && this.name == it.name && this.owner == it.owner) {
+                        this.owner = Owner
+                        this.name = it.methodName
+                        this.desc = it.replaceDesc()
+                        info("owner:${this.owner}  name:${this.name} desc:${this.desc} ")
+                    }
+                }
+
+            }
+        }
+    }
+}
+~~~
+
+最后在编译阶段该类就会被替换成我们想要的类，举个例子`Executors.newSingleThreadExecutor();`变更成`TestIOThreadExecutor.getThreadPool();`。
 
 ## 升级更新
 

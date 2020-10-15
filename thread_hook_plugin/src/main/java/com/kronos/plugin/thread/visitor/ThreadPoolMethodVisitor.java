@@ -1,7 +1,9 @@
-package com.kronos.thread.plugin.visitor;
+package com.kronos.plugin.thread.visitor;
 
 
-import org.objectweb.asm.Label;
+import com.kronos.plugin.thread.PoolEntity;
+
+import org.gradle.internal.impldep.com.esotericsoftware.minlog.Log;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
@@ -16,15 +18,15 @@ public class ThreadPoolMethodVisitor extends MethodVisitor {
 
     @Override
     public void visitMethodInsn(int opcode, String owner, String name, String desc, boolean itf) {
-      /*  PoolEntity isThreadPool = isThreadPool(opcode, owner, name, desc);
+        PoolEntity isThreadPool = isThreadPool(opcode, owner, name, desc);
         if (isThreadPool != null) {
-            JLog.info("owner:" + owner + " name: " + name + "desc:" + desc);
+            Log.info("owner:" + owner + " name: " + name + "desc:" + desc);
             mv.visitMethodInsn(Opcodes.INVOKESTATIC, PoolEntity.Owner,
                     isThreadPool.getMethodName(),
                     isThreadPool.replaceDesc(), itf);
         } else {
             super.visitMethodInsn(opcode, owner, name, desc, itf);
-        }*/
+        }
         super.visitMethodInsn(opcode, owner, name, desc, itf);
     }
 
