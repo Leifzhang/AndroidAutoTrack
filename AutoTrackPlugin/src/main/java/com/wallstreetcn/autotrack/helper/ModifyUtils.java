@@ -10,24 +10,6 @@ import java.io.IOException;
 
 class ModifyUtils {
 
-    public static byte[] modifyClasses(byte[] srcByteCode) {
-        byte[] classBytesCode = null;
-        try {
-            // Log.info("====start modifying ${className}====");
-            classBytesCode = modifyClass(srcByteCode);
-            //  Log.info("====revisit modified ${className}====");
-            //  onlyVisitClassMethod(classBytesCode);
-            //  Log.info("====finish modifying ${className}====");
-            return classBytesCode;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        if (classBytesCode == null) {
-            classBytesCode = srcByteCode;
-        }
-        return classBytesCode;
-    }
-
     public static byte[] modifyClass(byte[] srcClass) throws IOException {
         ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_MAXS);
         ClassVisitor methodFilterCV = new ClassFilterVisitor(classWriter);
