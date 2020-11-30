@@ -243,7 +243,8 @@ public class BaseTransform {
             for (File classFile : com.android.utils.FileUtils.getAllFiles(dir)) {
                 if (classFile.getName().endsWith(".class")) {
                     Callable<Void> task = () -> {
-                        String absolutePath = classFile.getAbsolutePath().replace(dir.getAbsolutePath() + File.separator, "");
+                        String absolutePath = classFile.getAbsolutePath().replace(dir.getAbsolutePath() + File.separator,
+                                "");
                         String className = ClassUtils.path2Classname(absolutePath);
                         if (!simpleScan) {
                             byte[] bytes = IOUtils.toByteArray(new FileInputStream(classFile));

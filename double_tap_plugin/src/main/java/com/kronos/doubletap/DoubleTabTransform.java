@@ -1,33 +1,32 @@
-package com.wallstreetcn.autotrack;
+package com.kronos.doubletap;
 
 import com.android.build.api.transform.QualifiedContent;
 import com.android.build.api.transform.Transform;
 import com.android.build.api.transform.TransformException;
 import com.android.build.api.transform.TransformInvocation;
 import com.android.build.gradle.internal.pipeline.TransformManager;
+import com.kronos.doubletap.helper.DoubleTapDelegate;
+
 import com.kronos.plugin.base.BaseTransform;
 import com.kronos.plugin.base.ClassUtils;
-import com.kronos.plugin.base.DeleteCallBack;
 import com.kronos.plugin.base.TransformCallBack;
-import com.wallstreetcn.autotrack.helper.AutoTrackDelegate;
-import com.wallstreetcn.autotrack.helper.Log;
 
 import org.gradle.api.Project;
 
 import java.io.IOException;
 import java.util.Set;
 
-public class NewAutoTackTransform extends Transform {
+public class DoubleTabTransform extends Transform {
 
     Project project;
 
-    NewAutoTackTransform(Project project) {
+    DoubleTabTransform(Project project) {
         this.project = project;
     }
 
     @Override
     public String getName() {
-        return "NewAutoTackTransform";
+        return "DoubleTabTransform";
     }
 
     @Override
@@ -47,21 +46,24 @@ public class NewAutoTackTransform extends Transform {
 
     @Override
     public void transform(TransformInvocation transformInvocation) throws TransformException, InterruptedException, IOException {
-        final AutoTrackDelegate injectHelper = new AutoTrackDelegate();
+        final DoubleTapDelegate injectHelper = new DoubleTapDelegate();
         BaseTransform baseTransform = new BaseTransform(project, transformInvocation, new TransformCallBack() {
 
             @Override
-            public byte[] process(String className, byte[] bytes, BaseTransform baseTransform) {
-                if (ClassUtils.checkClassName(className)) {
+            public byte[] process(String s, byte[] bytes, BaseTransform baseTransform) {
+                if (ClassUtils.checkClassName(s)) {
                     return injectHelper.transformByte(bytes);
                 } else {
                     return null;
                 }
             }
-
         });
         baseTransform.startTransform();
     }
 
 
+    @Override
+    public boolean isCacheable() {
+        return true;
+    }
 }

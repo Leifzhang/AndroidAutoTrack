@@ -2,7 +2,6 @@ package com.kronos.doubletap;
 
 import com.android.build.gradle.AppExtension;
 import com.android.build.gradle.AppPlugin;
-import com.kronos.doubletap.helper.TimingsListener;
 
 import org.gradle.api.Action;
 import org.gradle.api.Plugin;
@@ -17,7 +16,6 @@ public class DoubleTapPlugin implements Plugin<Project> {
         project.getExtensions().create(EXT_NAME, DoubleTabConfig.class);
         if (isApp) {
             AppExtension appExtension = project.getExtensions().getByType(AppExtension.class);
-            project.getGradle().addListener(new TimingsListener());
             appExtension.registerTransform(new DoubleTabTransform(project));
             project.afterEvaluate(new Action<Project>() {
                 @Override

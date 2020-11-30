@@ -15,5 +15,5 @@ dependencies {
     implementation localGroovy()
     implementation 'com.android.tools.build:gradle:3.6.3'
     implementation 'commons-io:commons-io:2.6'
-    implementation 'org.javassist:javassist:3.20.0-GA'
+    implementation 'org.javassist:javassist:3.27.0-GA'
 }
