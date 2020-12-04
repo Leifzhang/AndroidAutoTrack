@@ -33,14 +33,15 @@ class HookTransform(private val project: Project) : Transform() {
 
     override fun transform(transformInvocation: TransformInvocation?) {
         val helper = ThreadAsmHelper()
-        val baseTransform =
-            BaseTransform(transformInvocation) { s: String, bytes: ByteArray ->
-                if (ClassUtils.checkClassName(s)) {
-                    helper.modifyClass(bytes)
+        val baseTransform = BaseTransform(transformInvocation, object : TransformCallBack {
+            override fun process(className: String, classBytes: ByteArray?): ByteArray? {
+                return if (ClassUtils.checkClassName(className)) {
+                    helper.modifyClass(classBytes)
                 } else {
                     null
                 }
             }
+        })
         baseTransform.startTransform()
     }
 }

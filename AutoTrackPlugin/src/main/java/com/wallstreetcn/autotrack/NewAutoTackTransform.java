@@ -10,17 +10,12 @@ import com.kronos.plugin.base.ClassUtils;
 import com.kronos.plugin.base.TransformCallBack;
 import com.wallstreetcn.autotrack.helper.AutoTrackDelegate;
 
-import org.gradle.api.Project;
-
 import java.io.IOException;
 import java.util.Set;
 
 public class NewAutoTackTransform extends Transform {
 
-    Project project;
-
-    public NewAutoTackTransform(Project project) {
-        this.project = project;
+    public NewAutoTackTransform() {
     }
 
     @Override
