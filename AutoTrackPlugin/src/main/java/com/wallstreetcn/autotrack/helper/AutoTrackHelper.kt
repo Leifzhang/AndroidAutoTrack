@@ -8,11 +8,12 @@ import java.io.IOException
 import java.io.InputStream
 
 class AutoTrackHelper : AsmHelper {
+
     @Throws(IOException::class)
     override fun modifyClass(srcClass: ByteArray): ByteArray {
         val ctClass = ClassPool.getDefault().makeClass(ByteArrayInputStream(srcClass))
         if (ctClass.isFrozen) ctClass.defrost()
-       // Log.info("javassist ctClass:${ctClass.name}")
+        // Log.info("javassist ctClass:${ctClass.name}")
         ctClass.superclass.let { it ->
             Log.info("javassist interface:${it.name}")
             if (it.name == "android/view/View\$OnClickListener") {

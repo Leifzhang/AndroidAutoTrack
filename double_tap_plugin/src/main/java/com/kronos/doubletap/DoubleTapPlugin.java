@@ -16,7 +16,7 @@ public class DoubleTapPlugin implements Plugin<Project> {
         project.getExtensions().create(EXT_NAME, DoubleTabConfig.class);
         if (isApp) {
             AppExtension appExtension = project.getExtensions().getByType(AppExtension.class);
-            appExtension.registerTransform(new DoubleTabTransform(project));
+            appExtension.registerTransform(new DoubleTapTransform(project));
             project.afterEvaluate(new Action<Project>() {
                 @Override
                 public void execute(Project project) {

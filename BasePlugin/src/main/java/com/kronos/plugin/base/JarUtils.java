@@ -17,7 +17,7 @@ import java.util.zip.ZipEntry;
 
 class JarUtils {
 
-    public static File modifyJarFile(File jarFile, File tempDir, TransformCallBack callBack,
+    public static File modifyJarFile(File jarFile, File tempDir,
                                      BaseTransform transform) throws IOException {
         /** 设置输出到的jar */
         String hexName = DigestUtils.md5Hex(jarFile.getAbsolutePath()).substring(0, 8);
@@ -27,9 +27,9 @@ class JarUtils {
          * 读取原jar
          */
         JarFile file = new JarFile(jarFile);
-        Enumeration enumeration = file.entries();
+        Enumeration<JarEntry> enumeration = file.entries();
         while (enumeration.hasMoreElements()) {
-            JarEntry jarEntry = (JarEntry) enumeration.nextElement();
+            JarEntry jarEntry = enumeration.nextElement();
             InputStream inputStream = file.getInputStream(jarEntry);
 
             String entryName = jarEntry.getName();
@@ -62,9 +62,9 @@ class JarUtils {
     static HashSet<String> scanJarFile(File jarFile) throws IOException {
         HashSet<String> hashSet = new HashSet<>();
         JarFile file = new JarFile(jarFile);
-        Enumeration enumeration = file.entries();
+        Enumeration<JarEntry> enumeration = file.entries();
         while (enumeration.hasMoreElements()) {
-            JarEntry jarEntry = (JarEntry) enumeration.nextElement();
+            JarEntry jarEntry = enumeration.nextElement();
             String entryName = jarEntry.getName();
             if (entryName.endsWith(".class")) {
                 hashSet.add(entryName);
@@ -79,9 +79,9 @@ class JarUtils {
          * 读取原jar
          */
         JarFile file = new JarFile(jarFile);
-        Enumeration enumeration = file.entries();
+        Enumeration<JarEntry> enumeration = file.entries();
         while (enumeration.hasMoreElements()) {
-            JarEntry jarEntry = (JarEntry) enumeration.nextElement();
+            JarEntry jarEntry = enumeration.nextElement();
             String entryName = jarEntry.getName();
             if (entryName.endsWith(".class") && removeClasses.contains(entryName)) {
                 InputStream inputStream = file.getInputStream(jarEntry);
@@ -105,7 +105,7 @@ class JarUtils {
          * 读取原jar
          */
         JarFile file = new JarFile(jarFile);
-        Enumeration enumeration = file.entries();
+        Enumeration<JarEntry> enumeration = file.entries();
         while (enumeration.hasMoreElements()) {
             JarEntry jarEntry = (JarEntry) enumeration.nextElement();
             InputStream inputStream = file.getInputStream(jarEntry);

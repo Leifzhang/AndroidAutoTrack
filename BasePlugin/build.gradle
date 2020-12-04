@@ -17,3 +17,7 @@ dependencies {
     implementation 'commons-io:commons-io:2.6'
     implementation 'org.javassist:javassist:3.27.0-GA'
 }
+
+Properties config = new Properties()
+config.load(project.file("nexus.properties").newDataInputStream())
+group = config.getProperty('nexus_groupId')

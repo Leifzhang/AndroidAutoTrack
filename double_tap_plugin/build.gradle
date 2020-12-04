@@ -17,5 +17,3 @@ dependencies {
     implementation 'commons-io:commons-io:2.6'
     implementation 'org.javassist:javassist:3.27.0-GA'
 }
-
-

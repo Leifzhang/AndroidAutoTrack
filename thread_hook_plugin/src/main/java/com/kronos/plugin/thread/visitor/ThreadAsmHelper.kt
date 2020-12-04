@@ -18,7 +18,7 @@ import java.io.IOException
  */
 class ThreadAsmHelper : AsmHelper {
     @Throws(IOException::class)
-    override fun modifyClass(srcClass: ByteArray): ByteArray {
+    override fun modifyClass(srcClass: ByteArray?): ByteArray {
         val classNode = ClassNode(Opcodes.ASM5)
         val classReader = ClassReader(srcClass)
         //1 将读入的字节转为classNode
