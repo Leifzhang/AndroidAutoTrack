@@ -16,17 +16,17 @@ import org.gradle.api.Project;
 import java.io.IOException;
 import java.util.Set;
 
-public class DoubleTabTransform extends Transform {
+public class DoubleTapTransform extends Transform {
 
     Project project;
 
-    DoubleTabTransform(Project project) {
+    DoubleTapTransform(Project project) {
         this.project = project;
     }
 
     @Override
     public String getName() {
-        return "DoubleTabTransform";
+        return "DoubleTapTransform";
     }
 
     @Override
@@ -47,10 +47,10 @@ public class DoubleTabTransform extends Transform {
     @Override
     public void transform(TransformInvocation transformInvocation) throws TransformException, InterruptedException, IOException {
         final DoubleTapDelegate injectHelper = new DoubleTapDelegate();
-        BaseTransform baseTransform = new BaseTransform(project, transformInvocation, new TransformCallBack() {
+        BaseTransform baseTransform = new BaseTransform(transformInvocation, new TransformCallBack() {
 
             @Override
-            public byte[] process(String s, byte[] bytes, BaseTransform baseTransform) {
+            public byte[] process(String s, byte[] bytes) {
                 if (ClassUtils.checkClassName(s)) {
                     return injectHelper.transformByte(bytes);
                 } else {

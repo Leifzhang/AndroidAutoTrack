@@ -49,10 +49,12 @@ class ClassFilterVisitor extends ClassVisitor {
                     return new InitBlockVisitor(methodVisitor, owner);
                 }
                 MethodCell cell = MethodHelper.sInterfaceMethods.get(name + desc);
-                for (String anInterface : interfaces) {
-                    if (anInterface.equals(cell.parent)) {
-                        MethodVisitor methodVisitor = cv.visitMethod(access, name, desc, signature, exceptions);
-                        return new CheckVisitor(methodVisitor, owner);
+                if (cell != null) {
+                    for (String anInterface : interfaces) {
+                        if (anInterface.equals(cell.parent)) {
+                            MethodVisitor methodVisitor = cv.visitMethod(access, name, desc, signature, exceptions);
+                            return new CheckVisitor(methodVisitor, owner);
+                        }
                     }
                 }
             } catch (Exception e) {

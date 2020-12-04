@@ -47,7 +47,7 @@ public class BaseTransform {
     private ExecutorService executor;
     private List<Callable<Void>> tasks = new ArrayList<>();
 
-    public BaseTransform(Project project, TransformInvocation transformInvocation, TransformCallBack callBack) {
+    public BaseTransform(TransformInvocation transformInvocation, TransformCallBack callBack) {
         this.transformInvocation = transformInvocation;
         this.callBack = callBack;
         this.context = transformInvocation.getContext();
@@ -194,14 +194,15 @@ public class BaseTransform {
                     deleteCallBack.delete(className, bytes);
                 }
             }
-        } catch (Exception e) {
+        } catch (Exception ignored) {
 
         }
     }
 
     private void modifySingleFile(File dir, File file, File dest) throws IOException {
         try {
-            String absolutePath = file.getAbsolutePath().replace(dir.getAbsolutePath() + File.separator, "");
+            String absolutePath = file.getAbsolutePath().replace(dir.getAbsolutePath() +
+                    File.separator, "");
             String className = ClassUtils.path2Classname(absolutePath);
             if (absolutePath.endsWith(".class")) {
                 byte[] modifiedBytes = null;
@@ -229,7 +230,7 @@ public class BaseTransform {
                 filter = new DefaultClassNameFilter();
             }
             if (!filter.filter(className)) {
-                return callBack.process(className, classBytes, this);
+                return callBack.process(className, classBytes);
             }
         } catch (Exception ignored) {
 
@@ -243,21 +244,14 @@ public class BaseTransform {
             for (File classFile : com.android.utils.FileUtils.getAllFiles(dir)) {
                 if (classFile.getName().endsWith(".class")) {
                     Callable<Void> task = () -> {
-                        String absolutePath = classFile.getAbsolutePath().replace(dir.getAbsolutePath() + File.separator,
-                                "");
+                        String absolutePath = classFile.getAbsolutePath().replace(
+                                dir.getAbsolutePath() + File.separator, "");
                         String className = ClassUtils.path2Classname(absolutePath);
                         if (!simpleScan) {
                             byte[] bytes = IOUtils.toByteArray(new FileInputStream(classFile));
                             byte[] modifiedBytes = process(className, bytes);
-                            File modified = ClassUtils.saveFile(classFile, modifiedBytes);
-                            if (modified != null) {
-                                //key为相对路径
-                                String key = classFile.getAbsolutePath().replace(dir.getAbsolutePath(), "");
-                                File target = new File(dest.getAbsolutePath() + key);
-                                if (target.exists()) {
-                                    target.delete();
-                                }
-                                FileUtils.copyFile(modified, target);
+                            if (modifiedBytes != null) {
+                                saveClassFile(modifiedBytes, dest, absolutePath);
                             }
                         } else {
                             process(className, null);
@@ -269,6 +263,19 @@ public class BaseTransform {
                 }
             }
         }
+    }
+
+    private void saveClassFile(byte[] modifiedBytes, File dest, String absolutePath) throws Exception {
+        File tempFile = new File(dest, "/temp/" + absolutePath);
+        tempFile.mkdirs();
+        File modified = ClassUtils.saveFile(tempFile, modifiedBytes);
+        //key为相对路径
+        File target = new File(dest, absolutePath);
+        if (target.exists()) {
+            target.delete();
+        }
+        FileUtils.copyFile(modified, target);
+        tempFile.delete();
     }
 
     private void foreachJar(File dest, JarInput jarInput) {

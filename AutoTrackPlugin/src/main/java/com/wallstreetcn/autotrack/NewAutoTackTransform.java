@@ -19,7 +19,7 @@ public class NewAutoTackTransform extends Transform {
 
     Project project;
 
-    NewAutoTackTransform(Project project) {
+    public NewAutoTackTransform(Project project) {
         this.project = project;
     }
 
@@ -46,10 +46,10 @@ public class NewAutoTackTransform extends Transform {
     @Override
     public void transform(TransformInvocation transformInvocation) throws TransformException, InterruptedException, IOException {
         final AutoTrackDelegate injectHelper = new AutoTrackDelegate();
-        BaseTransform baseTransform = new BaseTransform(project, transformInvocation, new TransformCallBack() {
+        BaseTransform baseTransform = new BaseTransform(transformInvocation, new TransformCallBack() {
 
             @Override
-            public byte[] process(String className, byte[] bytes, BaseTransform baseTransform) {
+            public byte[] process(String className, byte[] bytes) {
                 if (ClassUtils.checkClassName(className)) {
                     return injectHelper.transformByte(bytes);
                 } else {
