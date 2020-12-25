@@ -3,7 +3,7 @@ apply plugin: 'com.jfrog.bintray'
 
 Properties config = new Properties()
 config.load(project.file("nexus.properties").newDataInputStream())
-def nexus_versionName = config.getProperty('nexus_versionName')
+def nexus_versionName = properties.get("plugin.version")
 def nexus_artifactId = config.getProperty('nexus_artifactId')
 def nexus_groupId = config.getProperty('nexus_groupId')
 def nexus_description = config.getProperty('nexus_description')
