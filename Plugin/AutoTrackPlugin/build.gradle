@@ -1,0 +1,25 @@
+apply plugin: 'groovy'
+apply plugin: 'kotlin'
+apply plugin: 'java-gradle-plugin'
+//apply from: '../upload.gradle'
+
+
+dependencies {
+    implementation gradleApi()
+    implementation localGroovy()
+    implementation 'com.android.tools.build:gradle:3.6.3'
+    implementation project(":BasePlugin")
+    implementation 'commons-io:commons-io:2.6'
+    implementation 'org.javassist:javassist:3.27.0-GA'
+}
+
+gradlePlugin {
+    plugins {
+        version {
+            // 在 app 模块需要通过 id 引用这个插件
+            id = 'auto-track'
+            // 实现这个插件的类的路径
+            implementationClass = 'com.wallstreetcn.autotrack.AutoTrackPlugin'
+        }
+    }
+}

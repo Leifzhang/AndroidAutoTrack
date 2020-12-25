@@ -1,0 +1,73 @@
+apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'com.jfrog.bintray'
+
+Properties config = new Properties()
+config.load(project.file("nexus.properties").newDataInputStream())
+def nexus_versionName = config.getProperty('nexus_versionName')
+def nexus_artifactId = config.getProperty('nexus_artifactId')
+def nexus_groupId = config.getProperty('nexus_groupId')
+def nexus_description = config.getProperty('nexus_description')
+def nexus_fileName = config.getProperty('nexus_fileName')
+def nexus_url = config.getProperty('nexus_url')
+
+def siteUrl = nexus_url// 项目的主页
+def gitUrl = nexus_url// Git仓库的url
+group = nexus_groupId
+version = nexus_versionName
+
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allSource
+    classifier = 'sources'
+}
+
+artifacts {
+    archives sourcesJar
+}
+
+install {
+    repositories.mavenInstaller {
+        // This generates POM.xml with proper parameters
+        pom {
+            project {
+                packaging 'aar'
+                // Add your description here
+                name nexus_description //项目描述
+                url siteUrl
+                // Set your license
+                licenses {
+                    license {
+                        name 'The Apache Software License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+                developers {
+                    developer {
+                        id 'LeifZhang'    //填写的一些基本信息
+                        name nexus_fileName
+                        email 'leifzhanggithub@gmail.com'
+                    }
+                }
+                scm {
+                    connection gitUrl
+                    developerConnection gitUrl
+                    url siteUrl
+                }
+            }
+        }
+    }
+}
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+bintray {
+    user = properties.getProperty("bintray.user")
+    key = properties.getProperty("bintray.apikey")
+    configurations = ['archives']
+    pkg {
+        repo = "maven"
+        name = nexus_artifactId   //发布到JCenter上的项目名字
+        websiteUrl = siteUrl
+        vcsUrl = gitUrl
+        licenses = ["Apache-2.0"]
+        publish = true
+    }
+}
