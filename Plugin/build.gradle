@@ -19,13 +19,6 @@ buildscript {
     }
 }
 
-plugins {
-    // 这个 id 就是在 versionPlugin 文件夹下 build.gradle 文件内定义的id
-    id "auto-track" apply false
-    id "thread-hook" apply false
-    id "doubleTap" apply false
-}
-
 allprojects {
     repositories {
         jcenter()
@@ -34,6 +27,7 @@ allprojects {
         }
         google()
     }
+
     configurations.all { Configuration c ->
         c.resolutionStrategy {
             dependencySubstitution {
@@ -50,7 +44,6 @@ allprojects {
     }
 
 }
-
 
 task clean(type: Delete) {
     delete rootProject.buildDir

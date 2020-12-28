@@ -4,6 +4,21 @@
   <component name="GradleSettings">
     <option name="linkedExternalProjectsSettings">
       <GradleProjectSettings>
+        <compositeConfiguration>
+          <compositeBuild compositeDefinitionSource="SCRIPT">
+            <builds>
+              <build path="$PROJECT_DIR$/Plugin" name="Plugin">
+                <projects>
+                  <project path="$PROJECT_DIR$/Plugin" />
+                  <project path="$PROJECT_DIR$/Plugin/AutoTrackPlugin" />
+                  <project path="$PROJECT_DIR$/Plugin/BasePlugin" />
+                  <project path="$PROJECT_DIR$/Plugin/double_tap_plugin" />
+                  <project path="$PROJECT_DIR$/Plugin/thread_hook_plugin" />
+                </projects>
+              </build>
+            </builds>
+          </compositeBuild>
+        </compositeConfiguration>
         <option name="delegatedBuild" value="true" />
         <option name="testRunner" value="PLATFORM" />
         <option name="distributionType" value="DEFAULT_WRAPPED" />
@@ -11,13 +26,13 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
-            <option value="$PROJECT_DIR$/AutoTrackPlugin" />
-            <option value="$PROJECT_DIR$/BasePlugin" />
+            <option value="$PROJECT_DIR$/Plugin" />
+            <option value="$PROJECT_DIR$/Plugin/AutoTrackPlugin" />
+            <option value="$PROJECT_DIR$/Plugin/BasePlugin" />
+            <option value="$PROJECT_DIR$/Plugin/double_tap_plugin" />
+            <option value="$PROJECT_DIR$/Plugin/thread_hook_plugin" />
             <option value="$PROJECT_DIR$/app" />
-            <option value="$PROJECT_DIR$/buildSrc" />
-            <option value="$PROJECT_DIR$/double_tap_plugin" />
             <option value="$PROJECT_DIR$/testmodule" />
-            <option value="$PROJECT_DIR$/thread_hook_plugin" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />
