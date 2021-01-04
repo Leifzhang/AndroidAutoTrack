@@ -16,28 +16,14 @@ import org.gradle.api.Project;
 import java.io.IOException;
 import java.util.Set;
 
-public class DoubleTapTransform extends Transform {
-
-    Project project;
-
-    DoubleTapTransform(Project project) {
-        this.project = project;
-    }
+public abstract class DoubleTapTransform extends Transform {
 
     @Override
     public String getName() {
         return "DoubleTapTransform";
     }
 
-    @Override
-    public Set<QualifiedContent.ContentType> getInputTypes() {
-        return TransformManager.CONTENT_JARS;
-    }
 
-    @Override
-    public Set<? super QualifiedContent.Scope> getScopes() {
-        return TransformManager.SCOPE_FULL_PROJECT;
-    }
 
     @Override
     public boolean isIncremental() {

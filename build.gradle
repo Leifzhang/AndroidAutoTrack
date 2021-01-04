@@ -3,6 +3,9 @@ buildscript {
     ext.kotlin_version = '1.3.72'
     repositories {
         maven {
+            url 'https://maven.aliyun.com/repository/central/'
+        }
+        maven {
             url 'https://dl.bintray.com/leifzhang/maven'
         }
         jcenter()
@@ -28,6 +31,9 @@ plugins {
 
 allprojects {
     repositories {
+        maven {
+            url 'https://maven.aliyun.com/repository/central/'
+        }
         jcenter()
         maven {
             url 'https://dl.bintray.com/leifzhang/maven'
