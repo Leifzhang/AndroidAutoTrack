@@ -3,6 +3,8 @@ package com.kronos.plugin.base
 import com.android.build.api.transform.*
 import com.android.build.gradle.internal.tasks.Workers.defaultExecutor
 import com.google.common.io.Files
+import com.kronos.plugin.base.utils.deleteAll
+import com.kronos.plugin.base.utils.filter
 import org.apache.commons.codec.digest.DigestUtils
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.IOUtils
@@ -24,7 +26,7 @@ class BaseTransform(transformInvocation: TransformInvocation?, callBack: Transfo
     var filter: ClassNameFilter? = null
     private val executor: ExecutorService
     private val tasks: MutableList<Callable<Void?>> = ArrayList()
-    private var outTempDir: File? = null
+    private val destFiles = mutableListOf<File>()
     fun openSimpleScan() {
         simpleScan = true
     }
@@ -52,7 +54,6 @@ class BaseTransform(transformInvocation: TransformInvocation?, callBack: Transfo
                         destName + "_" + hexName,
                         jarInput.contentTypes, jarInput.scopes, Format.JAR
                     )
-                    outTempDir = File(dest.parent, "temp")
                     if (isIncremental) {
                         when (status) {
                             Status.ADDED -> foreachJar(dest, jarInput)
@@ -66,6 +67,7 @@ class BaseTransform(transformInvocation: TransformInvocation?, callBack: Transfo
                                 e.printStackTrace()
                             }
                             else -> {
+
                             }
                         }
                     } else {
@@ -77,7 +79,11 @@ class BaseTransform(transformInvocation: TransformInvocation?, callBack: Transfo
                 }
             }
             executor.invokeAll(tasks)
-            outTempDir?.delete()
+            destFiles.forEach {
+                it.filter("temp")?.forEach { file ->
+                    file.deleteAll()
+                }
+            }
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -89,6 +95,7 @@ class BaseTransform(transformInvocation: TransformInvocation?, callBack: Transfo
             directoryInput.name, directoryInput.contentTypes,
             directoryInput.scopes, Format.DIRECTORY
         )
+        destFiles.add(dest)
         val map = directoryInput.changedFiles
         val dir = directoryInput.file
         if (isIncremental) {
@@ -101,10 +108,7 @@ class BaseTransform(transformInvocation: TransformInvocation?, callBack: Transfo
                             try {
                                 FileUtils.touch(destFile)
                             } catch (ignored: Exception) {
-                                try {
-                                    Files.createParentDirs(destFile)
-                                } catch (ignored1: Exception) {
-                                }
+                                Files.createParentDirs(destFile)
                             }
                             modifySingleFile(dir, file, destFile)
                             null
@@ -155,6 +159,7 @@ class BaseTransform(transformInvocation: TransformInvocation?, callBack: Transfo
                 }
             }
         } catch (ignored: Exception) {
+
         }
     }
 
@@ -167,7 +172,7 @@ class BaseTransform(transformInvocation: TransformInvocation?, callBack: Transfo
             )
             val className = ClassUtils.path2Classname(absolutePath)
             if (absolutePath.endsWith(".class")) {
-                var modifiedBytes: ByteArray? = null
+                var modifiedBytes: ByteArray?
                 val bytes = IOUtils.toByteArray(FileInputStream(file))
                 modifiedBytes = if (!simpleScan) {
                     process(className, bytes)
@@ -230,7 +235,7 @@ class BaseTransform(transformInvocation: TransformInvocation?, callBack: Transfo
 
     @Throws(Exception::class)
     private fun saveClassFile(modifiedBytes: ByteArray, dest: File, absolutePath: String) {
-        val tempDir = outTempDir ?: File(dest, "/temp")
+        val tempDir = File(dest, "/temp")
         val tempFile = File(tempDir, absolutePath)
         tempFile.mkdirs()
         val modified = ClassUtils.saveFile(tempFile, modifiedBytes)

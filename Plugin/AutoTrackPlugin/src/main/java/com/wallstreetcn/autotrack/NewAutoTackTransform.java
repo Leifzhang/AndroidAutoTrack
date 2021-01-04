@@ -56,7 +56,6 @@ public class NewAutoTackTransform extends Transform {
                 }
                 return null;
             }
-
         });
         baseTransform.startTransform();
     }

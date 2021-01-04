@@ -1,7 +1,5 @@
 package com.wallstreetcn.autotrack.helper;
 
-import java.util.List;
-
 public class MethodCell {
     // 原方法名
     public String name;

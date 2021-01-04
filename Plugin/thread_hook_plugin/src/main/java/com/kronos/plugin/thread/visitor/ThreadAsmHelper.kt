@@ -24,14 +24,13 @@ class ThreadAsmHelper : AsmHelper {
         //1 将读入的字节转为classNode
         classReader.accept(classNode, 0)
         //2 对classNode的处理逻辑
-        val iterator: Iterator<MethodNode> =
-            classNode.methods.iterator()
+        val iterator: Iterator<MethodNode> = classNode.methods.iterator()
         while (iterator.hasNext()) {
             val method = iterator.next()
             method.instructions?.iterator()?.forEach {
                 if (it.opcode == Opcodes.INVOKESTATIC) {
                     if (it is MethodInsnNode) {
-                        it.hookExecutors(classNode, method)
+                        it.hookExecutors()
                     }
                 }
             }
@@ -42,7 +41,7 @@ class ThreadAsmHelper : AsmHelper {
         return classWriter.toByteArray()
     }
 
-    private fun MethodInsnNode.hookExecutors(classNode: ClassNode, methodNode: MethodNode) {
+    private fun MethodInsnNode.hookExecutors() {
         when (this.owner) {
             EXECUTORS_OWNER -> {
                 info("owner:${this.owner}  name:${this.name} ")
