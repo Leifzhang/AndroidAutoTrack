@@ -14,7 +14,6 @@ import java.util.concurrent.Callable
 import java.util.concurrent.ExecutorService
 
 class BaseTransform(transformInvocation: TransformInvocation?, callBack: TransformCallBack) {
-    private var transformInvocation: TransformInvocation? = transformInvocation
     private var callBack: TransformCallBack? = callBack
     var context: Context? = null
     private var inputs: Collection<TransformInput>? = null
@@ -25,8 +24,7 @@ class BaseTransform(transformInvocation: TransformInvocation?, callBack: Transfo
     var filter: ClassNameFilter? = null
     private val executor: ExecutorService
     private val tasks: MutableList<Callable<Void?>> = ArrayList()
-
-
+    private var outTempDir: File? = null
     fun openSimpleScan() {
         simpleScan = true
     }
@@ -40,7 +38,7 @@ class BaseTransform(transformInvocation: TransformInvocation?, callBack: Transfo
             if (!isIncremental) {
                 outputProvider!!.deleteAll()
             }
-            for (input in inputs!!) {
+            inputs?.forEach { input ->
                 for (jarInput in input.jarInputs) {
                     val status = jarInput.status
                     var destName = jarInput.file.name
@@ -54,10 +52,9 @@ class BaseTransform(transformInvocation: TransformInvocation?, callBack: Transfo
                         destName + "_" + hexName,
                         jarInput.contentTypes, jarInput.scopes, Format.JAR
                     )
+                    outTempDir = File(dest.parent, "temp")
                     if (isIncremental) {
                         when (status) {
-                            Status.NOTCHANGED -> {
-                            }
                             Status.ADDED -> foreachJar(dest, jarInput)
                             Status.CHANGED -> diffJar(dest, jarInput)
                             Status.REMOVED -> try {
@@ -67,6 +64,8 @@ class BaseTransform(transformInvocation: TransformInvocation?, callBack: Transfo
                                 }
                             } catch (e: Exception) {
                                 e.printStackTrace()
+                            }
+                            else -> {
                             }
                         }
                     } else {
@@ -78,6 +77,7 @@ class BaseTransform(transformInvocation: TransformInvocation?, callBack: Transfo
                 }
             }
             executor.invokeAll(tasks)
+            outTempDir?.delete()
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -113,6 +113,8 @@ class BaseTransform(transformInvocation: TransformInvocation?, callBack: Transfo
                         executor.submit(callable)
                     }
                     Status.REMOVED -> deleteDirectory(destFile, dest)
+                    else -> {
+                    }
                 }
             }
         } else {
@@ -177,7 +179,9 @@ class BaseTransform(transformInvocation: TransformInvocation?, callBack: Transfo
                 }
                 ClassUtils.saveFile(dest, modifiedBytes)
             } else {
-                FileUtils.copyFile(file, dest)
+                if (!file.isDirectory) {
+                    FileUtils.copyFile(file, dest)
+                }
             }
         } catch (e: Exception) {
             e.printStackTrace()
@@ -226,7 +230,7 @@ class BaseTransform(transformInvocation: TransformInvocation?, callBack: Transfo
 
     @Throws(Exception::class)
     private fun saveClassFile(modifiedBytes: ByteArray, dest: File, absolutePath: String) {
-        val tempDir = File(dest, "/temp")
+        val tempDir = outTempDir ?: File(dest, "/temp")
         val tempFile = File(tempDir, absolutePath)
         tempFile.mkdirs()
         val modified = ClassUtils.saveFile(tempFile, modifiedBytes)

@@ -107,7 +107,7 @@ class JarUtils {
         JarFile file = new JarFile(jarFile);
         Enumeration<JarEntry> enumeration = file.entries();
         while (enumeration.hasMoreElements()) {
-            JarEntry jarEntry = (JarEntry) enumeration.nextElement();
+            JarEntry jarEntry = enumeration.nextElement();
             InputStream inputStream = file.getInputStream(jarEntry);
             String entryName = jarEntry.getName();
             byte[] sourceClassBytes = IOUtils.toByteArray(inputStream);

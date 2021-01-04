@@ -2,6 +2,8 @@ package com.wallstreetcn.sample
 
 import android.os.SystemClock
 import android.util.Log
+import com.wallstreetcn.testmodule.KronosContext
+import com.wallstreetcn.testmodule.show
 import kotlin.math.abs
 
 class DoubleTapCheck {
@@ -25,6 +27,7 @@ class DoubleTapCheck {
             downTimeTemp = System.currentTimeMillis()
             return true
         }
+        KronosContext.requireApplication().show()
         return false
     }
 

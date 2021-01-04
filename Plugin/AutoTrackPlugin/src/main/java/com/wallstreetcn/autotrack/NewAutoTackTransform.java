@@ -8,7 +8,9 @@ import com.android.build.gradle.internal.pipeline.TransformManager;
 import com.kronos.plugin.base.BaseTransform;
 import com.kronos.plugin.base.ClassUtils;
 import com.kronos.plugin.base.TransformCallBack;
-import com.wallstreetcn.autotrack.helper.AutoTrackDelegate;
+import com.wallstreetcn.autotrack.helper.AutoTrackHelper;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.util.Set;
@@ -40,16 +42,19 @@ public class NewAutoTackTransform extends Transform {
 
     @Override
     public void transform(TransformInvocation transformInvocation) throws TransformException, InterruptedException, IOException {
-        final AutoTrackDelegate injectHelper = new AutoTrackDelegate();
+        final AutoTrackHelper injectHelper = new AutoTrackHelper();
         BaseTransform baseTransform = new BaseTransform(transformInvocation, new TransformCallBack() {
 
             @Override
-            public byte[] process(String className, byte[] bytes) {
+            public byte[] process(@NotNull String className, byte[] bytes) {
                 if (ClassUtils.checkClassName(className)) {
-                    return injectHelper.transformByte(bytes);
-                } else {
-                    return null;
+                    try {
+                        return injectHelper.modifyClass(bytes);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
+                return null;
             }
 
         });
