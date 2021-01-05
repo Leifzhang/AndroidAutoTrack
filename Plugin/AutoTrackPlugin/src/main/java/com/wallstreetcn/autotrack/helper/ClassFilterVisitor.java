@@ -8,12 +8,11 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 
 
+//其实我已经不用了  但是保留下历史吧  毕竟以前菜过
 public class ClassFilterVisitor extends ClassVisitor {
+
     private String[] interfaces;
-    private String parentName;
-    private String outerOwner;
     private final String objectText = "java/lang/Object";
-    private String fieldName, fieldDesc, fieldOwner;
 
 
     ClassFilterVisitor(ClassVisitor classVisitor) {
@@ -23,8 +22,6 @@ public class ClassFilterVisitor extends ClassVisitor {
     @Override
     public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
         super.visit(version, access, name, signature, superName, interfaces);
-        this.outerOwner = name;
-        this.fieldOwner = name;
         this.interfaces = interfaces;
         if (!superName.equals(objectText)) {
             int index = name.lastIndexOf("/");
@@ -40,7 +37,6 @@ public class ClassFilterVisitor extends ClassVisitor {
     @Override
     public void visitOuterClass(String owner, String name, String desc) {
         super.visitOuterClass(owner, name, desc);
-        this.parentName = "L" + owner + ";";
     }
 
 
@@ -101,7 +97,6 @@ public class ClassFilterVisitor extends ClassVisitor {
 
         for (int i = start; i < start + count; i++) {
             methodVisitor.visitVarInsn(paramOpcodes[(i - start)], i);
-            //    Log.info("method visitFieldInsn:")
         }
         methodVisitor.visitInsn(Opcodes.ACONST_NULL);
         methodVisitor.visitMethodInsn(opcode, owner, methodName, methodDesc, false);

@@ -1,10 +1,66 @@
 # AndroidAutoTrack
 
-本项目主要就是给大家一个参考学习的demo而已，主要是打算简化学习gradle插件的成本，以及对于android transform的一次抽象，将增量更新等等进行一次抽象，以方便大家学习开发。
+本项目主要就是给大家一个参考学习的demo而已，主要是打算简化学习gradle插件的成本，以及对于`android transform`的一次抽象，将增量更新等等进行一次抽象，以方便大家学习开发。
+
+## ~~buildSrc 优化~~
+
+~~之前通过buildSrc形式重构项目，不需要本地推aar，同时module可以被同一个buildSrc关联上，方便调试和代码上传。~~
+
+## ComposeBuilding 优化
+
+通过项目组合编译的方式重构，同样不需要本地推aar，保留了上述所有的优点的同时，由于buildSrc是一个优先编译的工程，所以无法使用项目内的build.gradle,而`ComposeBuild`则由于是一个独立Project，所以可以使用当前下面的所有共用属性。
+
+[协程 路由 组件化 1+1+1>3 | 掘金年度征文](https://juejin.cn/post/6908232077200588814)，文章内有对`ComposeBuilding`的更详细的介绍和使用。
+
+## Tips 小贴士
+
+直接编译你的项目,观察项目下的build/imtermediates/transform/ 文件夹下面，因为class类android studio已经帮你完成了转化，所以无需担心看不懂的问题。
+
+最好各位可以安装一个ASM ByteCode Viewer插件，可以辅助大家快速阅读对应代码。
+
+仔细观察编译前java代码和编译后class文件的差别。如果有插入的代码那么代表该插件已经编织代码成功。
+
+## AutoTrackPlugin 安卓无痕埋点Demo
+
+~~以前使用的是`ClassVisitor`,由于无痕埋点相关其实有上下文以及传输数据等等的要求，所以该方案废弃了。~~
+
+当前通过`ClassNode`方式实现，ClassNode是类似Ast语法树的一种`ClassVisitor`的实现类，可以通过主动访问的方式，去对当前你需要变更的类进行快速访问逻辑判断，同时由于在外层判断逻辑，所以可以更方便的添加代码组合等，让asm操作更简化。
+
+通过编译时检索代码中是否实现了View.OnClickListener接口,然后在onClick方法尾部插入代码打点代码。
+
+### 如何将参数传递给打点代码
+
+通过标识注解的方式可以将外部的参数直接传输给埋点事件，这样就可以更丰富简单的拓展无痕埋点系统。
+
+```java
+View.OnClickListener listener=new View.OnClickListener() {
+            @Test
+            private Entity mdata;
+
+            @Override
+            public void onClick(View v) {
+                mdata = new Entity();
+                Log.i("MainActivity", v.toString());
+                Intent intent = new Intent();
+                intent.setClass(MainActivity.this, SecondActivity.class);
+                startActivity(intent);
+            }
+        });
+```
+
+### 完成Fragment hidden开发
+
+后续会补充上给fragment activity 生命周期方法补充增强
 
 ## double tap plugin 双击优化
 
-原理和无痕埋点相似，通过classvisitor的机制访问所有View.OnClickListener的子类，然后插入双击优化的代码块。但是插入的是一个类，所以有一部分逻辑代码，织入操作更为复杂，可以使用gradle插件去更好的学习。
+### 新增功能
+
+可以让当前双击保护只作用于Module下面，而不是App下面，让同学可以热拔插这部分代码，因为双击保护其实更针对模块开发同学，所以可以直接使用该插件，同时该插件也会对上传AAr生效，放心使用。
+
+原理和无痕埋点相似，当前还是保留以前开发无痕埋点的visitor形式。
+
+通过`ClassVisitor`的机制访问所有View.OnClickListener的子类，然后插入双击优化的代码块。但是插入的是一个类，所以有一部分逻辑代码，织入操作更为复杂，可以使用gradle插件去更好的学习。
 
 `InitBlockVisitor` 这个类MethodVisitor会给当前类的init 添加一个成员变量。`DoubleTapCheck doubleTap = new DoubleTapCheck();` 然后在onClick 方法前添加一个逻辑判断。
 
@@ -41,35 +97,7 @@ doubleTab {
 
 ```
 
-直接编译你的项目,观察项目下的build/imtermediates/transform/DoubleTabTrasform/ 文件夹下面
 
-如果有插入的代码那么代表该插件已经编织代码成功。
-
-## AutoTrackPlugin 安卓无痕埋点 
-
-通过编译时检索代码中是否实现了View.OnClickListener接口,然后在onClick方法尾部插入代码打点代码。
-
-### 如何将参数传递给打点代码 
-
-```java
-View.OnClickListener listener=new View.OnClickListener() {
-            @Test
-            private Entity mdata;
-
-            @Override
-            public void onClick(View v) {
-                mdata = new Entity();
-                Log.i("MainActivity", v.toString());
-                Intent intent = new Intent();
-                intent.setClass(MainActivity.this, SecondActivity.class);
-                startActivity(intent);
-            }
-        });
-```
-
-### TODO
-
-后续会补充上给fragment activity 生命周期方法补充增强
 
 ## Thread Hook plugin 线程hook更换
 
@@ -133,6 +161,4 @@ class ThreadAsmHelper : AsmHelper {
 
 base  plugin 代码升级，使用多线程优化，讲字节码操作执行在线程中，之后在主函数等待所有task执行完成之后在结束。
 
-### buildSrc 优化
-
-通过buildSrc形式重构项目，不需要本地推aar，同时module可以被同一个buildSrc关联上，方便调试和代码上传。
+base plugin 主要是辅助后续有兴趣的同学可以快速的进行transform开发学习，在当前类基础上，可以无视繁琐的增量编译和额外的文件拷贝操作，只专注于Asm的学习。

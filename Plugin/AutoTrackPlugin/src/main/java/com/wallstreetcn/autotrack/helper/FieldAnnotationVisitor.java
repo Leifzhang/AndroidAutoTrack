@@ -3,6 +3,7 @@ package com.wallstreetcn.autotrack.helper;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.FieldVisitor;
 
+//其实我已经不用了  但是保留下历史吧  毕竟以前菜过
 public abstract class FieldAnnotationVisitor extends FieldVisitor {
 
     private final String annotationName = "Lcom/wallstreetcn/sample/adapter/Test;";

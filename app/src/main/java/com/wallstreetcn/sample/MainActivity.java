@@ -51,8 +51,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onClick(View v) {
                 Log.i("MainActivity", v.toString());
                 Intent intent = new Intent();
-               // intent.setClass(MainActivity.this, SecondActivity.class);
-               // startActivity(intent);
             }
         });
     }
