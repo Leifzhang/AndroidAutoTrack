@@ -3,6 +3,8 @@ package com.kronos.plugin.base
 import com.android.build.api.transform.*
 import com.android.build.gradle.internal.tasks.Workers.defaultExecutor
 import com.google.common.io.Files
+import com.kronos.plugin.base.utils.deleteAll
+import com.kronos.plugin.base.utils.filter
 import org.apache.commons.codec.digest.DigestUtils
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.IOUtils
@@ -14,7 +16,6 @@ import java.util.concurrent.Callable
 import java.util.concurrent.ExecutorService
 
 class BaseTransform(transformInvocation: TransformInvocation?, callBack: TransformCallBack) {
-    private var transformInvocation: TransformInvocation? = transformInvocation
     private var callBack: TransformCallBack? = callBack
     var context: Context? = null
     private var inputs: Collection<TransformInput>? = null
@@ -25,8 +26,7 @@ class BaseTransform(transformInvocation: TransformInvocation?, callBack: Transfo
     var filter: ClassNameFilter? = null
     private val executor: ExecutorService
     private val tasks: MutableList<Callable<Void?>> = ArrayList()
-
-
+    private val destFiles = mutableListOf<File>()
     fun openSimpleScan() {
         simpleScan = true
     }
@@ -40,7 +40,7 @@ class BaseTransform(transformInvocation: TransformInvocation?, callBack: Transfo
             if (!isIncremental) {
                 outputProvider!!.deleteAll()
             }
-            for (input in inputs!!) {
+            inputs?.forEach { input ->
                 for (jarInput in input.jarInputs) {
                     val status = jarInput.status
                     var destName = jarInput.file.name
@@ -56,8 +56,6 @@ class BaseTransform(transformInvocation: TransformInvocation?, callBack: Transfo
                     )
                     if (isIncremental) {
                         when (status) {
-                            Status.NOTCHANGED -> {
-                            }
                             Status.ADDED -> foreachJar(dest, jarInput)
                             Status.CHANGED -> diffJar(dest, jarInput)
                             Status.REMOVED -> try {
@@ -67,6 +65,9 @@ class BaseTransform(transformInvocation: TransformInvocation?, callBack: Transfo
                                 }
                             } catch (e: Exception) {
                                 e.printStackTrace()
+                            }
+                            else -> {
+
                             }
                         }
                     } else {
@@ -78,6 +79,11 @@ class BaseTransform(transformInvocation: TransformInvocation?, callBack: Transfo
                 }
             }
             executor.invokeAll(tasks)
+            destFiles.forEach {
+                it.filter("temp")?.forEach { file ->
+                    file.deleteAll()
+                }
+            }
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -89,6 +95,7 @@ class BaseTransform(transformInvocation: TransformInvocation?, callBack: Transfo
             directoryInput.name, directoryInput.contentTypes,
             directoryInput.scopes, Format.DIRECTORY
         )
+        destFiles.add(dest)
         val map = directoryInput.changedFiles
         val dir = directoryInput.file
         if (isIncremental) {
@@ -101,10 +108,7 @@ class BaseTransform(transformInvocation: TransformInvocation?, callBack: Transfo
                             try {
                                 FileUtils.touch(destFile)
                             } catch (ignored: Exception) {
-                                try {
-                                    Files.createParentDirs(destFile)
-                                } catch (ignored1: Exception) {
-                                }
+                                Files.createParentDirs(destFile)
                             }
                             modifySingleFile(dir, file, destFile)
                             null
@@ -113,6 +117,8 @@ class BaseTransform(transformInvocation: TransformInvocation?, callBack: Transfo
                         executor.submit(callable)
                     }
                     Status.REMOVED -> deleteDirectory(destFile, dest)
+                    else -> {
+                    }
                 }
             }
         } else {
@@ -153,6 +159,7 @@ class BaseTransform(transformInvocation: TransformInvocation?, callBack: Transfo
                 }
             }
         } catch (ignored: Exception) {
+
         }
     }
 
@@ -165,7 +172,7 @@ class BaseTransform(transformInvocation: TransformInvocation?, callBack: Transfo
             )
             val className = ClassUtils.path2Classname(absolutePath)
             if (absolutePath.endsWith(".class")) {
-                var modifiedBytes: ByteArray? = null
+                var modifiedBytes: ByteArray?
                 val bytes = IOUtils.toByteArray(FileInputStream(file))
                 modifiedBytes = if (!simpleScan) {
                     process(className, bytes)
@@ -177,7 +184,9 @@ class BaseTransform(transformInvocation: TransformInvocation?, callBack: Transfo
                 }
                 ClassUtils.saveFile(dest, modifiedBytes)
             } else {
-                FileUtils.copyFile(file, dest)
+                if (!file.isDirectory) {
+                    FileUtils.copyFile(file, dest)
+                }
             }
         } catch (e: Exception) {
             e.printStackTrace()

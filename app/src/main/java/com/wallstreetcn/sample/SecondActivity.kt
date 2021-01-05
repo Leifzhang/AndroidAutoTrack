@@ -3,8 +3,7 @@ package com.wallstreetcn.sample
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.wallstreetcn.autotrack.adapter.TestAdapter
-import com.wallstreetcn.sample.utils.TestIOThreadExecutor
+import com.wallstreetcn.sample.adapter.TestAdapter
 import kotlinx.android.synthetic.main.activity_second.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors

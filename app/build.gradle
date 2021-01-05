@@ -1,9 +1,8 @@
 apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
 apply plugin: 'auto-track'
-apply plugin: 'doubleTap'
-apply plugin: 'thread-hook'
+//apply plugin: 'thread-hook'
 
 android {
     compileSdkVersion 28
