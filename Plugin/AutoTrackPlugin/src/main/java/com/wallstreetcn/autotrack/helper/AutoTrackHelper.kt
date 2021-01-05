@@ -20,7 +20,7 @@ class AutoTrackHelper : AsmHelper {
             if (it == "android/view/View\$OnClickListener") {
                 val field = classNode.fields?.firstOrNull { field ->
                     var hasAnnotation = false
-                    field.visibleAnnotations.forEach { annotation ->
+                    field?.visibleAnnotations?.forEach { annotation ->
                         if (annotation.desc == "Lcom/wallstreetcn/sample/adapter/Test;") {
                             hasAnnotation = true
                         }

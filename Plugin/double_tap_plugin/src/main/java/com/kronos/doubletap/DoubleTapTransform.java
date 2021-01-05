@@ -42,7 +42,7 @@ public abstract class DoubleTapTransform extends Transform {
                 }
                 return null;
             }
-        });
+        }, true);
         baseTransform.startTransform();
     }
 

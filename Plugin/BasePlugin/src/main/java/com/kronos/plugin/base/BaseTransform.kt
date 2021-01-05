@@ -14,9 +14,15 @@ import java.io.IOException
 import java.util.*
 import java.util.concurrent.Callable
 import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
+import java.util.concurrent.ThreadPoolExecutor
 
-class BaseTransform(transformInvocation: TransformInvocation?, callBack: TransformCallBack) {
-    private var callBack: TransformCallBack? = callBack
+class BaseTransform(
+    transformInvocation: TransformInvocation?,
+    callBack: TransformCallBack,
+    single: Boolean = false
+) {
+    private var mCallBack: TransformCallBack? = callBack
     var context: Context? = null
     private var inputs: Collection<TransformInput>? = null
     private var outputProvider: TransformOutputProvider? = null
@@ -27,6 +33,19 @@ class BaseTransform(transformInvocation: TransformInvocation?, callBack: Transfo
     private val executor: ExecutorService
     private val tasks: MutableList<Callable<Void?>> = ArrayList()
     private val destFiles = mutableListOf<File>()
+
+    init {
+        context = transformInvocation?.context
+        inputs = transformInvocation?.inputs
+        outputProvider = transformInvocation?.outputProvider
+        isIncremental = transformInvocation?.isIncremental ?: false
+        executor = if (!single) {
+            defaultExecutor
+        } else {
+            Executors.newSingleThreadExecutor()
+        }
+    }
+
     fun openSimpleScan() {
         simpleScan = true
     }
@@ -141,7 +160,8 @@ class BaseTransform(transformInvocation: TransformInvocation?, callBack: Transfo
             if (destFile.exists()) {
                 FileUtils.forceDelete(destFile)
             }
-        } catch (ignored: Exception) {
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 
@@ -154,12 +174,11 @@ class BaseTransform(transformInvocation: TransformInvocation?, callBack: Transfo
                 )
                 val className = ClassUtils.path2Classname(absolutePath)
                 val bytes = IOUtils.toByteArray(FileInputStream(classFile))
-                if (deleteCallBack != null) {
-                    deleteCallBack!!.delete(className, bytes)
-                }
-            }
-        } catch (ignored: Exception) {
+                deleteCallBack?.delete(className, bytes)
 
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 
@@ -199,9 +218,10 @@ class BaseTransform(transformInvocation: TransformInvocation?, callBack: Transfo
                 filter = DefaultClassNameFilter()
             }
             if (filter?.filter(className) == false) {
-                return callBack?.process(className, classBytes)
+                return mCallBack?.process(className, classBytes)
             }
-        } catch (ignored: Exception) {
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
         return null
     }
@@ -289,11 +309,5 @@ class BaseTransform(transformInvocation: TransformInvocation?, callBack: Transfo
         }
     }
 
-    init {
-        context = transformInvocation?.context
-        inputs = transformInvocation?.inputs
-        outputProvider = transformInvocation?.outputProvider
-        isIncremental = transformInvocation?.isIncremental ?: false
-        executor = defaultExecutor
-    }
+
 }
