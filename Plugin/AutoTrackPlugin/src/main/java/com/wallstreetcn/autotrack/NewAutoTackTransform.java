@@ -18,6 +18,7 @@ import java.util.Set;
 public class NewAutoTackTransform extends Transform {
 
     public NewAutoTackTransform() {
+
     }
 
     @Override

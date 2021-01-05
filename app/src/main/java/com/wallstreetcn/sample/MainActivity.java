@@ -33,6 +33,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     ExecutorService service;
 
     ExecutorService pool = Executors.newSingleThreadExecutor();
+    @Test
+    private Entity mdata = new Entity();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,11 +49,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             @Override
             public void onClick(View v) {
-                mdata = new Entity();
                 Log.i("MainActivity", v.toString());
                 Intent intent = new Intent();
-                intent.setClass(MainActivity.this, SecondActivity.class);
-                startActivity(intent);
+               // intent.setClass(MainActivity.this, SecondActivity.class);
+               // startActivity(intent);
             }
         });
     }
