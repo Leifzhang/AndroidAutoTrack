@@ -4,6 +4,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.wallstreetcn.sample.utils.ReflectUtil;
+import com.wallstreetcn.testmodule.KronosContextKt;
 
 
 public class ToastHelper {
@@ -18,7 +19,7 @@ public class ToastHelper {
 
     public static void toast(Object text, View view, Object data) {
         try {
-            String toastText = ReflectUtil.getObjectName(text, view);
+            String toastText;
             if (text instanceof String) {
                 toastText = (String) text;
             } else {
@@ -32,4 +33,5 @@ public class ToastHelper {
             e.printStackTrace();
         }
     }
+
 }
