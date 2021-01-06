@@ -21,15 +21,7 @@ class AutoTrackHelper : AsmHelper {
         classNodeMap[classNode.name] = classNode
         classNode.interfaces?.forEach {
             if (it == "android/view/View\$OnClickListener") {
-                val field = classNode.fields?.firstOrNull { field ->
-                    var hasAnnotation = false
-                    field?.visibleAnnotations?.forEach { annotation ->
-                        if (annotation.desc == "Lcom/wallstreetcn/sample/adapter/Test;") {
-                            hasAnnotation = true
-                        }
-                    }
-                    hasAnnotation
-                }
+                val field = classNode.getField()
                 classNode.methods?.forEach { method ->
                     insertTrack(classNode, method, field)
                 }
@@ -53,15 +45,15 @@ class AutoTrackHelper : AsmHelper {
             }
             if (!hasHiddenChange) {
                 val methodVisitor = classNode.visitMethod(
-                    ACC_PUBLIC, "onHiddenChanged", "(Z)V",
-                    classNode.signature, null
+                        ACC_PUBLIC, "onHiddenChanged", "(Z)V",
+                        classNode.signature, null
                 )
                 methodVisitor.visitCode()
                 methodVisitor.visitVarInsn(ALOAD, 0);
                 methodVisitor.visitVarInsn(ILOAD, 1);
                 methodVisitor.visitMethodInsn(
-                    INVOKESPECIAL, classNode.superName,
-                    "onHiddenChanged", "(Z)V", false
+                        INVOKESPECIAL, classNode.superName,
+                        "onHiddenChanged", "(Z)V", false
                 )
                 methodVisitor.visitInsn(RETURN)
                 methodVisitor.visitMaxs(2, 2)
@@ -80,36 +72,46 @@ class AutoTrackHelper : AsmHelper {
         if (method.name == "onClick" && method.desc == "(Landroid/view/View;)V") {
             val className = node.outerClass
             val parentNode = classNodeMap[className]
-            //      Log.info("outerClassName:${className}  parentNode:${parentNode?.name} ")
+            val parentField = field ?: parentNode?.getField()
             val instructions = method.instructions
             instructions?.iterator()?.forEach {
                 if ((it.opcode >= Opcodes.IRETURN && it.opcode <= Opcodes.RETURN) || it.opcode == Opcodes.ATHROW) {
                     instructions.insertBefore(it, VarInsnNode(Opcodes.ALOAD, 1))
                     instructions.insertBefore(it, VarInsnNode(Opcodes.ALOAD, 1))
-                    if (field != null) {
-                        field.apply {
+                    if (parentField != null) {
+                        parentField.apply {
                             instructions.insertBefore(it, VarInsnNode(Opcodes.ALOAD, 0))
                             instructions.insertBefore(
-                                it,
-                                FieldInsnNode(Opcodes.GETFIELD, node.name, field.name, field.desc)
+                                    it, FieldInsnNode(Opcodes.GETFIELD, node.name, parentField.name, parentField.desc)
                             )
                         }
                     } else {
                         instructions.insertBefore(it, LdcInsnNode("1234"))
                     }
                     instructions.insertBefore(
-                        it, MethodInsnNode(
+                            it, MethodInsnNode(
                             Opcodes.INVOKESTATIC,
                             "com/wallstreetcn/sample/ToastHelper",
                             "toast",
                             "(Ljava/lang/Object;Landroid/view/View;Ljava/lang/Object;)V",
                             false
-                        )
+                    )
                     )
                 }
             }
         }
+    }
 
+    fun ClassNode.getField(): FieldNode? {
+        return fields?.firstOrNull { field ->
+            var hasAnnotation = false
+            field?.visibleAnnotations?.forEach { annotation ->
+                if (annotation.desc == "Lcom/wallstreetcn/sample/adapter/Test;") {
+                    hasAnnotation = true
+                }
+            }
+            hasAnnotation
+        }
     }
 }
 
