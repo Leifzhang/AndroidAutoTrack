@@ -23,7 +23,9 @@ public class ClassUtils {
                     modified.delete();
                 }
                 modified.createNewFile();
-                new FileOutputStream(modified).write(modifiedClassBytes);
+                FileOutputStream stream = new FileOutputStream(modified);
+                stream.write(modifiedClassBytes);
+                stream.close();
             }
         } catch (Exception e) {
             e.printStackTrace();
