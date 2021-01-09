@@ -26,7 +26,6 @@ public class DoubleTapPlugin implements Plugin<Project> {
         if (isApp) {
             AppExtension appExtension = project.getExtensions().getByType(AppExtension.class);
             appExtension.registerTransform(new DoubleTapAppTransform());
-
             return;
         }
         if (project.getPlugins().hasPlugin("com.android.library")) {

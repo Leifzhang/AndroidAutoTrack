@@ -19,14 +19,17 @@ class AutoTrackHelper : AsmHelper {
         //1 将读入的字节转为classNode
         classReader.accept(classNode, 0)
         classNodeMap[classNode.name] = classNode
+        // 判断当前类是否实现了OnClickListener接口
         classNode.interfaces?.forEach {
             if (it == "android/view/View\$OnClickListener") {
                 val field = classNode.getField()
                 classNode.methods?.forEach { method ->
+                    // 找到onClick 方法
                     insertTrack(classNode, method, field)
                 }
             }
         }
+        //调用Fragment的onHiddenChange方法
         visitFragment(classNode)
         val classWriter = ClassWriter(0)
         //3  将classNode转为字节数组
@@ -69,15 +72,19 @@ class AutoTrackHelper : AsmHelper {
 
 
     private fun insertTrack(node: ClassNode, method: MethodNode, field: FieldNode?) {
+        // 判断方法名和方法描述
         if (method.name == "onClick" && method.desc == "(Landroid/view/View;)V") {
             val className = node.outerClass
             val parentNode = classNodeMap[className]
+            // 根据outClassName 获取到外部类的Node
             val parentField = field ?: parentNode?.getField()
             val instructions = method.instructions
             instructions?.iterator()?.forEach {
+                // 判断是不是代码的截止点
                 if ((it.opcode >= Opcodes.IRETURN && it.opcode <= Opcodes.RETURN) || it.opcode == Opcodes.ATHROW) {
                     instructions.insertBefore(it, VarInsnNode(Opcodes.ALOAD, 1))
                     instructions.insertBefore(it, VarInsnNode(Opcodes.ALOAD, 1))
+                    // 获取到数据参数
                     if (parentField != null) {
                         parentField.apply {
                             instructions.insertBefore(it, VarInsnNode(Opcodes.ALOAD, 0))
@@ -102,7 +109,8 @@ class AutoTrackHelper : AsmHelper {
         }
     }
 
-    fun ClassNode.getField(): FieldNode? {
+    // 判断Field是否包含注解
+    private fun ClassNode.getField(): FieldNode? {
         return fields?.firstOrNull { field ->
             var hasAnnotation = false
             field?.visibleAnnotations?.forEach { annotation ->
