@@ -54,7 +54,16 @@ allprojects {
             }
         }
     }
+    afterEvaluate {
+        if (project.plugins.hasPlugin('com.android.library') || project.plugins.hasPlugin('com.android.application')) {
+            def android = project.extensions.getByName('android')
+            android.compileOptions {
+                sourceCompatibility JavaVersion.VERSION_1_8
+                targetCompatibility JavaVersion.VERSION_1_8
+            }
 
+        }
+    }
 }
 
 

@@ -4,7 +4,7 @@ import com.android.build.api.transform.*
 import com.android.build.gradle.internal.tasks.Workers.defaultExecutor
 import com.google.common.io.Files
 import com.kronos.plugin.base.utils.deleteAll
-import com.kronos.plugin.base.utils.filter
+import com.kronos.plugin.base.utils.filterTest
 import org.apache.commons.codec.digest.DigestUtils
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.IOUtils
@@ -15,7 +15,6 @@ import java.util.*
 import java.util.concurrent.Callable
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
-import java.util.concurrent.ThreadPoolExecutor
 
 class BaseTransform(
     transformInvocation: TransformInvocation?,
@@ -99,7 +98,7 @@ class BaseTransform(
             }
             executor.invokeAll(tasks)
             destFiles.forEach {
-                it.filter("temp")?.forEach { file ->
+                it.filterTest("temp")?.forEach { file ->
                     file.deleteAll()
                 }
             }
