@@ -32,12 +32,9 @@ class AutoTrackHelper : AsmHelper {
                 }
             }
         }
-        classNode.lambdaHelper().forEach { _ ->
+        classNode.lambdaHelper().forEach { method->
             val field = classNode.getField()
-            classNode.methods?.forEach { method ->
-                // 找到onClick 方法
-                insertLambda(classNode, method, field)
-            }
+            insertLambda(classNode, method, field)
         }
         //调用Fragment的onHiddenChange方法
         visitFragment(classNode)

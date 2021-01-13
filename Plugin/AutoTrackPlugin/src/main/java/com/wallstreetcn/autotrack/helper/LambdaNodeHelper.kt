@@ -2,10 +2,10 @@ package com.wallstreetcn.autotrack.helper
 
 import com.kronos.plugin.base.Log
 import org.objectweb.asm.Handle
-import org.objectweb.asm.Opcodes
 import org.objectweb.asm.tree.ClassNode
 import org.objectweb.asm.tree.InvokeDynamicInsnNode
 import org.objectweb.asm.tree.MethodNode
+import org.objectweb.asm.Opcodes.*
 
 /**
  *
@@ -19,13 +19,19 @@ fun ClassNode.lambdaHelper(): MutableList<MethodNode> {
     methods?.forEach { method ->
         method.instructions.iterator()?.forEach {
             if (it is InvokeDynamicInsnNode) {
-                if (it.name == "onClick" && it.desc == "()Landroid/view/View\$OnClickListener;") {
-                    Log.info("InvokeDynamicInsnNode lambdaHelper methodName:${method.name}  className:$name")
+                if (it.name == "onClick" && it.desc.contains(")Landroid/view/View\$OnClickListener;")) {
+                    Log.info("dynamicName:${it.name} dynamicDesc:${it.desc}")
                     val args = it.bsmArgs
                     args.forEach { arg ->
                         if (arg is Handle) {
-                            val methodNode = findMethodByNameAndDesc(arg.name, arg.desc)
-                            methodNode?.let { it1 -> lambdaMethodNodes.add(it1) }
+                            val methodNode = findMethodByNameAndDesc(arg.name, arg.desc, arg.tag)
+                            Log.info("findMethodByNameAndDesc argName:${arg.name}  argDesc:${arg.desc} " +
+                                    "method:${method?.name} ")
+                            //    if (methodNode?.access == ACC_PRIVATE or ACC_STATIC or ACC_SYNTHETIC) {
+                            if (methodNode != null) {
+                                lambdaMethodNodes.add(methodNode)
+                            }
+                            //     }
                         }
                     }
                 }
@@ -33,11 +39,14 @@ fun ClassNode.lambdaHelper(): MutableList<MethodNode> {
             }
         }
     }
+    lambdaMethodNodes.forEach {
+        Log.info("lambdaName:${it.name} lambdaDesc:${it.desc} lambdaAccess:${it.access}")
+    }
     return lambdaMethodNodes
 
 }
 
-fun ClassNode.findMethodByNameAndDesc(name: String, desc: String): MethodNode? {
+fun ClassNode.findMethodByNameAndDesc(name: String, desc: String, access: Int): MethodNode? {
     return methods?.firstOrNull {
         it.name == name && it.desc == desc
     }
