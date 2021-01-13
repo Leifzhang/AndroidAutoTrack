@@ -83,6 +83,7 @@ public class ClassFilterVisitor extends ClassVisitor {
                         };
                     }
                 }
+
             } catch (Exception e) {
                 e.printStackTrace();
             }

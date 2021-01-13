@@ -1,6 +1,7 @@
 package com.wallstreetcn.autotrack.helper
 
 import com.kronos.plugin.base.AsmHelper
+import com.kronos.plugin.base.Log
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassWriter
 import org.objectweb.asm.Opcodes
@@ -25,8 +26,17 @@ class AutoTrackHelper : AsmHelper {
                 val field = classNode.getField()
                 classNode.methods?.forEach { method ->
                     // 找到onClick 方法
-                    insertTrack(classNode, method, field)
+                    if (method.name == "onClick" && method.desc == "(Landroid/view/View;)V") {
+                        insertTrack(classNode, method, field)
+                    }
                 }
+            }
+        }
+        classNode.lambdaHelper().forEach { _ ->
+            val field = classNode.getField()
+            classNode.methods?.forEach { method ->
+                // 找到onClick 方法
+                insertLambda(classNode, method, field)
             }
         }
         //调用Fragment的onHiddenChange方法
@@ -70,58 +80,91 @@ class AutoTrackHelper : AsmHelper {
         }
     }
 
+    private fun insertLambda(node: ClassNode, method: MethodNode, field: FieldNode?) {
+        // 判断方法名和方法描述
+        val className = node.outerClass
+        val parentNode = classNodeMap[className]
+        // 根据outClassName 获取到外部类的Node
+        val parentField = field ?: parentNode?.getField()
+        val instructions = method.instructions
+        instructions?.iterator()?.forEach {
+            // 判断是不是代码的截止点
+            if ((it.opcode >= Opcodes.IRETURN && it.opcode <= Opcodes.RETURN) || it.opcode == Opcodes.ATHROW) {
+                instructions.insertBefore(it, VarInsnNode(Opcodes.ALOAD, 0))
+                instructions.insertBefore(it, VarInsnNode(Opcodes.ALOAD, 0))
+                // 获取到数据参数
+                if (parentField != null) {
+                    parentField.apply {
+                        instructions.insertBefore(it, VarInsnNode(Opcodes.ALOAD, 0))
+                        instructions.insertBefore(
+                                it, FieldInsnNode(Opcodes.GETFIELD, node.name, parentField.name, parentField.desc)
+                        )
+                    }
+                } else {
+                    instructions.insertBefore(it, LdcInsnNode("1234"))
+                }
+                instructions.insertBefore(
+                        it, MethodInsnNode(
+                        Opcodes.INVOKESTATIC,
+                        "com/wallstreetcn/sample/ToastHelper",
+                        "toast",
+                        "(Ljava/lang/Object;Landroid/view/View;Ljava/lang/Object;)V",
+                        false)
+                )
+            }
+        }
+    }
+
 
     private fun insertTrack(node: ClassNode, method: MethodNode, field: FieldNode?) {
         // 判断方法名和方法描述
-        if (method.name == "onClick" && method.desc == "(Landroid/view/View;)V") {
-            val className = node.outerClass
-            val parentNode = classNodeMap[className]
-            // 根据outClassName 获取到外部类的Node
-            val parentField = field ?: parentNode?.getField()
-            val instructions = method.instructions
-            instructions?.iterator()?.forEach {
-                // 判断是不是代码的截止点
-                if ((it.opcode >= Opcodes.IRETURN && it.opcode <= Opcodes.RETURN) || it.opcode == Opcodes.ATHROW) {
-                    instructions.insertBefore(it, VarInsnNode(Opcodes.ALOAD, 1))
-                    instructions.insertBefore(it, VarInsnNode(Opcodes.ALOAD, 1))
-                    // 获取到数据参数
-                    if (parentField != null) {
-                        parentField.apply {
-                            instructions.insertBefore(it, VarInsnNode(Opcodes.ALOAD, 0))
-                            instructions.insertBefore(
-                                    it, FieldInsnNode(Opcodes.GETFIELD, node.name, parentField.name, parentField.desc)
-                            )
-                        }
-                    } else {
-                        instructions.insertBefore(it, LdcInsnNode("1234"))
+        val className = node.outerClass
+        val parentNode = classNodeMap[className]
+        // 根据outClassName 获取到外部类的Node
+        val parentField = field ?: parentNode?.getField()
+        val instructions = method.instructions
+        instructions?.iterator()?.forEach {
+            // 判断是不是代码的截止点
+            if ((it.opcode >= Opcodes.IRETURN && it.opcode <= Opcodes.RETURN) || it.opcode == Opcodes.ATHROW) {
+                instructions.insertBefore(it, VarInsnNode(Opcodes.ALOAD, 1))
+                instructions.insertBefore(it, VarInsnNode(Opcodes.ALOAD, 1))
+                // 获取到数据参数
+                if (parentField != null) {
+                    parentField.apply {
+                        instructions.insertBefore(it, VarInsnNode(Opcodes.ALOAD, 0))
+                        instructions.insertBefore(
+                                it, FieldInsnNode(Opcodes.GETFIELD, node.name, parentField.name, parentField.desc)
+                        )
                     }
-                    instructions.insertBefore(
-                            it, MethodInsnNode(
-                            Opcodes.INVOKESTATIC,
-                            "com/wallstreetcn/sample/ToastHelper",
-                            "toast",
-                            "(Ljava/lang/Object;Landroid/view/View;Ljava/lang/Object;)V",
-                            false
-                    )
-                    )
+                } else {
+                    instructions.insertBefore(it, LdcInsnNode("1234"))
                 }
+                instructions.insertBefore(
+                        it, MethodInsnNode(
+                        Opcodes.INVOKESTATIC,
+                        "com/wallstreetcn/sample/ToastHelper",
+                        "toast",
+                        "(Ljava/lang/Object;Landroid/view/View;Ljava/lang/Object;)V",
+                        false)
+                )
             }
-        }
-    }
-
-    // 判断Field是否包含注解
-    private fun ClassNode.getField(): FieldNode? {
-        return fields?.firstOrNull { field ->
-            var hasAnnotation = false
-            field?.visibleAnnotations?.forEach { annotation ->
-                if (annotation.desc == "Lcom/wallstreetcn/sample/adapter/Test;") {
-                    hasAnnotation = true
-                }
-            }
-            hasAnnotation
         }
     }
 }
+
+// 判断Field是否包含注解
+private fun ClassNode.getField(): FieldNode? {
+    return fields?.firstOrNull { field ->
+        var hasAnnotation = false
+        field?.visibleAnnotations?.forEach { annotation ->
+            if (annotation.desc == "Lcom/wallstreetcn/sample/adapter/Test;") {
+                hasAnnotation = true
+            }
+        }
+        hasAnnotation
+    }
+}
+
 
 fun isFragment(superName: String): Boolean {
     return superName == "androidx/fragment/app/Fragment" || superName == "android/support/v4/app/Fragment"

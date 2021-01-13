@@ -19,15 +19,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
     @Nullable
-    private View.OnClickListener listener = new View.OnClickListener() {
-
-        @Override
-        public void onClick(View v) {
-            Log.i("MainActivity", v.toString());
-            Intent intent = new Intent();
-            intent.setClass(MainActivity.this, SecondActivity.class);
-            startActivity(intent);
-        }
+    private View.OnClickListener listener = v -> {
+        Log.i("MainActivity", v.toString());
+        Intent intent = new Intent();
+        intent.setClass(MainActivity.this, SecondActivity.class);
+        startActivity(intent);
     };
 
     ExecutorService service;

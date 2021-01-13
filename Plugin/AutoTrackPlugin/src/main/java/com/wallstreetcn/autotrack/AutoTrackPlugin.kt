@@ -2,6 +2,8 @@ package com.wallstreetcn.autotrack
 
 import com.android.build.gradle.AppExtension
 import com.android.build.gradle.AppPlugin
+import com.kronos.plugin.base.Log
+import com.kronos.plugin.base.utils.filterTest
 import com.kronos.plugin.base.utils.getTaskNamePrefix
 import com.kronos.plugin.base.utils.getVariantManager
 import org.gradle.api.Plugin
@@ -13,13 +15,8 @@ class AutoTrackPlugin : Plugin<Project> {
         if (isApp) {
             val appExtension = project.extensions.getByType(AppExtension::class.java)
             val scanTransform = DataScanTransform()
-            appExtension.registerTransform(scanTransform)
-            val scopeManager = getVariantManager(project)
-            scopeManager.variantScopes.forEach {
-                val taskName = it.getTaskName(scanTransform.getTaskNamePrefix())
-                val task = project.tasks.getByName(taskName)
-                appExtension.registerTransform(NewAutoTackTransform(), task)
-            }
+            //    appExtension.registerTransform(scanTransform)
+            appExtension.registerTransform(NewAutoTackTransform())
         }
     }
 }

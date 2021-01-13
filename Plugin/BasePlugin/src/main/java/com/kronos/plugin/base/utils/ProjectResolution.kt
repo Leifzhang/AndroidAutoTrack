@@ -3,6 +3,7 @@ package com.kronos.plugin.base.utils
 import com.android.build.api.transform.QualifiedContent
 import com.android.build.api.transform.Transform
 import com.android.build.gradle.internal.VariantManager
+import com.android.build.gradle.internal.scope.VariantScope
 import com.android.utils.appendCapitalized
 import com.google.common.base.CaseFormat
 import org.gradle.api.GradleException
@@ -61,4 +62,11 @@ fun Transform.getTaskNamePrefix(): String {
     sb.appendCapitalized(name)
     sb.append("For")
     return sb.toString()
+}
+
+
+fun VariantManager.filterTest(): List<VariantScope> {
+    return variantScopes.filter {
+        !it.type.isForTesting
+    }
 }

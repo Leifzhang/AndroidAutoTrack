@@ -8,7 +8,7 @@ import java.io.File
  * @Since 2021/1/4
  */
 
-fun File.filter(nameReg: String): Array<File>? {
+fun File.filterTest(nameReg: String): Array<File>? {
     val list = listFiles { p0 -> p0?.name == nameReg }
     return list
 }

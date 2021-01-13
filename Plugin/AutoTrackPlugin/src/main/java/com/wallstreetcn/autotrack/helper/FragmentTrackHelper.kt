@@ -14,7 +14,6 @@ fun ClassNode.insert(methodNode: MethodNode) {
     val instructions = methodNode.instructions
     instructions?.iterator()?.forEach {
         if ((it.opcode >= Opcodes.IRETURN && it.opcode <= Opcodes.RETURN) || it.opcode == Opcodes.ATHROW) {
-            Log.info("start insert:${name}")
             instructions.insertBefore(
                     it, FieldInsnNode(Opcodes.GETSTATIC, "com/wallstreetcn/testmodule/KronosContext",
                     "INSTANCE", "Lcom/wallstreetcn/testmodule/KronosContext;")
