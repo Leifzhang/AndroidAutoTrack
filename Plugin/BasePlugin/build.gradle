@@ -7,7 +7,7 @@ apply from: '../upload_bintray.gradle'
 dependencies {
     implementation gradleApi()
     implementation localGroovy()
-    implementation 'com.android.tools.build:gradle:3.6.3'
+    api "com.android.tools.build:gradle:$apgVersion"
     implementation 'commons-io:commons-io:2.6'
     implementation 'org.javassist:javassist:3.27.0-GA'
 }
