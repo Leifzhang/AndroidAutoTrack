@@ -1,7 +1,6 @@
 package com.kronos.plugin.base
 
 import com.android.build.api.transform.*
-import com.android.build.gradle.internal.tasks.Workers.defaultExecutor
 import com.google.common.io.Files
 import com.kronos.plugin.base.utils.deleteAll
 import com.kronos.plugin.base.utils.filterTest
@@ -15,11 +14,12 @@ import java.util.*
 import java.util.concurrent.Callable
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import java.util.concurrent.ForkJoinPool
 
 class BaseTransform(
-    transformInvocation: TransformInvocation?,
-    callBack: TransformCallBack,
-    single: Boolean = false
+        transformInvocation: TransformInvocation?,
+        callBack: TransformCallBack,
+        single: Boolean = false
 ) {
     private var mCallBack: TransformCallBack? = callBack
     var context: Context? = null
@@ -39,7 +39,7 @@ class BaseTransform(
         outputProvider = transformInvocation?.outputProvider
         isIncremental = transformInvocation?.isIncremental ?: false
         executor = if (!single) {
-            defaultExecutor
+            ForkJoinPool.commonPool()
         } else {
             Executors.newSingleThreadExecutor()
         }
@@ -69,8 +69,8 @@ class BaseTransform(
                     }
                     /*获得输出文件*/
                     val dest = outputProvider!!.getContentLocation(
-                        destName + "_" + hexName,
-                        jarInput.contentTypes, jarInput.scopes, Format.JAR
+                            destName + "_" + hexName,
+                            jarInput.contentTypes, jarInput.scopes, Format.JAR
                     )
                     if (isIncremental) {
                         when (status) {
@@ -110,8 +110,8 @@ class BaseTransform(
     @Throws(IOException::class)
     private fun foreachClass(directoryInput: DirectoryInput) {
         val dest = outputProvider!!.getContentLocation(
-            directoryInput.name, directoryInput.contentTypes,
-            directoryInput.scopes, Format.DIRECTORY
+                directoryInput.name, directoryInput.contentTypes,
+                directoryInput.scopes, Format.DIRECTORY
         )
         destFiles.add(dest)
         val map = directoryInput.changedFiles
@@ -168,8 +168,8 @@ class BaseTransform(
         try {
             if (classFile.name.endsWith(".class")) {
                 val absolutePath = classFile.absolutePath.replace(
-                    dest.absolutePath +
-                            File.separator, ""
+                        dest.absolutePath +
+                                File.separator, ""
                 )
                 val className = ClassUtils.path2Classname(absolutePath)
                 val bytes = IOUtils.toByteArray(FileInputStream(classFile))
@@ -185,8 +185,8 @@ class BaseTransform(
     private fun modifySingleFile(dir: File, file: File, dest: File) {
         try {
             val absolutePath = file.absolutePath.replace(
-                dir.absolutePath +
-                        File.separator, ""
+                    dir.absolutePath +
+                            File.separator, ""
             )
             val className = ClassUtils.path2Classname(absolutePath)
             if (absolutePath.endsWith(".class")) {
@@ -233,7 +233,7 @@ class BaseTransform(
                 if (classFile.name.endsWith(".class")) {
                     val task = Callable<Void?> {
                         val absolutePath = classFile.absolutePath.replace(
-                            dir.absolutePath + File.separator, ""
+                                dir.absolutePath + File.separator, ""
                         )
                         val className = ClassUtils.path2Classname(absolutePath)
                         if (!simpleScan) {

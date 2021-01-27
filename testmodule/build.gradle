@@ -1,6 +1,6 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-apply plugin: 'doubleTap'
+//apply plugin: 'doubleTap'
 
 android {
     compileSdkVersion 28

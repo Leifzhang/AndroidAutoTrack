@@ -4,8 +4,6 @@ import com.android.build.gradle.AppExtension
 import com.android.build.gradle.AppPlugin
 import com.kronos.plugin.base.Log
 import com.kronos.plugin.base.utils.filterTest
-import com.kronos.plugin.base.utils.getTaskNamePrefix
-import com.kronos.plugin.base.utils.getVariantManager
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 

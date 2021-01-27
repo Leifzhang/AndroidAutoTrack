@@ -15,6 +15,7 @@ import java.util.stream.Collectors
  * Created by YangJing on 2020/01/07 .
  * Email: yangjing.yeoh@bytedance.com
  */
+/*
 fun getVariantManager(project: Project): VariantManager {
     val appPlugin: Plugin<Any>? = when {
         // AGP4.0.0-alpha07: move all methods to com.android.internal.application
@@ -28,8 +29,7 @@ fun getVariantManager(project: Project): VariantManager {
             throw GradleException("Unexpected AppPlugin")
         }
     }
-    return getVariantManagerFromAppPlugin(appPlugin)
-            ?: throw GradleException("get VariantManager failed")
+    return getVariantManagerFromAppPlugin(appPlugin) ?: throw GradleException("get VariantManager failed")
 }
 
 private fun getVariantManagerFromAppPlugin(appPlugin: Any?): VariantManager? {
@@ -69,4 +69,4 @@ fun VariantManager.filterTest(): List<VariantScope> {
     return variantScopes.filter {
         !it.type.isForTesting
     }
-}
+}*/
