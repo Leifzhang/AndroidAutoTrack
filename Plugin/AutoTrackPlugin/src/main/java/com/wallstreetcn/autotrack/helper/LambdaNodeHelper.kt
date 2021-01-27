@@ -24,14 +24,12 @@ fun ClassNode.lambdaHelper(): MutableList<MethodNode> {
                     val args = it.bsmArgs
                     args.forEach { arg ->
                         if (arg is Handle) {
-                            val methodNode = findMethodByNameAndDesc(arg.name, arg.desc, arg.tag)
+                            val methodNode = findMethodByNameAndDesc(arg.name, arg.desc)
                             Log.info("findMethodByNameAndDesc argName:${arg.name}  argDesc:${arg.desc} " +
                                     "method:${method?.name} ")
-                            //    if (methodNode?.access == ACC_PRIVATE or ACC_STATIC or ACC_SYNTHETIC) {
-                            if (methodNode != null) {
-                                lambdaMethodNodes.add(methodNode)
+                            if (methodNode?.access == ACC_PRIVATE or ACC_STATIC or ACC_SYNTHETIC) {
+                                methodNode.let { it1 -> lambdaMethodNodes.add(it1) }
                             }
-                            //     }
                         }
                     }
                 }
@@ -46,7 +44,7 @@ fun ClassNode.lambdaHelper(): MutableList<MethodNode> {
 
 }
 
-fun ClassNode.findMethodByNameAndDesc(name: String, desc: String, access: Int): MethodNode? {
+fun ClassNode.findMethodByNameAndDesc(name: String, desc: String): MethodNode? {
     return methods?.firstOrNull {
         it.name == name && it.desc == desc
     }
