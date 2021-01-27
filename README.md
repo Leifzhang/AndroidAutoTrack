@@ -20,6 +20,25 @@
 
 仔细观察编译前java代码和编译后class文件的差别。如果有插入的代码那么代表该插件已经编织代码成功。
 
+## dejavu x
+
+这次牛逼了，通过最简单的serviceloader机制，把多个plugin通过DI的形式收拢到一起，方便多插件组合接入。
+
+```java
+class MultiPlugin : Plugin<Project> {
+
+    override fun apply(project: Project) {
+        // 菜虾版本byteX beta版本
+        val providers = ServiceLoader.load(PluginProvider::class.java).toList()
+        providers.forEach {
+            project.plugins.apply(it.getPlugin())
+        }
+    }
+}
+```
+
+只要把不同的插件的classpath 加载进来，之后在主工程下声明你的合并插件即可直接使用。
+
 ## AutoTrackPlugin 安卓无痕埋点Demo
 
 ~~以前使用的是`ClassVisitor`,由于无痕埋点相关其实有上下文以及传输数据等等的要求，所以该方案废弃了。~~
