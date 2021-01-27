@@ -10,9 +10,6 @@ dependencies {
     implementation localGroovy()
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation project(":BasePlugin")
-    // implementation project(":AutoTrackPlugin")
-    // implementation project(":double_tap_plugin")
-    implementation project(":thread_hook_plugin")
     implementation 'com.google.auto.service:auto-service:1.0-rc6'
 }
 
