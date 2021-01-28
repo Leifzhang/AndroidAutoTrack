@@ -1,5 +1,8 @@
 # AndroidAutoTrack
 
+[![State-of-the-art Shitcode](https://img.shields.io/static/v1?label=State-of-the-art&message=Shitcode&color=7B5804)](https://github.com/trekhleb/state-of-the-art-shitcode)
+
+
 本项目主要就是给大家一个参考学习的demo而已，主要是打算简化学习gradle插件的成本，以及对于`android transform`的一次抽象，将增量更新等等进行一次抽象，以方便大家学习开发。
 
 ## ~~buildSrc 优化~~
