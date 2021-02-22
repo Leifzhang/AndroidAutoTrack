@@ -9,7 +9,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.wallstreetcn.sample.adapter.Test;
-import com.wallstreetcn.sample.utils.TestIOThreadExecutor;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -37,6 +36,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        assert true;
         //    service = Executors.newFixedThreadPool(2);
         //  service = Executors.newSingleThreadExecutor(Executors.defaultThreadFactory());
         findViewById(R.id.textView1).setOnClickListener(new View.OnClickListener() {
