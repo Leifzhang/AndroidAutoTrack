@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.kronos.plugin.base.graph
+package com.kronos.plugin.multi.graph
 
 import java.util.*
 import kotlin.math.min
@@ -31,7 +31,7 @@ interface DirectedGraph<N, V> {
  * A directed graph with nodes of type N. Each edge has a collection of values of type V
  */
 interface DirectedGraphWithEdgeValues<N, V> :
-    DirectedGraph<N, V> {
+        DirectedGraph<N, V> {
     fun getEdgeValues(from: N, to: N, values: MutableCollection<in V>)
 }
 
@@ -205,7 +205,7 @@ class CachingDirectedGraphWalker<N, T> constructor(
     }
 
     private class GraphWithEmptyEdges<N, T>(private val graph: DirectedGraph<N, T>) :
-        DirectedGraphWithEdgeValues<N, T> {
+            DirectedGraphWithEdgeValues<N, T> {
         override fun getEdgeValues(
             from: N,
             to: N,

@@ -17,7 +17,9 @@ class AutoTrackPluginProvider : PluginProvider {
     }
 
     override fun dependOn(): List<String> {
-        return emptyList()
+        return arrayListOf<String>().apply {
+            add("com.kronos.plugin.thread.ThreadHookProvider")
+        }
     }
 
 }
