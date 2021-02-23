@@ -16,7 +16,9 @@ class DoubleTapProvider : PluginProvider {
     }
 
     override fun dependOn(): List<String> {
-        return emptyList()
+        return arrayListOf<String>().apply {
+            add("com.wallstreetcn.autotrack.AutoTrackPluginProvider")
+        }
     }
 
 }

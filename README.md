@@ -38,6 +38,13 @@ class MultiPlugin : Plugin<Project> {
         }
     }
 }
+
+### 依赖任务
+
+这次通过有向图的方式重新计算了下plugin之间的依赖关系，这样就可以指定transform的执行顺序了。
+
+实现参考了gradle的`CachingDirectedGraphWalker`，有兴趣的大佬可以自行阅读，这部分说实话，算法我不是特别熟悉。
+
 ```
 
 只要把不同的插件的classpath 加载进来，之后在主工程下声明你的合并插件即可直接使用。
