@@ -30,7 +30,7 @@ class BaseTransform(
     private var simpleScan = false
     var filter: ClassNameFilter? = null
     private val executor: ExecutorService
-    private val tasks: MutableList<Callable<Void?>> = ArrayList()
+    private val tasks: MutableList<Callable<Void>> = ArrayList()
     private val destFiles = mutableListOf<File>()
 
     init {
@@ -55,8 +55,9 @@ class BaseTransform(
 
     fun startTransform() {
         try {
+            val startTimeUsage = System.currentTimeMillis()
             if (!isIncremental) {
-                outputProvider!!.deleteAll()
+                outputProvider?.deleteAll()
             }
             inputs?.forEach { input ->
                 for (jarInput in input.jarInputs) {
@@ -102,6 +103,8 @@ class BaseTransform(
                     file.deleteAll()
                 }
             }
+            val timeUsage = System.currentTimeMillis() - startTimeUsage
+            Log.info("transform coast time: $timeUsage ms")
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -122,7 +125,7 @@ class BaseTransform(
                 val destFile = File(destFilePath)
                 when (status) {
                     Status.ADDED, Status.CHANGED -> {
-                        val callable = Callable<Void?> {
+                        val callable = Callable<Void> {
                             try {
                                 FileUtils.touch(destFile)
                             } catch (ignored: Exception) {
@@ -231,7 +234,7 @@ class BaseTransform(
             FileUtils.copyDirectory(dir, dest)
             for (classFile in com.android.utils.FileUtils.getAllFiles(dir)) {
                 if (classFile.name.endsWith(".class")) {
-                    val task = Callable<Void?> {
+                    val task = Callable<Void> {
                         val absolutePath = classFile.absolutePath.replace(
                                 dir.absolutePath + File.separator, ""
                         )
@@ -268,21 +271,27 @@ class BaseTransform(
     }
 
     private fun foreachJar(dest: File, jarInput: JarInput) {
-        try {
-            if (!simpleScan) {
-                val modifiedJar = JarUtils.modifyJarFile(jarInput.file, context?.temporaryDir, this)
-                FileUtils.copyFile(modifiedJar, dest)
-            } else {
-                val jarFile = jarInput.file
-                val classNames = JarUtils.scanJarFile(jarFile)
-                for (className in classNames) {
-                    process(className, null)
+
+        val task = Callable<Void> {
+            try {
+                if (!simpleScan) {
+                    val modifiedJar = JarUtils.modifyJarFile(jarInput.file, context?.temporaryDir, this)
+                    FileUtils.copyFile(modifiedJar, dest)
+                } else {
+                    val jarFile = jarInput.file
+                    val classNames = JarUtils.scanJarFile(jarFile)
+                    for (className in classNames) {
+                        process(className, null)
+                    }
+                    FileUtils.copyFile(jarFile, dest)
                 }
-                FileUtils.copyFile(jarFile, dest)
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
-        } catch (e: Exception) {
-            e.printStackTrace()
+            null
         }
+        tasks.add(task)
+        executor.submit(task)
     }
 
     private fun diffJar(dest: File, jarInput: JarInput) {
