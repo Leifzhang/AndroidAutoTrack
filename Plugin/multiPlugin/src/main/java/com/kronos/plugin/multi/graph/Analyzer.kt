@@ -8,14 +8,13 @@ import java.util.concurrent.ConcurrentHashMap
  */
 class Analyzer(private val libs: List<ModuleNode>, private val allowMiss: Boolean) {
 
-    fun analyze() {
+    fun analyze(): Set<ModuleNode> {
 
         val modules = ConcurrentHashMap<String, ModuleNode>()
 
 
-        val walker = CachingDirectedGraphWalker(false, object : DirectedGraph<Node, Node> {
-            override fun getNodeValues(node: Node, values: MutableCollection<in Node>,
-                                       connectedNodes: MutableCollection<in Node>) {
+        val walker = CachingDirectedGraphWalker(false, object : DirectedGraph<ModuleNode, ModuleNode> {
+            override fun getNodeValues(node: ModuleNode, values: MutableCollection<in ModuleNode>, connectedNodes: MutableCollection<in ModuleNode>) {
                 values.add(node)
                 node.taskDependencies.forEach { name ->
                     modules[name]?.let {
@@ -23,13 +22,11 @@ class Analyzer(private val libs: List<ModuleNode>, private val allowMiss: Boolea
                     }
                             ?: if (!allowMiss) error("Task(${name}) that $node dependsOn does not exists.")
                 }
-                Log.info("connectedNodes:$connectedNodes")
             }
-
         })
 
         libs.parallelStream().forEach {
-            val nodes = arrayListOf<Node>()
+            val nodes = arrayListOf<ModuleNode>()
             modules.put(it.moduleName, it)?.let {
                 error("Duplicated module: ${it.moduleName}")
             }
@@ -40,23 +37,23 @@ class Analyzer(private val libs: List<ModuleNode>, private val allowMiss: Boolea
             }
         }
 
-        val cycles = walker.findCycles()
+        /*  val cycles = walker.findCycles()
 
-        check(cycles.isEmpty()) {
-            var num = 1
+          check(cycles.isEmpty()) {
+              var num = 1
 
-            val sb = StringBuilder()
-            sb.append("Found Cycles:\n")
+              val sb = StringBuilder()
+              sb.append("Found Cycles:\n")
 
-            cycles.forEach { cycle ->
-                sb.append("  Dependency Cycle ${num++}:\n")
-                cycle.joinTo(sb, "\n") {
-                    "\t" + it.toString()
-                }
-            }
-        }
+              cycles.forEach { cycle ->
+                  sb.append("  Dependency Cycle ${num++}:\n")
+                  cycle.joinTo(sb, "\n") {
+                      "\t" + it.toString()
+                  }
+              }
+          }*/
         val values = walker.findValues()
-        Log.info("graphValue:$values")
+        return values
     }
 }
 

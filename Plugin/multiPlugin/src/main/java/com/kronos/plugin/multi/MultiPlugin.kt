@@ -1,6 +1,5 @@
 package com.kronos.plugin.multi
 
-import com.kronos.plugin.base.Log
 import com.kronos.plugin.base.PluginProvider
 import com.kronos.plugin.multi.graph.Analyzer
 import com.kronos.plugin.multi.graph.ModuleNode
@@ -14,14 +13,22 @@ class MultiPlugin : Plugin<Project> {
         // 菜虾版本byteX beta版本
         val providers = ServiceLoader.load(PluginProvider::class.java).toList()
         val graph = mutableListOf<ModuleNode>()
+        val map = hashMapOf<String, PluginProvider>()
         providers.forEach {
             val list = it.dependOn()
-            val meta = ModuleNode(it.javaClass.name, list)
+            val className = it.javaClass.name
+            val meta = ModuleNode(className, list)
             graph.add(meta)
-            project.plugins.apply(it.getPlugin())
+            map[className] = it
         }
         val analyzer = Analyzer(graph, true)
-        analyzer.analyze()
-        Log.info("list:$graph")
+        val graphNodes = analyzer.analyze()
+        graphNodes.forEach {
+            map[it.moduleName]?.apply {
+                project.plugins.apply(getPlugin())
+            }
+
+        }
+
     }
 }
