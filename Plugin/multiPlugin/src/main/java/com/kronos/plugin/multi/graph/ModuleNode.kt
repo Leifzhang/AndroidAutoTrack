@@ -7,18 +7,17 @@ data class ModuleNode(
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other !is ModuleNode) return false
+        if (javaClass != other?.javaClass) return false
+
+        other as ModuleNode
 
         if (moduleName != other.moduleName) return false
-        if (taskDependencies != other.taskDependencies) return false
 
         return true
     }
 
     override fun hashCode(): Int {
-        var result = moduleName.hashCode()
-        result = 31 * result + taskDependencies.hashCode()
-        return result
+        return moduleName.hashCode()
     }
 }
 
