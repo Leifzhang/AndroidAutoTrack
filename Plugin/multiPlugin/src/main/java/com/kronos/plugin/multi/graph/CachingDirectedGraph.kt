@@ -21,9 +21,9 @@ import kotlin.math.min
 
 interface DirectedGraph<N, V> {
     fun getNodeValues(
-        node: N,
-        values: MutableCollection<in V>,
-        connectedNodes: MutableCollection<in N>
+            node: N,
+            values: MutableCollection<in V>,
+            connectedNodes: MutableCollection<in N>
     )
 }
 
@@ -43,16 +43,16 @@ interface DirectedGraphWithEdgeValues<N, V> :
  * Uses a variation of Tarjan's algorithm: http://en.wikipedia.org/wiki/Tarjan%27s_strongly_connected_components_algorithm
  */
 class CachingDirectedGraphWalker<N, T> constructor(
-    private val cleanCache: Boolean = false,
-    private val graph: DirectedGraphWithEdgeValues<N, T>
+        private val cleanCache: Boolean = false,
+        private val graph: DirectedGraphWithEdgeValues<N, T>
 ) {
     private val startNodes = arrayListOf<N>()
     private val strongComponents = linkedSetOf<NodeDetails<N, T>>()
     private val cachedNodeValues = hashMapOf<N, MutableSet<T>>()
 
     constructor(cleanCache: Boolean, graph: DirectedGraph<N, T>) : this(
-        cleanCache,
-        GraphWithEmptyEdges(graph)
+            cleanCache,
+            GraphWithEmptyEdges(graph)
     )
 
     /**
@@ -112,25 +112,22 @@ class CachingDirectedGraphWalker<N, T> constructor(
     private fun doSearch(): Set<T> {
         var componentCount = 0
         val seenNodes: MutableMap<N, NodeDetails<N, T>> =
-            HashMap()
+                HashMap()
         val components: MutableMap<Int, NodeDetails<N, T>> =
-            HashMap()
+                HashMap()
         val queue: Deque<N> = ArrayDeque(startNodes)
         while (!queue.isEmpty()) {
             val node = queue.first
             var details =
-                seenNodes[node]
-            if (details == null) { // Have not visited this node yet. Push its successors onto the queue in front of this node and visit
-// them
-                details =
-                    NodeDetails(
-                        node,
-                        componentCount++
-                    )
+                    seenNodes[node]
+            if (details == null) {
+                // Have not visited this node yet. Push its successors onto the queue in front of this node and visit them
+                details = NodeDetails(node, componentCount++)
                 seenNodes[node] = details
                 components[details.component] = details
                 val cacheValues = cachedNodeValues[node]
-                if (cacheValues != null) { // Already visited this node
+                if (cacheValues != null) {
+                    // Already visited this node
                     details.values = cacheValues
                     details.finished = true
                     queue.removeFirst()
@@ -138,8 +135,7 @@ class CachingDirectedGraphWalker<N, T> constructor(
                 }
                 graph.getNodeValues(node, details.values, details.successors)
                 for (connectedNode in details.successors) {
-                    val connectedNodeDetails =
-                        seenNodes[connectedNode]
+                    val connectedNodeDetails = seenNodes[connectedNode]
                     if (connectedNodeDetails == null) { // Have not visited the successor node, so add to the queue for visiting
                         queue.addFirst(connectedNode)
                     } else if (!connectedNodeDetails.finished) { // Currently visiting the successor node - we're in a cycle
@@ -153,11 +149,9 @@ class CachingDirectedGraphWalker<N, T> constructor(
                     continue
                 }
                 for (connectedNode in details.successors) {
-                    val connectedNodeDetails =
-                        seenNodes[connectedNode]
+                    val connectedNodeDetails = seenNodes[connectedNode]
                     if (!connectedNodeDetails!!.finished) { // part of a cycle : use the 'minimum' component as the root of the cycle
-                        val minSeen =
-                            min(details.minSeen, connectedNodeDetails.minSeen)
+                        val minSeen = min(details.minSeen, connectedNodeDetails.minSeen)
                         details.minSeen = minSeen
                         connectedNodeDetails.minSeen = minSeen
                         details.stronglyConnected = true
@@ -165,13 +159,13 @@ class CachingDirectedGraphWalker<N, T> constructor(
                     details.values.addAll(connectedNodeDetails.values)
                     graph.getEdgeValues(node, connectedNode, details.values)
                 }
-                if (details.minSeen != details.component) { // Part of a strongly connected component (ie cycle) - move values to root of the component
-// The root is the first node of the component we encountered
-                    val rootDetails =
-                        components[details.minSeen]
-                    rootDetails!!.values.addAll(details.values)
+                if (details.minSeen != details.component) {
+                    // Part of a strongly connected component (ie cycle) - move values to root of the component
+                    // The root is the first node of the component we encountered
+                    val rootDetails = components[details.minSeen]
+                    rootDetails?.values?.addAll(details.values)
                     details.values.clear()
-                    rootDetails.componentMembers.addAll(details.componentMembers)
+                    rootDetails?.componentMembers?.addAll(details.componentMembers)
                 } else { // Not part of a strongly connected component or the root of a strongly connected component
                     for (componentMember in details.componentMembers) {
                         cachedNodeValues[componentMember.node] = details.values
@@ -207,16 +201,16 @@ class CachingDirectedGraphWalker<N, T> constructor(
     private class GraphWithEmptyEdges<N, T>(private val graph: DirectedGraph<N, T>) :
             DirectedGraphWithEdgeValues<N, T> {
         override fun getEdgeValues(
-            from: N,
-            to: N,
-            values: MutableCollection<in T>
+                from: N,
+                to: N,
+                values: MutableCollection<in T>
         ) {
         }
 
         override fun getNodeValues(
-            node: N,
-            values: MutableCollection<in T>,
-            connectedNodes: MutableCollection<in N>
+                node: N,
+                values: MutableCollection<in T>,
+                connectedNodes: MutableCollection<in N>
         ) {
             graph.getNodeValues(node, values, connectedNodes)
         }
