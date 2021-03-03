@@ -1,6 +1,7 @@
 package com.kronos.plugin.multi.graph
 
 import com.kronos.plugin.base.Log
+import org.gradle.internal.graph.CachingDirectedGraphWalker
 import java.util.concurrent.ConcurrentHashMap
 import org.gradle.internal.graph.DirectedGraph
 import org.gradle.model.internal.core.ModelNode
@@ -13,15 +14,16 @@ class Analyzer(private val libs: List<ModuleNode>, private val allowMiss: Boolea
     private val modules = ConcurrentHashMap<String, ModuleNode>()
 
     fun analyze(): Set<ModuleNode> {
-        val walker = CachingDirectedGraphWalker(false, object : com.kronos.plugin.multi.graph.DirectedGraph<ModuleNode, ModuleNode> {
+        val walker = CachingDirectedGraphWalker(object : DirectedGraph<ModuleNode, ModuleNode> {
             override fun getNodeValues(node: ModuleNode, values: MutableCollection<in ModuleNode>, connectedNodes: MutableCollection<in ModuleNode>) {
-                values.add(node)
+                //   values.add(node)
                 node.taskDependencies.forEach { name ->
                     modules[name]?.let {
-                        getTaskModule(it, connectedNodes)
-                        Log.info("connectedNodes$connectedNodes")
+                        values.add(it)
+                        //     Log.info("connectedNodes$connectedNodes")
                     }
                 }
+                values.add(node)
             }
         })
 
@@ -36,15 +38,6 @@ class Analyzer(private val libs: List<ModuleNode>, private val allowMiss: Boolea
         return walker.findValues()
     }
 
-    fun getTaskModule(node: ModuleNode, connectedNodes: MutableCollection<in ModuleNode>) {
-        //  val list = mutableListOf<ModuleNode>()
-        connectedNodes += node
-        node.taskDependencies.forEach {
-            modules[it]?.let { node ->
-                getTaskModule(node, connectedNodes)
-            }
-        }
-    }
 }
 
 
