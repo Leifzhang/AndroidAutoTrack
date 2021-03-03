@@ -18,17 +18,20 @@ class Analyzer(private val libs: List<ModuleNode>, private val allowMiss: Boolea
                 values.add(node)
                 node.taskDependencies.forEach { name ->
                     modules[name]?.let {
-                        getTaskModule(it, connectedNodes)
-                        Log.info("connectedNodes$connectedNodes")
+                        connectedNodes += ModuleNode(it.moduleName, it.taskDependencies)
+                        // Log.info("connectedNodes$connectedNodes")
                     }
                 }
             }
         })
 
-        libs.forEach {
+        libs.parallelStream().forEach {
             val nodes = arrayListOf<ModuleNode>()
-            modules[it.moduleName] = it
-            nodes.add(it)
+            modules.put(it.moduleName, it)?.let {
+                error("Duplicated module: ${it.moduleName}")
+            }
+            nodes += ModuleNode(it.moduleName, it.taskDependencies)
+
             synchronized(walker) {
                 walker.add(nodes)
             }
