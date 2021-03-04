@@ -1,5 +1,6 @@
 package com.kronos.plugin.multi
 
+import com.kronos.plugin.base.Log
 import com.kronos.plugin.base.PluginProvider
 import com.kronos.plugin.multi.graph.Analyzer
 import com.kronos.plugin.multi.graph.ModuleNode
@@ -22,7 +23,9 @@ class MultiPlugin : Plugin<Project> {
             map[className] = it
         }
         val analyzer = Analyzer(graph, true)
+        Log.info("graphList:$graph")
         val graphNodes = analyzer.analyze()
+        Log.info("analyzer graphList:$graphNodes")
         graphNodes.forEach {
             map[it.moduleName]?.apply {
                 project.plugins.apply(getPlugin())
