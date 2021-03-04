@@ -1,9 +1,8 @@
 package com.kronos.plugin.multi.graph
 
-import com.kronos.plugin.base.Log
-import java.util.concurrent.ConcurrentHashMap
+import org.gradle.internal.graph.CachingDirectedGraphWalker
 import org.gradle.internal.graph.DirectedGraph
-import org.gradle.model.internal.core.ModelNode
+import java.util.concurrent.ConcurrentHashMap
 
 /**
  * Use dfs find the circle, replace to Tarjan algorithm later.
@@ -13,25 +12,23 @@ class Analyzer(private val libs: List<ModuleNode>, private val allowMiss: Boolea
     private val modules = ConcurrentHashMap<String, ModuleNode>()
 
     fun analyze(): Set<ModuleNode> {
-        val walker = CachingDirectedGraphWalker(false, object : com.kronos.plugin.multi.graph.DirectedGraph<ModuleNode, ModuleNode> {
+        val walker = CachingDirectedGraphWalker(object : DirectedGraph<ModuleNode, ModuleNode> {
             override fun getNodeValues(node: ModuleNode, values: MutableCollection<in ModuleNode>, connectedNodes: MutableCollection<in ModuleNode>) {
-                values.add(node)
+                //   values.add(node)
                 node.taskDependencies.forEach { name ->
                     modules[name]?.let {
-                        connectedNodes += ModuleNode(it.moduleName, it.taskDependencies)
-                        // Log.info("connectedNodes$connectedNodes")
+                        values.add(it)
+                        //     Log.info("connectedNodes$connectedNodes")
                     }
                 }
+                values.add(node)
             }
         })
 
-        libs.parallelStream().forEach {
+        libs.forEach {
             val nodes = arrayListOf<ModuleNode>()
-            modules.put(it.moduleName, it)?.let {
-                error("Duplicated module: ${it.moduleName}")
-            }
-            nodes += ModuleNode(it.moduleName, it.taskDependencies)
-
+            modules[it.moduleName] = it
+            nodes.add(it)
             synchronized(walker) {
                 walker.add(nodes)
             }
@@ -48,6 +45,7 @@ class Analyzer(private val libs: List<ModuleNode>, private val allowMiss: Boolea
             }
         }
     }
+
 }
 
 
