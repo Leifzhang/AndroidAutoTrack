@@ -22,15 +22,15 @@ class MultiPlugin : Plugin<Project> {
             graph.add(meta)
             map[className] = it
         }
-        val analyzer = Analyzer(graph, true)
+        val analyzer = Analyzer(graph)
         Log.info("graphList:$graph")
-        val graphNodes = analyzer.analyze()
-        Log.info("analyzer graphList:$graphNodes")
-        graphNodes.forEach {
+        analyzer.bfsSort()
+        analyzer.analyze()
+        analyzer.bfsSortList.forEach {
+            Log.info("it:${it.moduleName}")
             map[it.moduleName]?.apply {
                 project.plugins.apply(getPlugin())
             }
-
         }
 
     }

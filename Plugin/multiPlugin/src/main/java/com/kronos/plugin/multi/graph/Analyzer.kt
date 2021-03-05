@@ -1,5 +1,6 @@
 package com.kronos.plugin.multi.graph
 
+import com.kronos.plugin.base.Log
 import org.gradle.internal.graph.CachingDirectedGraphWalker
 import org.gradle.internal.graph.DirectedGraph
 import java.util.concurrent.ConcurrentHashMap
@@ -7,25 +8,28 @@ import java.util.concurrent.ConcurrentHashMap
 /**
  * Use dfs find the circle, replace to Tarjan algorithm later.
  */
-class Analyzer(private val libs: List<ModuleNode>, private val allowMiss: Boolean) {
+class Analyzer(private val libs: MutableList<ModuleNode>) {
 
     private val modules = ConcurrentHashMap<String, ModuleNode>()
+    lateinit var bfsSortList: MutableList<ModuleNode>
 
-    fun analyze(): Set<ModuleNode> {
+    fun bfsSort() {
+        bfsSortList = ModuleBfsHelper.sort(libs)
+        Log.info("analyzer graphList:$bfsSortList")
+    }
+
+    fun analyze() {
         val walker = CachingDirectedGraphWalker(object : DirectedGraph<ModuleNode, ModuleNode> {
             override fun getNodeValues(node: ModuleNode, values: MutableCollection<in ModuleNode>, connectedNodes: MutableCollection<in ModuleNode>) {
-                //   values.add(node)
                 node.taskDependencies.forEach { name ->
                     modules[name]?.let {
-                        values.add(it)
-                        //     Log.info("connectedNodes$connectedNodes")
+                        connectedNodes.add(it)
                     }
                 }
-                values.add(node)
             }
         })
 
-        libs.forEach {
+        bfsSortList.forEach {
             val nodes = arrayListOf<ModuleNode>()
             modules[it.moduleName] = it
             nodes.add(it)
@@ -33,17 +37,23 @@ class Analyzer(private val libs: List<ModuleNode>, private val allowMiss: Boolea
                 walker.add(nodes)
             }
         }
-        return walker.findValues()
-    }
+        val cycles = walker.findCycles()
 
-    fun getTaskModule(node: ModuleNode, connectedNodes: MutableCollection<in ModuleNode>) {
-        //  val list = mutableListOf<ModuleNode>()
-        connectedNodes += node
-        node.taskDependencies.forEach {
-            modules[it]?.let { node ->
-                getTaskModule(node, connectedNodes)
+        check(cycles.isEmpty()) {
+            var num = 1
+            val sb = StringBuilder()
+            sb.append("Found Cycles:\n")
+
+            cycles.forEach { cycle ->
+                sb.append("  Dependency Cycle ${num++}:\n")
+                cycle.joinTo(sb, "\n") {
+                    "\t" + it.toString()
+                }
             }
+            throw NullPointerException(sb.toString())
         }
+
+        //return cycles
     }
 
 }
