@@ -1,10 +1,9 @@
 package com.wallstreetcn.autotrack.helper
 
-import com.kronos.plugin.base.Log
 import org.objectweb.asm.Opcodes
+import org.objectweb.asm.Opcodes.INVOKESTATIC
+import org.objectweb.asm.Opcodes.INVOKEVIRTUAL
 import org.objectweb.asm.tree.*
-
-import org.objectweb.asm.Opcodes.*
 
 /**
  * @Author LiABao

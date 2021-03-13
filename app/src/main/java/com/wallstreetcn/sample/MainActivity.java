@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
+import androidx.annotation.Keep;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -13,7 +14,7 @@ import com.wallstreetcn.sample.adapter.Test;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-
+@Keep
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
 

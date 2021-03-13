@@ -1,6 +1,7 @@
-package com.wallstreetcn.autotrack.helper
+package com.kronos.doubletap.helper
 
 import com.kronos.plugin.base.AsmHelper
+import com.kronos.plugin.base.Log
 import com.kronos.plugin.base.utils.lambdaHelper
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassWriter
@@ -9,7 +10,7 @@ import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.tree.*
 import java.io.IOException
 
-class AutoTrackHelper : AsmHelper {
+class DoubleTapClassNodeHelper : AsmHelper {
 
     private val classNodeMap = hashMapOf<String, ClassNode>()
 
@@ -39,45 +40,12 @@ class AutoTrackHelper : AsmHelper {
             insertLambda(classNode, method, field)
         }
         //调用Fragment的onHiddenChange方法
-        visitFragment(classNode)
         val classWriter = ClassWriter(0)
         //3  将classNode转为字节数组
         classNode.accept(classWriter)
         return classWriter.toByteArray()
     }
 
-    private fun visitFragment(classNode: ClassNode) {
-        if (isFragment(classNode.superName)) {
-            var hasHiddenChange = false
-            classNode.methods?.forEach { methodNode ->
-                if (methodNode.name == "onHiddenChanged" && methodNode.desc == "(Z)V" && methodNode.access == Opcodes.ACC_PUBLIC) {
-                    hasHiddenChange = true
-                    classNode.insert(methodNode)
-                }
-            }
-            if (!hasHiddenChange) {
-                val methodVisitor = classNode.visitMethod(
-                        ACC_PUBLIC, "onHiddenChanged", "(Z)V",
-                        classNode.signature, null
-                )
-                methodVisitor.visitCode()
-                methodVisitor.visitVarInsn(ALOAD, 0);
-                methodVisitor.visitVarInsn(ILOAD, 1);
-                methodVisitor.visitMethodInsn(
-                        INVOKESPECIAL, classNode.superName,
-                        "onHiddenChanged", "(Z)V", false
-                )
-                methodVisitor.visitInsn(RETURN)
-                methodVisitor.visitMaxs(2, 2)
-                methodVisitor.visitEnd()
-                classNode.methods.last()?.let { methodNode ->
-                    if (methodNode.name == "onHiddenChanged" && methodNode.desc == "(Z)V" && methodNode.access == Opcodes.ACC_PUBLIC) {
-                        classNode.insert(methodNode)
-                    }
-                }
-            }
-        }
-    }
 
     private fun insertLambda(node: ClassNode, method: MethodNode, field: FieldNode?) {
         // 判断方法名和方法描述
