@@ -17,7 +17,7 @@ import org.objectweb.asm.Opcodes.*
 fun ClassNode.lambdaHelper(block: (InvokeDynamicInsnNode) -> Boolean): MutableList<MethodNode> {
     val lambdaMethodNodes = mutableListOf<MethodNode>()
     methods?.forEach { method ->
-        method.instructions.iterator()?.forEach {
+        method?.instructions?.iterator()?.forEach {
             if (it is InvokeDynamicInsnNode) {
                 if (block.invoke(it)) {
                     val args = it.bsmArgs
