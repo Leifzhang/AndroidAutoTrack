@@ -11,6 +11,8 @@ public class OtherTestViewHolder extends RecyclerView.ViewHolder {
 
     public OtherTestViewHolder(@NonNull View itemView) {
         super(itemView);
-        itemView.setOnClickListener(v -> Log.i("", ""));
+        itemView.setOnClickListener(v -> {
+            Log.i("", "" + i);
+        });
     }
 }

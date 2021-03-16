@@ -15,6 +15,7 @@ public class CheckVisitor extends MethodVisitor {
         this.owner = owner;
     }
 
+
     @Override
     public void visitCode() {
         mv.visitVarInsn(Opcodes.ALOAD, 0);
@@ -26,6 +27,7 @@ public class CheckVisitor extends MethodVisitor {
         mv.visitJumpInsn(Opcodes.IFNE, label);
         mv.visitInsn(Opcodes.RETURN);
         mv.visitLabel(label);
-        super.visitCode();
+   //     super.visitCode();
     }
+
 }

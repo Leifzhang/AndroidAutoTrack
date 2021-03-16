@@ -1,6 +1,5 @@
 package com.kronos.plugin.base.utils
 
-import com.kronos.plugin.base.Log
 import java.io.File
 
 /**
@@ -9,8 +8,7 @@ import java.io.File
  */
 
 fun File.filterTest(nameReg: String): Array<File>? {
-    val list = listFiles { p0 -> p0?.name == nameReg }
-    return list
+    return listFiles { p0 -> p0?.name == nameReg }
 }
 
 fun File.deleteAll() {

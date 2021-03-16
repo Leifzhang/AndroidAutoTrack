@@ -1,7 +1,7 @@
 package com.wallstreetcn.autotrack.helper
 
 import com.kronos.plugin.base.AsmHelper
-import com.kronos.plugin.base.Log
+import com.kronos.plugin.base.utils.lambdaHelper
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassWriter
 import org.objectweb.asm.Opcodes
@@ -32,7 +32,9 @@ class AutoTrackHelper : AsmHelper {
                 }
             }
         }
-        classNode.lambdaHelper().forEach { method->
+        classNode.lambdaHelper {
+            (it.name == "onClick" && it.desc.contains(")Landroid/view/View\$OnClickListener;"))
+        }.forEach { method ->
             val field = classNode.getField()
             insertLambda(classNode, method, field)
         }
