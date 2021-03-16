@@ -14,13 +14,12 @@ import java.util.Collections;
 
 public class OtherTestViewHolder extends RecyclerView.ViewHolder {
     private int i = 100;
-    private DoubleTapCheck doubleTapCheck=new DoubleTapCheck();
+    private DoubleTapCheck doubleTapCheck = new DoubleTapCheck();
+
     public OtherTestViewHolder(@NonNull View itemView) {
         super(itemView);
         itemView.setOnClickListener(v -> {
-            if(doubleTapCheck.isNotDoubleTap()) {
-                Log.i("", "");
-            }
+            Log.i("TAG", doubleTapCheck.toString());
         });
     }
 }

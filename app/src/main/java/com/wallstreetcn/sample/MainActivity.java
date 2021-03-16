@@ -14,7 +14,7 @@ import com.wallstreetcn.sample.adapter.Test;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-//@Keep
+@Test
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
 

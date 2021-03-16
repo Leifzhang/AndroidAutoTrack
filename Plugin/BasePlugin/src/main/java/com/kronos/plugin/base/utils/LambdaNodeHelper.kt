@@ -20,18 +20,22 @@ fun ClassNode.lambdaHelper(block: (InvokeDynamicInsnNode) -> Boolean): MutableLi
         method?.instructions?.iterator()?.forEach {
             if (it is InvokeDynamicInsnNode) {
                 if (block.invoke(it)) {
+                    //   Log.info("dynamicName:${it.name} dynamicDesc:${it.desc}")
                     val args = it.bsmArgs
                     args.forEach { arg ->
                         if (arg is Handle) {
                             val methodNode = findMethodByNameAndDesc(arg.name, arg.desc)
-                            if (methodNode?.access == ACC_PRIVATE or ACC_STATIC or ACC_SYNTHETIC) {
-                                methodNode.let { it1 -> lambdaMethodNodes.add(it1) }
-                            }
+                            //   if (methodNode?.access == ACC_PRIVATE  or ACC_SYNTHETIC) {
+                            methodNode?.let { it1 -> lambdaMethodNodes.add(it1) }
+                            // }
                         }
                     }
                 }
             }
         }
+    }
+    lambdaMethodNodes.forEach {
+        Log.info("lambdaName:${it.name} lambdaDesc:${it.desc} lambdaAccess:${it.access}")
     }
     return lambdaMethodNodes
 

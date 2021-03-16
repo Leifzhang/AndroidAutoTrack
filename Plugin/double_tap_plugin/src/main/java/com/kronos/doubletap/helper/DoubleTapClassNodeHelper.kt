@@ -33,19 +33,19 @@ class DoubleTapClassNodeHelper : AsmHelper {
             parentNode?.hasAnnotation() ?: false
         }
         if (!hasKeepAnnotation) {
-            /* classNode.interfaces?.forEach {
-                 if (it == "android/view/View\$OnClickListener") {
-                     classNode.methods?.forEach { method ->
-                         // 找到onClick 方法
-                         if (method.name == "<init>") {
-                             initFunction(classNode, method)
-                         }
-                         if (method.name == "onClick" && method.desc == "(Landroid/view/View;)V") {
-                             insertTrack(classNode, method)
-                         }
-                     }
-                 }
-             }*/
+            classNode.interfaces?.forEach {
+                if (it == "android/view/View\$OnClickListener") {
+                    classNode.methods?.forEach { method ->
+                        // 找到onClick 方法
+                        if (method.name == "<init>") {
+                            initFunction(classNode, method)
+                        }
+                        if (method.name == "onClick" && method.desc == "(Landroid/view/View;)V") {
+                            insertTrack(classNode, method)
+                        }
+                    }
+                }
+            }
             classNode.lambdaHelper {
                 (it.name == "onClick" && it.desc.contains(")Landroid/view/View\$OnClickListener;"))
             }.apply {
@@ -105,6 +105,7 @@ class DoubleTapClassNodeHelper : AsmHelper {
         // 判断方法名和方法描述
         val instructions = method.instructions
         val firstNode = instructions.first
+        instructions?.insertBefore(firstNode, LabelNode(Label()))
         instructions?.insertBefore(firstNode, VarInsnNode(ALOAD, 0))
         instructions?.insertBefore(firstNode, FieldInsnNode(GETFIELD, node.name,
                 "doubleTap", String.format("L%s;", DoubleTabConfig.ByteCodeInjectClassName)))
@@ -121,7 +122,14 @@ class DoubleTapClassNodeHelper : AsmHelper {
     private fun ClassNode.hasAnnotation(): Boolean {
         var hasAnnotation = false
         this.visibleAnnotations?.forEach { annotation ->
-            if (annotation.desc == "Landroidx/annotation/Keep;") {
+            //   Log.info("name:$name visibleAnnotations:${annotation.desc} ")
+            if (annotation.desc == "Lcom/wallstreetcn/sample/adapter/Test;") {
+                hasAnnotation = true
+            }
+        }
+        this.invisibleAnnotations?.forEach { annotation ->
+            //  Log.info("name:$name visibleAnnotations:${annotation.desc} ")
+            if (annotation.desc == "Lcom/wallstreetcn/sample/adapter/Test;") {
                 hasAnnotation = true
             }
         }
