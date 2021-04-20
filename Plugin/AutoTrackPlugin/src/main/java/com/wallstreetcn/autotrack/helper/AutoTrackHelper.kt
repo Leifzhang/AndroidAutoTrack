@@ -32,7 +32,7 @@ class AutoTrackHelper : AsmHelper {
                 }
             }
         }
-        classNode.lambdaHelper {
+        classNode.lambdaHelper(true) {
             (it.name == "onClick" && it.desc.contains(")Landroid/view/View\$OnClickListener;"))
         }.forEach { method ->
             val field = classNode.getField()

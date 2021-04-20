@@ -2,10 +2,10 @@ package com.kronos.plugin.base.utils
 
 import com.kronos.plugin.base.Log
 import org.objectweb.asm.Handle
+import org.objectweb.asm.Opcodes.ACC_STATIC
 import org.objectweb.asm.tree.ClassNode
 import org.objectweb.asm.tree.InvokeDynamicInsnNode
 import org.objectweb.asm.tree.MethodNode
-import org.objectweb.asm.Opcodes.*
 
 /**
  *
@@ -14,7 +14,7 @@ import org.objectweb.asm.Opcodes.*
  *
  */
 
-fun ClassNode.lambdaHelper(block: (InvokeDynamicInsnNode) -> Boolean): MutableList<MethodNode> {
+fun ClassNode.lambdaHelper(isStatic: Boolean = false, block: (InvokeDynamicInsnNode) -> Boolean): MutableList<MethodNode> {
     val lambdaMethodNodes = mutableListOf<MethodNode>()
     methods?.forEach { method ->
         method?.instructions?.iterator()?.forEach {
@@ -25,9 +25,19 @@ fun ClassNode.lambdaHelper(block: (InvokeDynamicInsnNode) -> Boolean): MutableLi
                     args.forEach { arg ->
                         if (arg is Handle) {
                             val methodNode = findMethodByNameAndDesc(arg.name, arg.desc)
-                            //   if (methodNode?.access == ACC_PRIVATE  or ACC_SYNTHETIC) {
-                            methodNode?.let { it1 -> lambdaMethodNodes.add(it1) }
-                            // }
+                            methodNode?.apply {
+                                val hasStatic = access and ACC_STATIC != 0
+                                if (isStatic) {
+                                    if (hasStatic) {
+                                        lambdaMethodNodes.add(this)
+                                    }
+                                } else {
+                                    if (!hasStatic) {
+                                        lambdaMethodNodes.add(this)
+                                    }
+                                }
+
+                            }
                         }
                     }
                 }
@@ -35,6 +45,7 @@ fun ClassNode.lambdaHelper(block: (InvokeDynamicInsnNode) -> Boolean): MutableLi
         }
     }
     lambdaMethodNodes.forEach {
+
         Log.info("lambdaName:${it.name} lambdaDesc:${it.desc} lambdaAccess:${it.access}")
     }
     return lambdaMethodNodes

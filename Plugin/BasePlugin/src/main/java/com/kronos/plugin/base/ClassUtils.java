@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 public class ClassUtils {
 
     public static String path2Classname(String entryName) {
+
         return entryName.replace(File.separator, ".").replace(".class", "");
     }
 
