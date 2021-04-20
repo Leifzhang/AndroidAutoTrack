@@ -17,7 +17,6 @@ import java.util.concurrent.Executors;
 @Test
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
-
     @Nullable
     private View.OnClickListener listener = v -> {
         Log.i("MainActivity", v.toString());
