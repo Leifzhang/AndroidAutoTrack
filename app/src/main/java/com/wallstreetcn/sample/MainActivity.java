@@ -39,12 +39,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //    service = Executors.newFixedThreadPool(2);
         //  service = Executors.newSingleThreadExecutor(Executors.defaultThreadFactory());
         findViewById(R.id.textView1).setOnClickListener(new View.OnClickListener() {
-            @Test
-            private Entity mdata;
+
+            private NewEntity mdata = new NewEntity();
 
             @Override
             public void onClick(View v) {
                 Log.i("MainActivity", v.toString());
+                String test = mdata.getTest();
                 Intent intent = new Intent();
             }
         });

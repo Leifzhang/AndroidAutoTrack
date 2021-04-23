@@ -23,11 +23,9 @@ class MultiPlugin : Plugin<Project> {
             map[className] = it
         }
         val analyzer = Analyzer(graph)
-        Log.info("graphList:$graph")
         analyzer.bfsSort()
         analyzer.analyze()
         analyzer.bfsSortList.forEach {
-            Log.info("it:${it.moduleName}")
             map[it.moduleName]?.apply {
                 project.plugins.apply(getPlugin())
             }

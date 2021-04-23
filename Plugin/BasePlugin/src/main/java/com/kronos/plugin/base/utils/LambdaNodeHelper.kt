@@ -46,7 +46,7 @@ fun ClassNode.lambdaHelper(isStatic: Boolean = false, block: (InvokeDynamicInsnN
     }
     lambdaMethodNodes.forEach {
 
-        Log.info("lambdaName:${it.name} lambdaDesc:${it.desc} lambdaAccess:${it.access}")
+       // Log.info("lambdaName:${it.name} lambdaDesc:${it.desc} lambdaAccess:${it.access}")
     }
     return lambdaMethodNodes
 
