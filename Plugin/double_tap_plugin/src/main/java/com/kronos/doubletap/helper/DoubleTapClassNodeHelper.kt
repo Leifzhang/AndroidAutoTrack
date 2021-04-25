@@ -81,7 +81,6 @@ class DoubleTapClassNodeHelper : AsmHelper {
                 hasDoubleTap = true
             }
         }
-        Log.info("className:${node.name}  hasDoubleTap:$hasDoubleTap")
         if (!hasDoubleTap) {
             node.visitField(ACC_PRIVATE + ACC_FINAL, "doubleTap", String.format("L%s;",
                     DoubleTabConfig.ByteCodeInjectClassName), node.signature, null)

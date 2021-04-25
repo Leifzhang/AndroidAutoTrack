@@ -21,6 +21,14 @@ public class Entity implements Parcelable {
     public Entity() {
     }
 
+    public String getTest() {
+        return test;
+    }
+
+    public void setTest(String test) {
+        this.test = test;
+    }
+
     @NonNull
     @Override
     public String toString() {

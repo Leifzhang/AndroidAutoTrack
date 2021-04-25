@@ -13,7 +13,7 @@ class AutoTrackPlugin : Plugin<Project> {
         if (isApp) {
             val appExtension = project.extensions.getByType(AppExtension::class.java)
             val scanTransform = DataScanTransform()
-            //    appExtension.registerTransform(scanTransform)
+            appExtension.registerTransform(scanTransform)
             appExtension.registerTransform(NewAutoTackTransform())
         }
     }

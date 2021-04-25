@@ -1,7 +1,6 @@
 package com.kronos.plugin.thread.visitor
 
 import com.kronos.plugin.base.AsmHelper
-import com.kronos.plugin.base.Log.info
 import com.kronos.plugin.thread.PoolEntity.Companion.Owner
 import com.kronos.plugin.thread.visitor.ThreadPoolCreator.EXECUTORS_OWNER
 import org.objectweb.asm.ClassReader
@@ -44,13 +43,11 @@ class ThreadAsmHelper : AsmHelper {
     private fun MethodInsnNode.hookExecutors() {
         when (this.owner) {
             EXECUTORS_OWNER -> {
-                info("owner:${this.owner}  name:${this.name} ")
                 ThreadPoolCreator.poolList.forEach {
                     if (it.name == this.name && this.name == it.name && this.owner == it.owner) {
                         this.owner = Owner
                         this.name = it.methodName
                         this.desc = it.replaceDesc()
-                        info("owner:${this.owner}  name:${this.name} desc:${this.desc} ")
                     }
                 }
 

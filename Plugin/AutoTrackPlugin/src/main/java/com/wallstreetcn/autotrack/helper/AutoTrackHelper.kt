@@ -1,7 +1,9 @@
 package com.wallstreetcn.autotrack.helper
 
 import com.kronos.plugin.base.AsmHelper
+import com.kronos.plugin.base.Log
 import com.kronos.plugin.base.utils.lambdaHelper
+import com.wallstreetcn.autotrack.scan.DataClassManager
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassWriter
 import org.objectweb.asm.Opcodes
@@ -122,19 +124,35 @@ class AutoTrackHelper : AsmHelper {
         // 根据outClassName 获取到外部类的Node
         val parentField = field ?: parentNode?.getField()
         val instructions = method.instructions
+        var dataField: FieldInsnNode? = null
         instructions?.iterator()?.forEach {
+            if (it is FieldInsnNode && dataField == null) {
+                if (it.opcode == GETFIELD) {
+                    Log.info(" instructions filedName:${it.name}  fieldOwner:${it.owner}  desc:${it.desc}")
+                    val className = it.desc.subSequence(1, it.desc.length - 1)
+                    if (DataClassManager.INSTANCE.datList.contains(className)) {
+                        dataField = it
+                        Log.info(" match track filedName:${it.name}  fieldOwner:${it.owner}  desc:${it.desc}")
+                    }
+                }
+            }
             // 判断是不是代码的截止点
             if ((it.opcode >= Opcodes.IRETURN && it.opcode <= Opcodes.RETURN) || it.opcode == Opcodes.ATHROW) {
                 instructions.insertBefore(it, VarInsnNode(Opcodes.ALOAD, 1))
                 instructions.insertBefore(it, VarInsnNode(Opcodes.ALOAD, 1))
                 // 获取到数据参数
-                if (parentField != null) {
-                    parentField.apply {
+                if (dataField != null) {
+                    dataField?.let { dataField ->
                         instructions.insertBefore(it, VarInsnNode(Opcodes.ALOAD, 0))
-                        instructions.insertBefore(
-                                it, FieldInsnNode(Opcodes.GETFIELD, node.name, parentField.name, parentField.desc)
-                        )
+                        instructions.insertBefore(it, FieldInsnNode(dataField.opcode, dataField.owner, dataField.name, dataField.desc))
                     }
+                } else if (parentField != null) {
+                        parentField.apply {
+                            instructions.insertBefore(it, VarInsnNode(Opcodes.ALOAD, 0))
+                            instructions.insertBefore(
+                                    it, FieldInsnNode(Opcodes.GETFIELD, node.name, parentField.name, parentField.desc)
+                            )
+                        }
                 } else {
                     instructions.insertBefore(it, LdcInsnNode("1234"))
                 }
