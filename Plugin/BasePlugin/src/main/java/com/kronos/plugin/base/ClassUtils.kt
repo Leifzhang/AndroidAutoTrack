@@ -5,7 +5,11 @@ import java.io.FileOutputStream
 
 object ClassUtils {
     fun path2Classname(entryName: String): String {
-        return entryName.replace(File.separator, ".").replace(".class", "")
+        // 感谢大佬 dingshaoran
+        //ClassUtils.path2Classname(className); File.separator donot match jar entryName on windows
+        return entryName.replace(".class", "")
+                .replace('\\', '.')
+                .replace('/', '.')
     }
 
     fun checkClassName(className: String): Boolean {
