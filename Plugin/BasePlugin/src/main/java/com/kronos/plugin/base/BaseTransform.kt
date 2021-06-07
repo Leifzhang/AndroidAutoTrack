@@ -135,7 +135,6 @@ class BaseTransform(
                             null
                         }
                         tasks.add(callable)
-                        executor.submit(callable)
                     }
                     Status.REMOVED -> deleteDirectory(destFile, dest)
                     else -> {
@@ -249,7 +248,6 @@ class BaseTransform(
                         null
                     }
                     tasks.add(task)
-                    executor.submit(task)
                 }
             }
         }
@@ -291,7 +289,6 @@ class BaseTransform(
             null
         }
         tasks.add(task)
-        executor.submit(task)
     }
 
     private fun diffJar(dest: File, jarInput: JarInput) {
