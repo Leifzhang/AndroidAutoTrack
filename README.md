@@ -5,6 +5,18 @@
 
 本项目主要就是给大家一个参考学习的demo而已，主要是打算简化学习gradle插件的成本，以及对于`android transform`的一次抽象，将增量更新等等进行一次抽象，以方便大家学习开发。
 
+# 技术栈罗列
+
+1. compose building  混合编译，提供plugin当场调试能力
+2. Transform dependOn 依赖，通过拓扑排序解决依赖问题
+3. 通过`auto-service` 动态组合多个plugin
+4. 自动化埋点demo，透传参数，以及对于onHiddenChange方法覆盖，可以拿来做fragment可视化逻辑判断 (由于都是字节码操作，所以开发人员不需要感知到)
+5. 双击保护优化，解决了d8导致的java8 lambda，动态引用问题
+6. thread pool 构造动态替换成共享
+7. 简单的tree api 使用demo
+8. 多线程字节码操作
+9. transform 增量编译抽象
+
 ## ~~buildSrc 优化~~
 
 ~~之前通过buildSrc形式重构项目，不需要本地推aar，同时module可以被同一个buildSrc关联上，方便调试和代码上传。~~
