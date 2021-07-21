@@ -183,11 +183,11 @@ private fun ClassNode.getField(): FieldNode? {
 }
 
 
-fun isFragment(superName: String): Boolean {
+fun isFragment(superName: String?): Boolean {
     return superName == "androidx/fragment/app/Fragment" || superName == "android/support/v4/app/Fragment"
 }
 
 
-fun isRecyclerViewHolder(superName: String): Boolean {
+fun isRecyclerViewHolder(superName: String?): Boolean {
     return superName == "androidx/recyclerview/widget/RecyclerView\$ViewHolder"
 }

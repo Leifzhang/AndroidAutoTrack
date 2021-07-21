@@ -1,5 +1,4 @@
 apply plugin: 'com.github.dcendents.android-maven'
-apply plugin: 'com.jfrog.bintray'
 
 Properties config = new Properties()
 config.load(project.file("nexus.properties").newDataInputStream())
@@ -23,6 +22,7 @@ task sourcesJar(type: Jar) {
 artifacts {
     archives sourcesJar
 }
+/*
 
 install {
     repositories.mavenInstaller {
@@ -70,4 +70,4 @@ bintray {
         licenses = ["Apache-2.0"]
         publish = true
     }
-}
+}*/
