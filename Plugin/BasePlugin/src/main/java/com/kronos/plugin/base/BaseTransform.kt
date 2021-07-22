@@ -2,6 +2,7 @@ package com.kronos.plugin.base
 
 import com.android.build.api.transform.*
 import com.google.common.io.Files
+import com.kronos.plugin.base.utils.copyIfLegal
 import com.kronos.plugin.base.utils.deleteAll
 import com.kronos.plugin.base.utils.filterTest
 import org.apache.commons.codec.digest.DigestUtils
@@ -205,7 +206,7 @@ class BaseTransform(
                 ClassUtils.saveFile(dest, modifiedBytes)
             } else {
                 if (!file.isDirectory) {
-                    FileUtils.copyFile(file, dest)
+                    copyIfLegal(file, dest)
                 }
             }
         } catch (e: Exception) {
@@ -264,7 +265,7 @@ class BaseTransform(
         if (target.exists()) {
             target.delete()
         }
-        FileUtils.copyFile(modified, target)
+        copyIfLegal(modified, target)
         tempFile.delete()
     }
 
@@ -274,14 +275,14 @@ class BaseTransform(
             try {
                 if (!simpleScan) {
                     val modifiedJar = JarUtils.modifyJarFile(jarInput.file, context?.temporaryDir, this)
-                    FileUtils.copyFile(modifiedJar, dest)
+                    copyIfLegal(modifiedJar, dest)
                 } else {
                     val jarFile = jarInput.file
                     val classNames = JarUtils.scanJarFile(jarFile)
                     for (className in classNames) {
                         process(className, null)
                     }
-                    FileUtils.copyFile(jarFile, dest)
+                    copyIfLegal(jarFile, dest)
                 }
             } catch (e: Exception) {
                 e.printStackTrace()

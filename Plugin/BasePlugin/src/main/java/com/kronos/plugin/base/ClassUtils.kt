@@ -24,20 +24,16 @@ object ClassUtils {
     }
 
     fun saveFile(mTempDir: File?, modifiedClassBytes: ByteArray?): File? {
-        var modified: File? = null
-        try {
-            if (modifiedClassBytes != null) {
-                modified = mTempDir
-                if (modified!!.exists()) {
-                    modified.delete()
-                }
-                modified.createNewFile()
-                val stream = FileOutputStream(modified)
-                stream.write(modifiedClassBytes)
-                stream.close()
+        val modified: File? = null
+        modifiedClassBytes?.apply {
+            if (mTempDir!!.exists()) {
+                mTempDir.delete()
             }
-        } catch (e: Exception) {
-            e.printStackTrace()
+            mTempDir.createNewFile()
+            val stream = FileOutputStream(mTempDir)
+            stream.use {
+                stream.write(modifiedClassBytes)
+            }
         }
         return modified
     }

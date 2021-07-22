@@ -1,4 +1,4 @@
-package com.wallstreetcn.autotrack
+    package com.wallstreetcn.autotrack
 
 import com.android.build.api.transform.QualifiedContent
 import com.android.build.api.transform.Transform
