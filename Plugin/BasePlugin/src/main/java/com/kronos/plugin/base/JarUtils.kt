@@ -24,18 +24,16 @@ internal object JarUtils {
                 val jarEntry = enumeration.nextElement()
                 val inputStream = file.getInputStream(jarEntry)
                 val entryName = jarEntry.name
+                if (entryName.contains("module-info.class")) {
+                    if (!entryName.contains("META-INF")) {
+                        Log.info("jar file module-info:$entryName jarFileName:${jarFile.path}")
+                        continue
+                    }
+                }
                 val zipEntry = ZipEntry(entryName)
                 jarOutputStream.putNextEntry(zipEntry)
                 var modifiedClassBytes: ByteArray? = null
                 val sourceClassBytes = IOUtils.toByteArray(inputStream)
-                if (entryName.contains("module-info.class")) {
-                    if (!entryName.contains("META-INF")) {
-                        Log.info("jar file module-info:$entryName jarFileName:${jarFile.path}")
-                        jarOutputStream.write(0)
-                        jarOutputStream.closeEntry()
-                        continue
-                    }
-                }
                 if (entryName.endsWith(".class")) {
                     try {
                         modifiedClassBytes = transform.process(entryName, sourceClassBytes)
