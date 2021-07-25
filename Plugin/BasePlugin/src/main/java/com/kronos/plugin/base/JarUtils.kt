@@ -20,38 +20,34 @@ internal object JarUtils {
         jarOutputStream.use {
             val file = JarFile(jarFile)
             val enumeration = file.entries()
-            while (enumeration.hasMoreElements()) {
-                val jarEntry = enumeration.nextElement()
+            enumeration.iterator().forEach { jarEntry ->
                 val inputStream = file.getInputStream(jarEntry)
                 val entryName = jarEntry.name
-                if (entryName.contains("module-info.class")) {
-                    if (!entryName.contains("META-INF")) {
-                        Log.info("jar file module-info:$entryName jarFileName:${jarFile.path}")
-                        continue
-                    }
-                }
-                val zipEntry = ZipEntry(entryName)
-                jarOutputStream.putNextEntry(zipEntry)
-                var modifiedClassBytes: ByteArray? = null
-                val sourceClassBytes = IOUtils.toByteArray(inputStream)
-                if (entryName.endsWith(".class")) {
-                    try {
-                        modifiedClassBytes = transform.process(entryName, sourceClassBytes)
-                    } catch (ignored: Exception) {
-                    }
-                }
-                /**
-                 * 读取原jar
-                 */
-                if (modifiedClassBytes == null) {
-                    jarOutputStream.write(sourceClassBytes)
+                if (entryName.contains("module-info.class") && !entryName.contains("META-INF")) {
+                    Log.info("jar file module-info:$entryName jarFileName:${jarFile.path}")
                 } else {
-                    jarOutputStream.write(modifiedClassBytes)
+                    val zipEntry = ZipEntry(entryName)
+                    jarOutputStream.putNextEntry(zipEntry)
+                    var modifiedClassBytes: ByteArray? = null
+                    val sourceClassBytes = IOUtils.toByteArray(inputStream)
+                    if (entryName.endsWith(".class")) {
+                        try {
+                            modifiedClassBytes = transform.process(entryName, sourceClassBytes)
+                        } catch (ignored: Exception) {
+                        }
+                    }
+                    /**
+                     * 读取原jar
+                     */
+                    if (modifiedClassBytes == null) {
+                        jarOutputStream.write(sourceClassBytes)
+                    } else {
+                        jarOutputStream.write(modifiedClassBytes)
+                    }
+                    jarOutputStream.closeEntry()
                 }
-                jarOutputStream.closeEntry()
             }
         }
-
         return optJar
     }
 

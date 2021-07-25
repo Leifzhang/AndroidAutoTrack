@@ -23,7 +23,7 @@ buildscript {
 plugins {
     // 这个 id 就是在 versionPlugin 文件夹下 build.gradle 文件内定义的id
     id "auto-track" apply false
-    id "thread-hook" apply false
+    // id "thread-hook" apply false
     id "doubleTap" apply false
     id "multi-plugin" apply false
 }
@@ -35,20 +35,20 @@ allprojects {
         }
         google()
     }
- /*   configurations.all { Configuration c ->
-        c.resolutionStrategy {
-            dependencySubstitution {
-                all { DependencySubstitution dependency ->
-                    if (dependency.requested instanceof ModuleComponentSelector) {
-                        def p = rootProject.allprojects.find { p -> p.group == dependency.requested.group && p.name == dependency.requested.module }
-                        if (p != null) {
-                            dependency.useTarget(project(p.path), 'selected local project')
-                        }
-                    }
-                }
-            }
-        }
-    }*/
+    /*   configurations.all { Configuration c ->
+           c.resolutionStrategy {
+               dependencySubstitution {
+                   all { DependencySubstitution dependency ->
+                       if (dependency.requested instanceof ModuleComponentSelector) {
+                           def p = rootProject.allprojects.find { p -> p.group == dependency.requested.group && p.name == dependency.requested.module }
+                           if (p != null) {
+                               dependency.useTarget(project(p.path), 'selected local project')
+                           }
+                       }
+                   }
+               }
+           }
+       }*/
     afterEvaluate {
         if (project.plugins.hasPlugin('com.android.library') || project.plugins.hasPlugin('com.android.application')) {
             def android = project.extensions.getByName('android')
