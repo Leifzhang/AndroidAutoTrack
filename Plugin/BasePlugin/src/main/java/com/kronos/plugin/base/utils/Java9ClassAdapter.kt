@@ -1,6 +1,7 @@
 package com.kronos.plugin.base.utils
 
 import com.kronos.plugin.base.Log
+import org.apache.commons.io.FileUtils
 import java.io.File
 
 /**
@@ -12,7 +13,7 @@ fun copyIfLegal(srcFile: File?, destFile: File) {
     if (srcFile?.name?.contains("module-info") != true) {
         try {
             srcFile?.apply {
-                org.apache.commons.io.FileUtils.copyFile(srcFile, destFile)
+                FileUtils.copyFile(srcFile, destFile)
             }
         } catch (e: Exception) {
             e.printStackTrace()

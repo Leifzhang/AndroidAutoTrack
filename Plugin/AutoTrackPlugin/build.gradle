@@ -8,8 +8,6 @@ dependencies {
     implementation gradleApi()
     implementation localGroovy()
     implementation project(":BasePlugin")
-    implementation 'commons-io:commons-io:2.6'
-    implementation 'org.javassist:javassist:3.27.0-GA'
     kapt "com.google.auto.service:auto-service:1.0-rc6"
     implementation 'com.google.auto.service:auto-service:1.0-rc6'
 }
@@ -23,4 +21,9 @@ gradlePlugin {
             implementationClass = 'com.wallstreetcn.autotrack.AutoTrackPlugin'
         }
     }
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
 }

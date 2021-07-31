@@ -1,11 +1,10 @@
 package com.kronos.plugin.base
 
 import com.android.build.api.transform.*
-import com.google.common.io.Files
+import com.kronos.plugin.base.utils.DigestUtils
 import com.kronos.plugin.base.utils.copyIfLegal
 import com.kronos.plugin.base.utils.deleteAll
 import com.kronos.plugin.base.utils.filterTest
-import org.apache.commons.codec.digest.DigestUtils
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.IOUtils
 import java.io.File
@@ -130,7 +129,7 @@ class BaseTransform(
                             try {
                                 FileUtils.touch(destFile)
                             } catch (ignored: Exception) {
-                                Files.createParentDirs(destFile)
+                                //  Files.createParentDirs(destFile)
                             }
                             modifySingleFile(dir, file, destFile)
                             null
@@ -150,7 +149,7 @@ class BaseTransform(
     private fun deleteDirectory(destFile: File, dest: File) {
         try {
             if (destFile.isDirectory) {
-                for (classFile in com.android.utils.FileUtils.getAllFiles(destFile)) {
+                destFile.walkTopDown().forEach { classFile ->
                     deleteSingle(classFile, dest)
                 }
             } else {
@@ -232,25 +231,26 @@ class BaseTransform(
     private fun changeFile(dir: File, dest: File) {
         if (dir.isDirectory) {
             FileUtils.copyDirectory(dir, dest)
-            for (classFile in com.android.utils.FileUtils.getAllFiles(dir)) {
-                if (classFile.name.endsWith(".class")) {
-                    val task = Callable<Void> {
-                        val absolutePath = classFile.absolutePath.replace(
-                                dir.absolutePath + File.separator, ""
-                        )
-                        val className = ClassUtils.path2Classname(absolutePath)
-                        if (!simpleScan) {
-                            val bytes = IOUtils.toByteArray(FileInputStream(classFile))
-                            val modifiedBytes = process(className, bytes)
-                            modifiedBytes?.let { saveClassFile(it, dest, absolutePath) }
-                        } else {
-                            process(className, null)
+            dir.walkTopDown().filter { it.isFile }
+                    .forEach { classFile ->
+                        if (classFile.name.endsWith(".class")) {
+                            val task = Callable<Void> {
+                                val absolutePath = classFile.absolutePath.replace(
+                                        dir.absolutePath + File.separator, ""
+                                )
+                                val className = ClassUtils.path2Classname(absolutePath)
+                                if (!simpleScan) {
+                                    val bytes = IOUtils.toByteArray(FileInputStream(classFile))
+                                    val modifiedBytes = process(className, bytes)
+                                    modifiedBytes?.let { saveClassFile(it, dest, absolutePath) }
+                                } else {
+                                    process(className, null)
+                                }
+                                null
+                            }
+                            tasks.add(task)
                         }
-                        null
                     }
-                    tasks.add(task)
-                }
-            }
         }
     }
 
@@ -270,7 +270,6 @@ class BaseTransform(
     }
 
     private fun foreachJar(dest: File, jarInput: JarInput) {
-
         val task = Callable<Void> {
             try {
                 if (!simpleScan) {

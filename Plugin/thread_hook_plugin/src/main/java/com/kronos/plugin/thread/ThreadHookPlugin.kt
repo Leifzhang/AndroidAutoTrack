@@ -14,6 +14,6 @@ class ThreadHookPlugin : Plugin<Project> {
         val appExtension = project.extensions.getByType(
             AppExtension::class.java
         )
-        appExtension.registerTransform(HookTransform(project))
+        appExtension.registerTransform(HookTransform())
     }
 }

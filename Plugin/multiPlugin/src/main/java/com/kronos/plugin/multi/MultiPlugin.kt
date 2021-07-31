@@ -1,6 +1,5 @@
 package com.kronos.plugin.multi
 
-import com.kronos.plugin.base.Log
 import com.kronos.plugin.base.PluginProvider
 import com.kronos.plugin.multi.graph.Analyzer
 import com.kronos.plugin.multi.graph.ModuleNode

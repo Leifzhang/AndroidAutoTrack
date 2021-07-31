@@ -12,11 +12,12 @@ class DoubleTapLibraryTransform : DoubleTapTransform() {
 
     override fun getScopes(): MutableSet<in QualifiedContent.Scope> {
         return ImmutableSet.of(
-            QualifiedContent.Scope.PROJECT
+                QualifiedContent.Scope.PROJECT
         )
     }
 
     override fun getInputTypes(): Set<QualifiedContent.ContentType>? {
         return TransformManager.CONTENT_CLASS
     }
+
 }

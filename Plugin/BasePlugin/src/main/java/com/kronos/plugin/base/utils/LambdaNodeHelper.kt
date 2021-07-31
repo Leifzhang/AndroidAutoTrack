@@ -1,6 +1,5 @@
 package com.kronos.plugin.base.utils
 
-import com.kronos.plugin.base.Log
 import org.objectweb.asm.Handle
 import org.objectweb.asm.Opcodes.ACC_STATIC
 import org.objectweb.asm.tree.ClassNode
@@ -46,7 +45,7 @@ fun ClassNode.lambdaHelper(isStatic: Boolean = false, block: (InvokeDynamicInsnN
     }
     lambdaMethodNodes.forEach {
 
-       // Log.info("lambdaName:${it.name} lambdaDesc:${it.desc} lambdaAccess:${it.access}")
+        // Log.info("lambdaName:${it.name} lambdaDesc:${it.desc} lambdaAccess:${it.access}")
     }
     return lambdaMethodNodes
 

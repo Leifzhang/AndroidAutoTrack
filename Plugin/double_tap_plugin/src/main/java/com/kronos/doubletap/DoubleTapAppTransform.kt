@@ -9,8 +9,10 @@ import com.android.build.gradle.internal.pipeline.TransformManager
  */
 class DoubleTapAppTransform : DoubleTapTransform() {
 
-    override fun getScopes(): MutableSet<in QualifiedContent.Scope>? {
-        return TransformManager.SCOPE_FULL_PROJECT
+    override fun getScopes(): MutableSet<QualifiedContent.ScopeType> {
+        return mutableSetOf<QualifiedContent.ScopeType>().apply {
+            addAll(TransformManager.SCOPE_FULL_PROJECT)
+        }
     }
 
     override fun getInputTypes(): Set<QualifiedContent.ContentType>? {
