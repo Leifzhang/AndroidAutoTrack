@@ -1,7 +1,7 @@
 package com.kronos.doubletap;
 
 
-import org.apache.http.util.TextUtils;
+import org.gradle.internal.impldep.org.apache.http.util.TextUtils;
 
 public class DoubleTabConfig {
     public String injectClassName = "";

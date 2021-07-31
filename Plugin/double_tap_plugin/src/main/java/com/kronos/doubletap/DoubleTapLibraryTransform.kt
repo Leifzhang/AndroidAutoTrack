@@ -1,8 +1,8 @@
 package com.kronos.doubletap
 
 import com.android.build.api.transform.QualifiedContent
-import com.android.build.gradle.internal.pipeline.TransformManager
 import com.google.common.collect.ImmutableSet
+import com.kronos.plugin.base.constant.TransformManager
 
 /**
  * @Author LiABao
@@ -12,11 +12,12 @@ class DoubleTapLibraryTransform : DoubleTapTransform() {
 
     override fun getScopes(): MutableSet<in QualifiedContent.Scope> {
         return ImmutableSet.of(
-            QualifiedContent.Scope.PROJECT
+                QualifiedContent.Scope.PROJECT
         )
     }
 
     override fun getInputTypes(): Set<QualifiedContent.ContentType>? {
         return TransformManager.CONTENT_CLASS
     }
+
 }

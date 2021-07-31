@@ -1,7 +1,6 @@
 package com.kronos.plugin.base
 
-import org.apache.commons.codec.digest.DigestUtils
-import org.apache.commons.compress.utils.IOUtils
+import org.gradle.internal.impldep.org.apache.commons.codec.digest.DigestUtils
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -29,7 +28,7 @@ internal object JarUtils {
                     val zipEntry = ZipEntry(entryName)
                     jarOutputStream.putNextEntry(zipEntry)
                     var modifiedClassBytes: ByteArray? = null
-                    val sourceClassBytes = IOUtils.toByteArray(inputStream)
+                    val sourceClassBytes = inputStream.readBytes()
                     if (entryName.endsWith(".class")) {
                         try {
                             modifiedClassBytes = transform.process(entryName, sourceClassBytes)
@@ -83,7 +82,7 @@ internal object JarUtils {
                 val entryName = jarEntry.name
                 if (entryName.endsWith(".class") && removeClasses.contains(entryName)) {
                     val inputStream = file.getInputStream(jarEntry)
-                    val sourceClassBytes = IOUtils.toByteArray(inputStream)
+                    val sourceClassBytes = inputStream.readBytes()
                     try {
                         callBack?.delete(entryName, sourceClassBytes)
                     } catch (ignored: Exception) {
@@ -104,7 +103,7 @@ internal object JarUtils {
                 val jarEntry = enumeration.nextElement()
                 val inputStream = file.getInputStream(jarEntry)
                 val entryName = jarEntry.name
-                val sourceClassBytes = IOUtils.toByteArray(inputStream)
+                val sourceClassBytes = inputStream.readBytes()
                 if (entryName.endsWith(".class")) {
                     try {
                         callBack?.delete(entryName, sourceClassBytes)
