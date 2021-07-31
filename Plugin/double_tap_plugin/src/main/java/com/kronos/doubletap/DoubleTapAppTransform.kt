@@ -1,7 +1,7 @@
 package com.kronos.doubletap
 
 import com.android.build.api.transform.QualifiedContent
-import com.kronos.plugin.base.constant.TransformManager
+import com.android.build.gradle.internal.pipeline.TransformManager
 
 /**
  * @Author LiABao

@@ -17,7 +17,7 @@ class DoubleTapProvider : PluginProvider {
 
     override fun dependOn(): List<String> {
         return arrayListOf<String>().apply {
-            add("com.kronos.plugin.thread.ThreadHookProvider")
+            // add("com.kronos.plugin.thread.ThreadHookProvider")
         }
     }
 

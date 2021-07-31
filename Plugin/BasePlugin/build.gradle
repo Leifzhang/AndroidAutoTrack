@@ -9,6 +9,7 @@ dependencies {
     api "com.android.tools.build:gradle-api:$apgVersion"
     api "com.android.tools.build:gradle:$apgVersion"
     implementation 'commons-io:commons-io:2.6'
+    implementation "commons-codec:commons-codec:1.15"
     api 'org.ow2.asm:asm:9.2'
     api 'org.ow2.asm:asm-tree:9.2'
 }
@@ -17,3 +18,9 @@ dependencies {
 Properties config = new Properties()
 config.load(project.file("nexus.properties").newDataInputStream())
 group = config.getProperty('nexus_groupId')
+
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+}

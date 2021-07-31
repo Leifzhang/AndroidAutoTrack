@@ -1,9 +1,8 @@
 package com.kronos.plugin.base
 
-import org.gradle.internal.impldep.org.apache.commons.codec.digest.DigestUtils
+import com.kronos.plugin.base.utils.DigestUtils
 import java.io.File
 import java.io.FileOutputStream
-import java.io.IOException
 import java.util.*
 import java.util.jar.JarFile
 import java.util.jar.JarOutputStream

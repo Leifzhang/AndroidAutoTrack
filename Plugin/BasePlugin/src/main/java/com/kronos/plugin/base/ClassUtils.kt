@@ -24,7 +24,7 @@ object ClassUtils {
     }
 
     fun saveFile(mTempDir: File?, modifiedClassBytes: ByteArray?): File? {
-        val modified: File? = null
+        val modified: File? = mTempDir
         modifiedClassBytes?.apply {
             if (mTempDir!!.exists()) {
                 mTempDir.delete()

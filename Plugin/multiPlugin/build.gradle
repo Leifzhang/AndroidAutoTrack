@@ -1,16 +1,13 @@
 plugins {
-    id 'java-library'
     id 'kotlin'
-    id 'groovy'
     id 'java-gradle-plugin'
 }
 
 dependencies {
-    implementation gradleApi()
     implementation localGroovy()
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation project(":BasePlugin")
-    implementation 'com.google.auto.service:auto-service:1.0-rc6'
+    implementation 'com.google.auto.service:auto-service:1.0-rc7'
 }
 
 gradlePlugin {
@@ -22,4 +19,8 @@ gradlePlugin {
             implementationClass = 'com.kronos.plugin.multi.MultiPlugin'
         }
     }
+}
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
 }

@@ -3,10 +3,10 @@ package com.kronos.plugin.thread
 import com.android.build.api.transform.QualifiedContent
 import com.android.build.api.transform.Transform
 import com.android.build.api.transform.TransformInvocation
+import com.android.build.gradle.internal.pipeline.TransformManager
 import com.kronos.plugin.base.BaseTransform
 import com.kronos.plugin.base.ClassUtils
 import com.kronos.plugin.base.TransformCallBack
-import com.kronos.plugin.base.constant.TransformManager
 import com.kronos.plugin.thread.visitor.ThreadAsmHelper
 
 /**
