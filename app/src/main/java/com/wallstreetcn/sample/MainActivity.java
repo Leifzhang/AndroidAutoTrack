@@ -44,8 +44,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             @Override
             public void onClick(View v) {
-                Log.i("MainActivity", v.toString());
-               // String test = mdata.getTest();
+                String test = mdata.getTest();
+                Log.i("MainActivity", test);
                 Intent intent = new Intent();
             }
         });
