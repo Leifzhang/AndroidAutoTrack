@@ -11,7 +11,7 @@ buildscript {
         classpath "com.android.tools.build:gradle:$apgVersion"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath 'com.github.dcendents:android-maven-gradle-plugin:2.1'
-
+        classpath 'com.vanniktech:gradle-maven-publish-plugin:0.17.0'
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
@@ -19,6 +19,14 @@ buildscript {
 
 allprojects {
     repositories {
+        maven {
+            name = "GitHubPackages"
+            url "https://github.com/Leifzhang/AndroidAutoTrack"
+            credentials {
+                username = 'leifzhang'
+                password = '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'
+            }
+        }
         maven {
             url 'https://maven.aliyun.com/repository/central/'
         }
@@ -41,11 +49,40 @@ allprojects {
     }
 
     pluginManager.withPlugin("java-library") {
-        /*  configure<JavaPluginExtension> {
-              sourceCompatibility = JavaVersion.VERSION_11
-              targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+    }
+    group("com.github.leifzhang")
+    version = property("plugin.version")
+    plugins.withId("com.vanniktech.maven.publish") {
+        mavenPublish {
+            pom {
+                name = "Android Auot Track"
+                description = "A description of what my library does."
+                inceptionYear = "2020"
+                url = "https://github.com/Leifzhang/AndroidAutoTrack"
+                licenses {
+                    license {
+                        name = "The Apache License, Version 2.0"
+                        url = "http://www.apache.org/licenses/LICENSE-2.0.txt"
+                        distribution = "http://www.apache.org/licenses/LICENSE-2.0.txt"
+                    }
+                }
+                developers {
+                    developer {
+                        id = "Leifzhang"
+                        name = "User Name"
+                        url = "https://github.com/Leifzhang/"
+                    }
+                }
+                scm {
+                    url = "https://github.com/Leifzhang/AndroidAutoTrack"
+                    connection = "scm:https://github.com/Leifzhang/AndroidAutoTrack.git"
+                    developerConnection = "scm:https://github.com/Leifzhang/AndroidAutoTrack.git"
+                }
+            }
 
-          }*/
+        }
     }
 }
 

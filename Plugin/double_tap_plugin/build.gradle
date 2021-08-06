@@ -2,8 +2,6 @@ apply plugin: 'groovy'
 apply plugin: 'kotlin'
 apply plugin: 'java-gradle-plugin'
 apply plugin: 'kotlin-kapt'
-apply from: '../upload_bintray.gradle'
-
 
 dependencies {
     implementation gradleApi()

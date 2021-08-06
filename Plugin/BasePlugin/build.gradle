@@ -2,7 +2,6 @@ plugins {
     id("kotlin")
     id("kotlin-kapt")
 }
-apply from: '../upload_bintray.gradle'
 
 dependencies {
     implementation gradleApi()
