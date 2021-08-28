@@ -23,7 +23,7 @@ buildscript {
 plugins {
     // 这个 id 就是在 versionPlugin 文件夹下 build.gradle 文件内定义的id
     id "auto-track" apply false
-    // id "thread-hook" apply false
+    id "thread-hook" apply false
     id "doubleTap" apply false
     id "multi-plugin" apply false
 }

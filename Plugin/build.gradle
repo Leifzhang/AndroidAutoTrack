@@ -19,14 +19,14 @@ buildscript {
 
 allprojects {
     repositories {
-        maven {
+      /*  maven {
             name = "GitHubPackages"
             url "https://github.com/Leifzhang/AndroidAutoTrack"
             credentials {
                 username = 'leifzhang'
                 password = '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'
             }
-        }
+        }*/
         maven {
             url 'https://maven.aliyun.com/repository/central/'
         }

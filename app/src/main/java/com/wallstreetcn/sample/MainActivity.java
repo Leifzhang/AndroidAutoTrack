@@ -2,6 +2,7 @@ package com.wallstreetcn.sample;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.View;
 
@@ -10,6 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.wallstreetcn.sample.adapter.Test;
+import com.wallstreetcn.sample.utils.PrivacyUtils;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -49,6 +51,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Intent intent = new Intent();
             }
         });
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            TelephonyManager manager = getSystemService(TelephonyManager.class);
+            PrivacyUtils.getImei(manager);
+            String did = manager.getDeviceId();
+        }
     }
 
     @Override
