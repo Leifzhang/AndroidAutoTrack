@@ -49,6 +49,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 String test = mdata.getTest();
                 Log.i("MainActivity", test);
                 Intent intent = new Intent();
+                intent.setClass(MainActivity.this, SecondActivity.class);
+                startActivity(intent);
             }
         });
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {

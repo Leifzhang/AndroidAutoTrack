@@ -23,7 +23,7 @@ class TestAdapter : RecyclerView.Adapter<TestAdapter.ViewHolder>() {
     }
 
     override fun getItemCount(): Int {
-        return 10
+        return 300
     }
 
     class ViewHolder constructor(itemView: View) : RecyclerView.ViewHolder(itemView),
@@ -39,7 +39,7 @@ class TestAdapter : RecyclerView.Adapter<TestAdapter.ViewHolder>() {
         }
 
         fun bindViewHolder(position: Int) {
-            itemView.findViewById<TextView>(R.id.textView1).text = "这是第" + position + "条目"
+            itemView.findViewById<TextView>(R.id.titleTv).text = "这是第" + position + "条目"
             itemView.setOnClickListener(this)
         }
     }
