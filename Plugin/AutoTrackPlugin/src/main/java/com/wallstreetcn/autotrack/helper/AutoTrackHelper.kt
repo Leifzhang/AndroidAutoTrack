@@ -2,7 +2,7 @@ package com.wallstreetcn.autotrack.helper
 
 import com.kronos.plugin.base.AsmHelper
 import com.kronos.plugin.base.Log
-import com.kronos.plugin.base.utils.lambdaHelper
+import com.kronos.plugin.base.asm.lambdaHelper
 import com.wallstreetcn.autotrack.scan.DataClassManager
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassWriter
@@ -22,6 +22,7 @@ class AutoTrackHelper : AsmHelper {
         //1 将读入的字节转为classNode
         classReader.accept(classNode, 0)
         classNodeMap[classNode.name] = classNode
+        RecyclerViewHolderImp(classNode)
         // 判断当前类是否实现了OnClickListener接口
         classNode.interfaces?.forEach {
             if (it == "android/view/View\$OnClickListener") {
@@ -147,12 +148,12 @@ class AutoTrackHelper : AsmHelper {
                         instructions.insertBefore(it, FieldInsnNode(dataField.opcode, dataField.owner, dataField.name, dataField.desc))
                     }
                 } else if (parentField != null) {
-                        parentField.apply {
-                            instructions.insertBefore(it, VarInsnNode(Opcodes.ALOAD, 0))
-                            instructions.insertBefore(
-                                    it, FieldInsnNode(Opcodes.GETFIELD, node.name, parentField.name, parentField.desc)
-                            )
-                        }
+                    parentField.apply {
+                        instructions.insertBefore(it, VarInsnNode(Opcodes.ALOAD, 0))
+                        instructions.insertBefore(
+                                it, FieldInsnNode(Opcodes.GETFIELD, node.name, parentField.name, parentField.desc)
+                        )
+                    }
                 } else {
                     instructions.insertBefore(it, LdcInsnNode("1234"))
                 }

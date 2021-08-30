@@ -2,8 +2,7 @@ package com.kronos.doubletap.helper
 
 import com.kronos.doubletap.DoubleTabConfig
 import com.kronos.plugin.base.AsmHelper
-import com.kronos.plugin.base.Log
-import com.kronos.plugin.base.utils.lambdaHelper
+import com.kronos.plugin.base.asm.lambdaHelper
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassWriter
 import org.objectweb.asm.Label

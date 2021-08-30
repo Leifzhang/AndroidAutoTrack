@@ -2,7 +2,7 @@ package com.kronos.plugin.base
 
 import com.android.build.api.transform.*
 import com.kronos.plugin.base.utils.DigestUtils
-import com.kronos.plugin.base.utils.copyIfLegal
+import com.kronos.plugin.base.asm.copyIfLegal
 import com.kronos.plugin.base.utils.deleteAll
 import com.kronos.plugin.base.utils.filterTest
 import org.apache.commons.io.FileUtils
@@ -98,6 +98,7 @@ class BaseTransform(
                 }
             }
             executor.invokeAll(tasks)
+
             destFiles.forEach {
                 it.filterTest("temp")?.forEach { file ->
                     file.deleteAll()

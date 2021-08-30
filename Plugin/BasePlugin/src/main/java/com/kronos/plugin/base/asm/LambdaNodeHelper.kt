@@ -1,4 +1,4 @@
-package com.kronos.plugin.base.utils
+package com.kronos.plugin.base.asm
 
 import org.objectweb.asm.Handle
 import org.objectweb.asm.Opcodes.ACC_STATIC
