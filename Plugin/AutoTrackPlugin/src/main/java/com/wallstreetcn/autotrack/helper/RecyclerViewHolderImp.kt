@@ -34,9 +34,4 @@ class RecyclerViewHolderImp(classNode: ClassNode) {
         }
     }
 
-    private fun isRecyclerViewHolder(superName: String?): Boolean {
-        return superName == "androidx/recyclerview/widget/RecyclerView\$ViewHolder"
-    }
-
-
 }
