@@ -2,6 +2,7 @@ package com.wallstreetcn.sample;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.View;
@@ -57,6 +58,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             TelephonyManager manager = getSystemService(TelephonyManager.class);
             PrivacyUtils.getImei(manager);
             String did = manager.getDeviceId();
+            String androidId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+       //     String newDid =PrivacyUtils.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
         }
     }
 
