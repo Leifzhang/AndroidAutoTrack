@@ -38,7 +38,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        assert true;
+        String processName = TestUtils.getProcessName(this);
+        String processName2=TestUtils.processName(this);
         //    service = Executors.newFixedThreadPool(2);
         //  service = Executors.newSingleThreadExecutor(Executors.defaultThreadFactory());
         findViewById(R.id.textView1).setOnClickListener(new View.OnClickListener() {
@@ -59,7 +60,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             PrivacyUtils.getImei(manager);
             String did = manager.getDeviceId();
             String androidId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
-       //     String newDid =PrivacyUtils.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+            //     String newDid =PrivacyUtils.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
         }
     }
 
