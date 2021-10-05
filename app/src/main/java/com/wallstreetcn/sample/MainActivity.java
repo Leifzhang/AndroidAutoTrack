@@ -38,8 +38,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        String processName = TestUtils.getProcessName(this);
-        String processName2=TestUtils.processName(this);
         //    service = Executors.newFixedThreadPool(2);
         //  service = Executors.newSingleThreadExecutor(Executors.defaultThreadFactory());
         findViewById(R.id.textView1).setOnClickListener(new View.OnClickListener() {
