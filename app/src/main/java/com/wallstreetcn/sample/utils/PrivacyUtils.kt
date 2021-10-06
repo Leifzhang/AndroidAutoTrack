@@ -18,7 +18,7 @@ import android.telephony.TelephonyManager
 object PrivacyUtils {
     @JvmStatic
     fun getImei(manager: TelephonyManager): String {
-        manager.deviceId
+//        manager.deviceId
         return ""
     }
 

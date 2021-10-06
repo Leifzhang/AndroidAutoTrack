@@ -7,7 +7,6 @@ import com.android.build.gradle.internal.pipeline.TransformManager
 import com.kronos.plugin.base.BaseTransform
 import com.kronos.plugin.base.ClassUtils
 import com.kronos.plugin.base.TransformCallBack
-import com.kronos.plugin.thread.visitor.PrivacyAsmHelper
 import com.kronos.plugin.thread.visitor.ThreadAsmHelper
 
 /**
@@ -36,7 +35,7 @@ class HookTransform : Transform() {
     }
 
     override fun transform(transformInvocation: TransformInvocation?) {
-        val helper = PrivacyAsmHelper()
+        val helper = ThreadAsmHelper()
         val baseTransform = BaseTransform(transformInvocation, object : TransformCallBack {
             override fun process(className: String, classBytes: ByteArray?): ByteArray? {
                 return if (ClassUtils.checkClassName(className)) {
