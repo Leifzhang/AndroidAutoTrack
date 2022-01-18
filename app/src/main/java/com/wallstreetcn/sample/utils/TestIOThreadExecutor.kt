@@ -34,6 +34,10 @@ class TestIOThreadExecutor private constructor() : ThreadPoolExecutor(
             return THREAD_POOL_SHARE
         }
 
+
+        fun getThreadPool(name:String):TestIOThreadExecutor{
+            return THREAD_POOL_SHARE
+        }
     }
 
 }

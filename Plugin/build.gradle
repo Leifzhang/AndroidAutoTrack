@@ -1,6 +1,6 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
-    ext.kotlin_version = '1.4.30'
+    ext.kotlin_version = '1.5.30'
     repositories {
         maven {
             url 'https://maven.aliyun.com/repository/central/'
@@ -52,36 +52,16 @@ allprojects {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+
     group("com.github.leifzhang")
     version = property("plugin.version")
-    plugins.withId("com.vanniktech.maven.publish") {
-        mavenPublish {
-            pom {
-                name = "Android Auot Track"
-                description = "A description of what my library does."
-                inceptionYear = "2020"
-                url = "https://github.com/Leifzhang/AndroidAutoTrack"
-                licenses {
-                    license {
-                        name = "The Apache License, Version 2.0"
-                        url = "http://www.apache.org/licenses/LICENSE-2.0.txt"
-                        distribution = "http://www.apache.org/licenses/LICENSE-2.0.txt"
-                    }
-                }
-                developers {
-                    developer {
-                        id = "Leifzhang"
-                        name = "User Name"
-                        url = "https://github.com/Leifzhang/"
-                    }
-                }
-                scm {
-                    url = "https://github.com/Leifzhang/AndroidAutoTrack"
-                    connection = "scm:https://github.com/Leifzhang/AndroidAutoTrack.git"
-                    developerConnection = "scm:https://github.com/Leifzhang/AndroidAutoTrack.git"
-                }
+    afterEvaluate {
+        if (project.plugins.hasPlugin('com.android.library') || project.plugins.hasPlugin('com.android.application')) {
+            def android = project.extensions.getByName('android')
+            android.compileOptions {
+                sourceCompatibility JavaVersion.VERSION_11
+                targetCompatibility JavaVersion.VERSION_11
             }
-
         }
     }
 }

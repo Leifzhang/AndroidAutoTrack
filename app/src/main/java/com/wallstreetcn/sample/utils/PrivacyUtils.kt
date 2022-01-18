@@ -53,7 +53,7 @@ object PrivacyUtils {
     fun getString(resolver: ContentResolver?, name: String?): String {
         resolver ?: return ""
         name ?: return ""
-        return Settings.Secure.getString(resolver, name)
+        return ""
     }
 
 
