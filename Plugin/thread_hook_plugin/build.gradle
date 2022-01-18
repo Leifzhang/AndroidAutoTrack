@@ -6,10 +6,10 @@ dependencies {
     implementation gradleApi()
     implementation localGroovy()
     implementation project(":BasePlugin")
-    implementation 'commons-io:commons-io:2.6'
+    implementation 'commons-io:commons-io:2.11.0'
     implementation 'org.javassist:javassist:3.27.0-GA'
-    implementation 'com.google.auto.service:auto-service:1.0-rc7'
-    kapt "com.google.auto.service:auto-service:1.0-rc7"
+    implementation 'com.google.auto.service:auto-service:1.0'
+    kapt "com.google.auto.service:auto-service:1.0"
 }
 
 java {

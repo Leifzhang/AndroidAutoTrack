@@ -5,9 +5,6 @@ buildscript {
         maven {
             url 'https://maven.aliyun.com/repository/central/'
         }
-        maven {
-            url 'https://dl.bintray.com/leifzhang/maven'
-        }
         google()
     }
     dependencies {
