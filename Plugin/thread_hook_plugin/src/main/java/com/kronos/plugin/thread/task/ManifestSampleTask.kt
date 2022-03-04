@@ -12,18 +12,18 @@ import org.gradle.api.tasks.TaskAction
  *  @Since 2022/1/18
  *
  */
-abstract class ManifestTask : DefaultTask() {
+abstract class ManifestSampleTask : DefaultTask() {
     // 输入
     @get:InputFile
     abstract val mergedManifest: RegularFileProperty
     // 输出
     @get:OutputFile
-    abstract val updatedManifest: RegularFileProperty
+    abstract val outputManifest: RegularFileProperty
 
     @TaskAction
     fun taskAction() {
         val file = mergedManifest.get().asFile.inputStream()
-        val steam = updatedManifest.get().asFile.outputStream()
+        val steam = outputManifest.get().asFile.outputStream()
         steam.use {
             it.write(file.readBytes())
         }
