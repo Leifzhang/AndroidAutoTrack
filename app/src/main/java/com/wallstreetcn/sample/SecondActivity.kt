@@ -25,6 +25,7 @@ class SecondActivity : AppCompatActivity() {
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = TestAdapter()
         poolExecutor = Executors.newFixedThreadPool(2)
+        val number=2L.toBigDecimal()
         val wifiMgr = applicationContext.getSystemService(Context.WIFI_SERVICE)
                 as WifiManager
  /*       val info = wifiMgr.connectionInfo

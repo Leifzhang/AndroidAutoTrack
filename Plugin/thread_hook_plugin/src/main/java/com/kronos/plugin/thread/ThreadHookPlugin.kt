@@ -24,6 +24,7 @@ class ThreadHookPlugin : Plugin<Project> {
         val androidComponents = project.extensions.getByType(AndroidComponentsExtension::class.java)
         androidComponents.onVariants { variant ->
             //  artifacts 简单使用
+            variant.flavorName
             val taskProvider = project.tasks.register(
                     "manifestCopy${variant.name}Task",
                     ManifestSampleTask::class.java
