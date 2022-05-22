@@ -1,3 +1,5 @@
+import com.android.build.gradle.options.BooleanOption
+
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
     ext.kotlin_version = '1.5.30'
@@ -65,7 +67,16 @@ allprojects {
         }
     }
 }
-
+// 下面注释的代码是 work 的，但 apply 脚本的是不行的
+//subprojects {
+//    it.beforeEvaluate {
+//        plugins.withType(com.android.build.gradle.internal.plugins.BasePlugin.class) { com.android.build.gradle.internal.plugins.BasePlugin basePlugin ->
+//            println basePlugin.project.group + ":" + basePlugin.project.name
+//            println basePlugin.projectServices.projectOptions.get(BooleanOption.ENABLE_JETIFIER)
+//        }
+//    }
+//}
+apply from: new File("../subprojects.gradle")
 task clean(type: Delete) {
     delete rootProject.buildDir
 }

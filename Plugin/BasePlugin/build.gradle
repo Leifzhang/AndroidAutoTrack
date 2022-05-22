@@ -5,8 +5,8 @@ plugins {
 
 dependencies {
     implementation gradleApi()
-    api "com.android.tools.build:gradle-api:$agpVersion"
-    api "com.android.tools.build:gradle:$agpVersion"
+    implementation "com.android.tools.build:gradle-api:$agpVersion"
+    compileOnly "com.android.tools.build:gradle:$agpVersion"
     implementation 'commons-io:commons-io:2.6'
     implementation "commons-codec:commons-codec:1.15"
     api 'org.ow2.asm:asm:9.2'

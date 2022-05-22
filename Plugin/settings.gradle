@@ -1,7 +1,7 @@
-include ':double_tap_plugin'
-include ':AutoTrackPlugin'
+//include ':double_tap_plugin'
+//include ':AutoTrackPlugin'
 include ':BasePlugin'
-include ':thread_hook_plugin'
+//include ':thread_hook_plugin'
 include ':multiPlugin'
+include ':testmodule'
 rootProject.name = "Plugin"
-

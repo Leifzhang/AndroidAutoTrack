@@ -1,3 +1,5 @@
+import com.android.build.gradle.options.BooleanOption
+
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
     ext.kotlin_version = '1.4.30'
@@ -19,9 +21,9 @@ buildscript {
 
 plugins {
     // 这个 id 就是在 versionPlugin 文件夹下 build.gradle 文件内定义的id
-    id "auto-track" apply false
-    id "thread-hook" apply false
-    id "doubleTap" apply false
+//    id "auto-track" apply false
+//    id "thread-hook" apply false
+//    id "doubleTap" apply false
     id "multi-plugin" apply false
 }
 
@@ -57,6 +59,14 @@ allprojects {
     }
 }
 
+subprojects {
+    it.beforeEvaluate {
+        plugins.withType(com.android.build.gradle.internal.plugins.BasePlugin.class) { com.android.build.gradle.internal.plugins.BasePlugin basePlugin ->
+            println basePlugin.project.group + ":" + basePlugin.project.name
+            println basePlugin.projectServices.projectOptions.get(BooleanOption.ENABLE_JETIFIER)
+        }
+    }
+}
 
 task clean(type: Delete) {
     delete rootProject.buildDir

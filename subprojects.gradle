@@ -1,0 +1,26 @@
+import com.android.build.gradle.options.BooleanOption
+
+buildscript {
+    ext.kotlin_version = '1.4.30'
+    repositories {
+        maven {
+            url 'https://maven.aliyun.com/repository/central/'
+        }
+        google()
+    }
+    dependencies {
+        classpath "com.android.tools.build:gradle:${agpVersion}"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath 'com.github.dcendents:android-maven-gradle-plugin:2.1'
+
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
+    }
+}
+allprojects {
+    println "-------- ${it.name}: " + it.hashCode()
+    plugins.withType(com.android.build.gradle.internal.plugins.BasePlugin.class) { com.android.build.gradle.internal.plugins.BasePlugin basePlugin ->
+        println basePlugin.project.group + ":" + basePlugin.project.name
+        println basePlugin.projectServices.projectOptions.get(BooleanOption.ENABLE_JETIFIER)
+    }
+}
