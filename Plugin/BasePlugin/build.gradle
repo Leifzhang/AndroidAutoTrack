@@ -7,7 +7,7 @@ dependencies {
     implementation gradleApi()
     api "com.android.tools.build:gradle-api:$apgVersion"
     api "com.android.tools.build:gradle:$apgVersion"
-    implementation 'commons-io:commons-io:2.6'
+    implementation 'commons-io:commons-io:2.11.0'
     implementation "commons-codec:commons-codec:1.15"
     api 'org.ow2.asm:asm:9.2'
     api 'org.ow2.asm:asm-tree:9.2'

@@ -28,13 +28,14 @@ android {
     }
 }
 
+
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation 'androidx.appcompat:appcompat:1.4.0-alpha02'
-    implementation 'androidx.recyclerview:recyclerview:1.2.0'
+    implementation 'androidx.appcompat:appcompat:1.4.2'
+    implementation 'androidx.recyclerview:recyclerview:1.2.1'
     implementation project(":testmodule")
     implementation 'androidx.multidex:multidex:2.0.1'
-    implementation 'com.google.code.gson:gson:2.8.7'
+    implementation 'com.google.code.gson:gson:2.8.9'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'com.squareup.leakcanary:leakcanary-android-process:2.7'
 }
