@@ -4,7 +4,7 @@ import com.android.build.api.artifact.SingleArtifact
 import com.android.build.api.instrumentation.FramesComputationMode
 import com.android.build.api.instrumentation.InstrumentationScope
 import com.android.build.api.variant.AndroidComponentsExtension
-import com.android.build.gradle.AppExtension
+import com.android.build.gradle.BaseExtension
 import com.kronos.plugin.thread.task.ManifestTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -17,10 +17,11 @@ class ThreadHookPlugin : Plugin<Project> {
 
     override fun apply(project: Project) {
         val appExtension = project.extensions.getByType(
-                AppExtension::class.java
+                BaseExtension::class.java
         )
         appExtension.registerTransform(HookTransform())
         val androidComponents = project.extensions.getByType(AndroidComponentsExtension::class.java)
+
         androidComponents.onVariants { variant ->
             //  artifacts 简单使用
             val taskProvider = project.tasks.register(
@@ -31,9 +32,11 @@ class ThreadHookPlugin : Plugin<Project> {
                     ManifestTask::mergedManifest,
                     ManifestTask::updatedManifest
             ).toTransform(SingleArtifact.MERGED_MANIFEST)
-            variant.transformClassesWith(PrivacyClassVisitorFactory::class.java,
-                    InstrumentationScope.ALL) {}
-            variant.setAsmFramesComputationMode(FramesComputationMode.COPY_FRAMES)
+            variant.instrumentation.transformClassesWith(PrivacyClassVisitorFactory::class.java,
+                    InstrumentationScope.ALL) {
+
+            }
+            variant.instrumentation.setAsmFramesComputationMode(FramesComputationMode.COPY_FRAMES)
         }
     }
 }
